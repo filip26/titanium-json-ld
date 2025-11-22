@@ -302,7 +302,7 @@ public interface Context {
 //            this.adapter = adapter;
 //            this.baseUrl = baseUrl;
             this.ctx = ctx.newContext(loader, runtime)
-                    .acceptInlineContext(acceptInline)
+                    .useInline(acceptInline)
                     .build(node, adapter, baseUrl);
             return this;
         }

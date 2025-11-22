@@ -16,22 +16,47 @@ import com.apicatalog.jsonld.runtime.Execution.EventType;
  * 
  * @since 2.0.0
  */
-public class NodeThrottle implements EventProcessor {
+public final class NodeThrottle implements EventProcessor {
 
     private final int maxNodes;
-    private int counter;
+    private final int maxDepth;
 
-    public NodeThrottle(int maxNodes) {
+    private int counter;
+    private int depth;
+
+    public NodeThrottle(int maxNodes, int maxDepth) {
         this.maxNodes = maxNodes;
+        this.maxDepth = maxDepth;
         this.counter = 0;
+        this.depth = 0;
     }
 
     @Override
     public void onEvent(EventType type, String key, String value) throws JsonLdException {
-        // FIXME count only begins
-        if (++counter >= maxNodes) {
-            // TODO add ErrorCode.MAX_NODES_LIMIT_EXCEEDED
-            throw new JsonLdException(ErrorCode.UNSPECIFIED);
+
+        switch (type) {
+        case BEGIN_LIST:
+        case BEGIN_MAP:
+            if (++depth >= maxDepth) {
+                // TODO add ErrorCode.MAX_DEPTH_LIMIT_EXCEEDED
+                throw new JsonLdException(ErrorCode.UNSPECIFIED);
+            }
+            
+        case TERM_KEY:
+        case UNDEFINED_TERM:
+            if (++counter >= maxNodes) {
+                // TODO add ErrorCode.MAX_NODES_LIMIT_EXCEEDED
+                throw new JsonLdException(ErrorCode.UNSPECIFIED);
+            }
+            break;
+
+        case END_LIST:
+        case END_MAP:
+            depth--;
+            break;
+
+        default:
+            break;
         }
     }
 }

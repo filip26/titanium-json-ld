@@ -22,27 +22,27 @@ public final class TermMapCollector implements EventProcessor {
     @Override
     public void onEvent(EventType type, String key, String value) throws JsonLdException {
         switch (type) {
-        case onBeginList:
+        case BEGIN_LIST:
             if (key != null) {
                 path.push(key);
             }
             return;
 
-        case onEndList:
+        case END_LIST:
             if (key != null) {
                 path.pop();
             }
             return;
 
-        case onBeginMap:
+        case BEGIN_MAP:
             path.push(TypeMapCollector.escapeJsonPointerSegment(key));
             return;
 
-        case onEndMap:
+        case END_MAP:
             path.pop();
             return;
 
-        case onTermKey:
+        case TERM_KEY:
             if (path.isEmpty()) {
                 consumer.accept("/" + TypeMapCollector.escapeJsonPointerSegment(key), value);
                 return;

@@ -138,7 +138,7 @@ public final class Expander {
         // If expandContext is a map having an @context entry, pass that entry's value
         // instead for local context.
         if (options.expandContext() != null) {
-            final var expandContext = options.expandContext().content();
+            final var expandContext = options.expandContext();
 
             builder.update(
                     extractExpansionContext(expandContext),

@@ -55,7 +55,7 @@ class PoliciesTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
-    void testTermMapper(TestCase testCase) {
+    void testPolicy(TestCase testCase) {
 
         final var termMap = new LinkedHashMap<String, Object>();
 
@@ -75,10 +75,11 @@ class PoliciesTest {
                     Document.load(testCase.input, options.loader()),
                     options,
                     Execution.of(options, termMapper));
-            
-            JunitRunner.write(testCase, null, null, null);
 
-            fail("Expected error " + testCase.expectErrorCode);
+            if (testCase.expectErrorCode != null) {
+                JunitRunner.write(testCase, null, null, null);
+                fail("Expected error " + testCase.expectErrorCode);                
+            }
 
         } catch (JsonLdException e) {
 

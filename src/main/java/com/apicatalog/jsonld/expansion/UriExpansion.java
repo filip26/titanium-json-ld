@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +27,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
@@ -130,12 +130,13 @@ public final class UriExpansion {
         // a processor SHOULD generate a warning and return null.
         if (Keywords.matchForm(value)) {
             LOGGER.log(Level.WARNING, "Value [{0}] of keyword form [@1*ALPHA] is not allowed.", value);
+            runtime.fire(EventType.DROPPED_NODE, value);
             return null;
         }
 
         initLocalContext(value);
 
-        final Optional<TermDefinition> definition = activeContext.findTerm(value)
+        final var definition = activeContext.findTerm(value)
                 .filter(term -> vocab || Keywords.contains(term.getUriMapping()));
 
         // 4. if active context has a term definition for value,

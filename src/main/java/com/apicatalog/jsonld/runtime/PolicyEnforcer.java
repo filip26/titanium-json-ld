@@ -27,11 +27,11 @@ public final class PolicyEnforcer implements EventProcessor {
     @Override
     public void onEvent(EventType type, String key, String value) throws JsonLdException {
         switch (type) {
-        case onDroppedNode:
+        case DROPPED_NODE:
             enforceNodes(droppedNodes, key);
             return;
             
-        case onUndefinedTerm:
+        case UNDEFINED_TERM:
             enforceTerms(undefinedTerms, key);
             return;
             

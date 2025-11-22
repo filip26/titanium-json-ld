@@ -65,7 +65,7 @@ public final class ObjectExpansion {
     public Object expand(final Context context, final String property) throws JsonLdException {
 
         if (property != null || term != null) {
-            params.runtime().fire(EventType.onBeginMap, term != null ? term : property);
+            params.runtime().fire(EventType.BEGIN_MAP, term != null ? term : property);
         }
 
         activeContext = initPreviousContext(
@@ -93,10 +93,9 @@ public final class ObjectExpansion {
         if (contextValue != null) {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
-                    .acceptInlineContext(params.options().useInlineContexts())
+                    .useInline(params.options().useInlineContexts())
                     .collectKeys(params.runtime()::contextKeys)
                     .build(contextValue, adapter, params.baseUrl());
-
         }
 
         // 10.
@@ -119,7 +118,7 @@ public final class ObjectExpansion {
         final var normalized = normalize(result, property, params);
 
         if (property != null || term != null) {
-            params.runtime().fire(EventType.onEndMap, term != null ? term : property);
+            params.runtime().fire(EventType.END_MAP, term != null ? term : property);
         }
 
         return normalized;
@@ -225,7 +224,7 @@ public final class ObjectExpansion {
                     typeKey = key;
                 }
 
-                params.runtime().fire(EventType.onTypeKey, key, Keywords.TYPE);
+                params.runtime().fire(EventType.TYPE_KEY, key, Keywords.TYPE);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))
@@ -346,7 +345,7 @@ public final class ObjectExpansion {
 
         final var type = result.get(Keywords.TYPE);
 
-        if (!(type instanceof Collection)) {
+        if (type != null && !(type instanceof Collection)) {
             result.put(Keywords.TYPE, List.of(type));
         }
 
@@ -394,6 +393,7 @@ public final class ObjectExpansion {
 
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {
+            params.runtime().fire(EventType.DROPPED_NODE, activeProperty);
             return null;
         }
 
@@ -405,7 +405,7 @@ public final class ObjectExpansion {
             if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
-                params.runtime().fire(EventType.onDroppedNode, activeProperty);
+                params.runtime().fire(EventType.DROPPED_NODE, activeProperty);
                 return null;
             }
 
@@ -413,7 +413,7 @@ public final class ObjectExpansion {
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
             if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
-                params.runtime().fire(EventType.onDroppedNode, activeProperty);
+                params.runtime().fire(EventType.DROPPED_NODE, activeProperty);
                 return null;
             }
 

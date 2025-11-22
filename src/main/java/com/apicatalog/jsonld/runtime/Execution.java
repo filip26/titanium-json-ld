@@ -31,15 +31,15 @@ import com.apicatalog.jsonld.Options;
 public class Execution {
 
     public enum EventType {
-        onBeginMap,
-        onEndMap,
-        onBeginList,
-        onEndList,
-        onTypeKey,
-        onTermKey,
+        BEGIN_MAP,
+        END_MAP,
+        BEGIN_LIST,
+        END_LIST,
+        TYPE_KEY,
+        TERM_KEY,
 
-        onUndefinedTerm,
-        onDroppedNode,
+        UNDEFINED_TERM,
+        DROPPED_NODE,
     }
 
     @FunctionalInterface
@@ -103,8 +103,6 @@ public class Execution {
 
     /**
      * Event fired when a new context key is encountered.
-     * 
-     * use beginMap(@context)
      * 
      * @param keys
      */

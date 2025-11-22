@@ -121,7 +121,7 @@ public final class Expansion {
                     params);
 
             if (Keywords.SET.equals(expandedTerm)) {
-                params.runtime().fire(EventType.onTermKey, term);
+                params.runtime().fire(EventType.TERM_KEY, term);
             }
             return scalar;
         }
@@ -184,6 +184,7 @@ public final class Expansion {
          * returning null.
          */
         if (property == null || Keywords.GRAPH.equals(property)) {
+            params.runtime().fire(EventType.DROPPED_NODE, property);
             return null;
         }
 
@@ -262,7 +263,7 @@ public final class Expansion {
                         || nodeAdapter.isSingleElement(node));
 
         if (!indexedSingleton) {
-            params.runtime().fire(EventType.onBeginList, term);
+            params.runtime().fire(EventType.BEGIN_LIST, term);
         }
 
         final var result = new ArrayList<Object>();
@@ -306,7 +307,7 @@ public final class Expansion {
         }
 
         if (!indexedSingleton) {
-            params.runtime().fire(EventType.onEndList, term);
+            params.runtime().fire(EventType.END_LIST, term);
         }
 
         // 5.3

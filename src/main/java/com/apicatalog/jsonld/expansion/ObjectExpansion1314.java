@@ -96,28 +96,20 @@ final class ObjectExpansion1314 {
                     .vocab(true)
                     .expand(key);
 
-            // FIXME if the term is undefined and
+            // FIXME if the term is undefined, i.e. is not URI or keyword
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
-                switch (params.options().undefinedTerms()) {
-                case Fail:
-                    throw new JsonLdException(ErrorCode.UNDEFINED_TERM,
-                            "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
-                case Warn:
-                    LOGGER.log(Level.WARNING, "An undefined term has been detected, term={0}", key);
-
-                case Ignore:
-                    continue;
-                }
+                params.runtime().fire(EventType.UNDEFINED_TERM, key);
+                continue;
             }
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
                 if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                    params.runtime().fire(EventType.onTermKey, key, expandedProperty);
+                    params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
                 }
 
-                params.runtime().fire(EventType.onTypeKey, key, expandedProperty);
+                params.runtime().fire(EventType.TYPE_KEY, key, expandedProperty);
 
                 final var value = adapter.property(key, element);
 
@@ -135,7 +127,7 @@ final class ObjectExpansion1314 {
             final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
 
             if (typeMapping != null) {
-                params.runtime().fire(EventType.onTypeKey, key, typeMapping);
+                params.runtime().fire(EventType.TYPE_KEY, key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition
@@ -171,7 +163,7 @@ final class ObjectExpansion1314 {
                         ? adapter.keyStream(value).map(adapter::asString).sorted().iterator()
                         : adapter.keyStream(value).map(adapter::asString).iterator();
 
-                params.runtime().fire(EventType.onBeginMap, key);
+                params.runtime().fire(EventType.BEGIN_MAP, key);
                 while (langCodes.hasNext()) {
 
                     final var langCode = langCodes.next();
@@ -219,9 +211,9 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.6.
                         langMaps.add(langMap);
                     }
-                    params.runtime().fire(EventType.onTermKey, langCode, Keywords.LANGUAGE);
+                    params.runtime().fire(EventType.TERM_KEY, langCode, Keywords.LANGUAGE);
                 }
-                params.runtime().fire(EventType.onEndMap, key);
+                params.runtime().fire(EventType.END_MAP, key);
 
                 expandedValue = List.copyOf(langMaps);
 
@@ -242,7 +234,7 @@ final class ObjectExpansion1314 {
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keys(value).iterator();
 
-                params.runtime().fire(EventType.onBeginMap, key);
+                params.runtime().fire(EventType.BEGIN_MAP, key);
 
                 // 13.8.3.
                 while (valueKeys.hasNext()) {
@@ -253,7 +245,7 @@ final class ObjectExpansion1314 {
 
                     final var index = adapter.asString(valueKey);
 
-                    params.runtime().fire(EventType.onTermKey, index, Keywords.INDEX);
+                    params.runtime().fire(EventType.TERM_KEY, index, Keywords.INDEX);
 
                     // 13.8.3.1.
                     Context mapContext = activeContext;
@@ -403,7 +395,7 @@ final class ObjectExpansion1314 {
                         indices.add(indexMap);
                     }
                 }
-                params.runtime().fire(EventType.onEndMap, key);
+                params.runtime().fire(EventType.END_MAP, key);
                 expandedValue = indices;
             }
             // 13.9.
@@ -497,7 +489,7 @@ final class ObjectExpansion1314 {
             }
 
             if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                params.runtime().fire(EventType.onTermKey, key, expandedProperty);
+                params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
             }
 
         }
@@ -1160,7 +1152,7 @@ final class ObjectExpansion1314 {
             final String term) throws JsonLdException {
 
         if (activeProperty != null || term != null) {
-            params.runtime().fire(EventType.onBeginMap, term != null ? term : activeProperty);
+            params.runtime().fire(EventType.BEGIN_MAP, term != null ? term : activeProperty);
         }
 
         var activeContext = context;
@@ -1189,7 +1181,7 @@ final class ObjectExpansion1314 {
         expand(activeContext, element, adapter, activeProperty, term);
 
         if (activeProperty != null || term != null) {
-            params.runtime().fire(EventType.onEndMap, term != null ? term : activeProperty);
+            params.runtime().fire(EventType.END_MAP, term != null ? term : activeProperty);
         }
 
     }
@@ -1230,7 +1222,7 @@ final class ObjectExpansion1314 {
                 }
 
                 if (collection) {
-                    params.runtime().fire(EventType.onBeginList, nestedKey);
+                    params.runtime().fire(EventType.BEGIN_LIST, nestedKey);
                 } else {
 //                    params.runtime().beginMap(nestedKey);
                 }
@@ -1248,7 +1240,7 @@ final class ObjectExpansion1314 {
                                         : nestedKey);
 
                 if (collection) {
-                    params.runtime().fire(EventType.onEndList, nestedKey);
+                    params.runtime().fire(EventType.END_LIST, nestedKey);
                 } else {
 //                    params.runtime().endMap(nestedKey);
                 }

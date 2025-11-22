@@ -424,7 +424,9 @@ public final class TermDefinitionBuilder {
                                 runtime);
             }
             // 15.2.
-            if (compactUri != null && compactUri.isNotBlank() && activeContext.containsTerm(compactUri.prefix())) {
+            if (compactUri != null 
+                    && compactUri.isNotBlank() 
+                    && activeContext.containsTerm(compactUri.prefix())) {
 
                 definition.setUriMapping(
                         activeContext

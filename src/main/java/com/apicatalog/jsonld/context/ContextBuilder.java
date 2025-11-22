@@ -71,9 +71,9 @@ public final class ContextBuilder {
     private boolean propagate;
 
     private boolean validateScopedContext;
-    
+
     private boolean acceptInlineContext;
-    
+
     private Consumer<Collection<String>> collectKeys;
 
     // runtime
@@ -129,7 +129,7 @@ public final class ContextBuilder {
             if (!acceptInlineContext) {
                 throw new JsonLdException(ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED);
             }
-            
+
             var propagateValue = adapter.property(Keywords.PROPAGATE, contextValue);
 
             if (!adapter.isNull(propagateValue)) {
@@ -184,9 +184,9 @@ public final class ContextBuilder {
                 fetch(adapter.stringValue(itemContext), baseUrl);
                 continue;
             }
-            
+
             if (!acceptInlineContext) {
-                throw new JsonLdException(ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED); 
+                throw new JsonLdException(ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED);
             }
 
             // 5.3. If context is not a map, an invalid local context error has been
@@ -198,7 +198,7 @@ public final class ContextBuilder {
             if (collectKeys != null) {
                 collectKeys.accept(adapter.keyStream(itemContext).map(adapter::asString).toList());
             }
-            
+
             // 5.4. Otherwise, it's a context definition
             var versionNode = adapter.property(Keywords.VERSION, itemContext);
 
@@ -211,7 +211,7 @@ public final class ContextBuilder {
                     versionString = adapter.stringValue(versionNode);
 
                 } else if (adapter.isNumber(versionNode)) {
-                    versionString = versionNode.toString();
+                    versionString = adapter.asString(versionNode);
                 }
 
                 // 5.5.1. If the associated value is not 1.1, an invalid @version value has been
@@ -539,12 +539,12 @@ public final class ContextBuilder {
         this.validateScopedContext = value;
         return this;
     }
-    
-    public ContextBuilder acceptInlineContext(boolean accept) {
+
+    public ContextBuilder useInline(boolean accept) {
         this.acceptInlineContext = accept;
         return this;
     }
-    
+
     public ContextBuilder collectKeys(Consumer<Collection<String>> collectKeys) {
         this.collectKeys = collectKeys;
         return this;
@@ -693,7 +693,7 @@ public final class ContextBuilder {
 //        if (collectKey != null) {
 //            collectKey.accept(newContextAdapter.keyStream(newContext).map(newContextAdapter::asString).toList());
 //        }
-        
+
         // 5.2.6
         try {
             result = result
