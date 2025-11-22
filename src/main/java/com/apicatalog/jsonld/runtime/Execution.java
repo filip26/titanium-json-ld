@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
@@ -58,18 +59,23 @@ public class Execution {
 
     public static Execution of(Options options, EventProcessor... listeners) {
 
-        // TODO optimize
-//        if (listeners.length == 0) {
-//            return new Execution(List.of(), null);
-//        }
-
-        final var consumers = new ArrayList<EventProcessor>((listeners == null ? 0 : listeners.length) + 1);
-
         if (options.timeout() != null) {
+
+            if (listeners == null || listeners.length == 0) {
+                return new Execution(List.of(new TimeLimiter(options.timeout())::onEvent), null);
+            }
+
+            final var consumers = new ArrayList<EventProcessor>(listeners.length + 1);
             consumers.add(new TimeLimiter(options.timeout())::onEvent);
+            consumers.addAll(List.of(listeners));
+            return new Execution(consumers, null);
         }
 
-        return new Execution(consumers, null);
+        if (listeners == null || listeners.length == 0) {
+            return new Execution(List.of(), null);
+        }
+
+        return new Execution(List.of(listeners), null);
     }
 
     /**
