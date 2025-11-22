@@ -74,7 +74,7 @@ public final class JsonLd {
                         options.loader(),
                         options.isExtractAllScripts()),
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -92,7 +92,7 @@ public final class JsonLd {
         return Expander.expand(
                 document,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -127,7 +127,7 @@ public final class JsonLd {
         return Expander.expand(
                 document,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /* --- COMPACT -- */
@@ -209,7 +209,7 @@ public final class JsonLd {
                 document,
                 context,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -227,7 +227,7 @@ public final class JsonLd {
             final TreeIO context,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options).start();
+        final Execution runtime = Execution.of(options);
 
         return Compactor.compact(
                 Compactor.expand(document, options, runtime),
@@ -280,7 +280,7 @@ public final class JsonLd {
                         options.isExtractAllScripts()),
                 null,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -306,7 +306,7 @@ public final class JsonLd {
                         ? Context.load(context, options.loader()).content()
                         : null,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -326,7 +326,7 @@ public final class JsonLd {
                 document,
                 null,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -346,7 +346,7 @@ public final class JsonLd {
                         ? context.content()
                         : null,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -452,7 +452,7 @@ public final class JsonLd {
                 document,
                 null,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -475,7 +475,7 @@ public final class JsonLd {
                 document,
                 context,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /* --- FRAME -- */
@@ -558,7 +558,7 @@ public final class JsonLd {
                 document,
                 frame,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -596,7 +596,7 @@ public final class JsonLd {
             final TreeIO frame,
             final Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options).start();
+        final Execution runtime = Execution.of(options);
 
         final var contextNode = Context.extract(frame);
 
@@ -655,7 +655,7 @@ public final class JsonLd {
                 document,
                 consumer,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -677,7 +677,7 @@ public final class JsonLd {
                 document,
                 consumer,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /**
@@ -698,7 +698,7 @@ public final class JsonLd {
                 new TreeIO(document, NativeAdapter.instance()),
                 consumer,
                 options,
-                Execution.of(options).start());
+                Execution.of(options));
     }
 
     /* --- FROM RDF -- */

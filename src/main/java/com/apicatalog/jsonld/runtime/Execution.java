@@ -78,30 +78,6 @@ public class Execution {
         return new Execution(List.of(listeners), null);
     }
 
-    /**
-     * Called in multiple places during a processing to check processing timeout if
-     * set. Does nothing if timeout is not set.
-     * 
-     * When hit for the first time a timestamp is set, otherwise a duration is
-     * decreased by timestamps difference.
-     * 
-     * @throws JsonLdException if a processing has exceeded
-     */
-    @Deprecated
-    public void tick() throws JsonLdException {
-//        if (ttl != null) {
-//            ttl.increment();
-//        }
-    }
-
-    @Deprecated
-    public Execution start() throws JsonLdException {
-//        if (ttl != null) {
-//            ttl.increment();
-//        }
-        return this;
-    }
-
     public void fire(EventType type, String key) throws JsonLdException {
         for (final var consumer : listeners) {
             consumer.onEvent(type, key, null);

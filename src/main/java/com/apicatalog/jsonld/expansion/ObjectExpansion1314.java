@@ -76,13 +76,9 @@ final class ObjectExpansion1314 {
             final String activeProperty,
             final String term) throws JsonLdException {
 
-        var keys = params.options().isOrdered()
+        final var keys = params.options().isOrdered()
                 ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
-
-//        if (activeProperty != null || term != null) {
-//            params.runtime().beginMap(term != null ? term : activeProperty);
-//        }
 
         // 13.
         while (keys.hasNext()) {
@@ -93,8 +89,6 @@ final class ObjectExpansion1314 {
             if (Keywords.CONTEXT.equals(key)) {
                 continue;
             }
-
-            params.runtime().tick();
 
             // 13.2.
             var expandedProperty = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
@@ -1170,8 +1164,6 @@ final class ObjectExpansion1314 {
         }
 
         var activeContext = context;
-
-        params.runtime().tick();
 
         // step 3
         var propertyContext = activeContext

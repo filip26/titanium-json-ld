@@ -172,8 +172,6 @@ public final class ObjectExpansion {
 
             while (it.hasNext()) {
 
-                params.runtime().tick();
-
                 final var key = it.next();
 
                 final var expandedKey = UriExpansion
@@ -213,8 +211,6 @@ public final class ObjectExpansion {
 
             final var key = typeKeys.next();
 
-            params.runtime().tick();
-
             var expandedKey = UriExpansion
                     .with(
                             activeContext,
@@ -239,8 +235,6 @@ public final class ObjectExpansion {
                         .iterator();
 
                 while (terms.hasNext()) {
-
-                    params.runtime().tick();
 
                     final var term = terms.next();
 

@@ -61,10 +61,16 @@ class ExecutionTest {
             .build();
 
     @Test
-    void testExpandTimeout() {
+    void testExpandTimeout() throws JsonLdException, TreeIOException, IOException {
+
+        var document = read("/com/apicatalog/jsonld/test/vc-utopia.jsonld");
+
+        var options = Options.with(UTOPIA_LOADER)
+                .timeout(Duration.ofNanos(0));
+
         var ex = assertThrows(JsonLdException.class, () -> JsonLd.expand(
-                Map.of(),
-                Options.newOptions().timeout(Duration.ofNanos(0))));
+                document,
+                options));
         assertEquals(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED, ex.code());
     }
 
@@ -116,7 +122,7 @@ class ExecutionTest {
 
         assertTrue(match);
     }
-    
+
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);

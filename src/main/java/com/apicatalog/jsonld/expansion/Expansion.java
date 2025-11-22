@@ -126,8 +126,6 @@ public final class Expansion {
             return scalar;
         }
 
-        params.runtime().tick();
-
         // 6. Otherwise element is a map
         return new ObjectExpansion(
                 propertyContext,
@@ -273,8 +271,6 @@ public final class Expansion {
 
         // 5.2.
         for (final var item : nodeAdapter.asIterable(node)) {
-
-            params.runtime().tick();
 
             // 5.2.1
             var expanded = expand(
