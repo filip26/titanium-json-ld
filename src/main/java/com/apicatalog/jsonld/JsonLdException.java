@@ -423,7 +423,7 @@ public final class JsonLdException extends Exception {
          */
         UNDEFINED_TERM("An undefined term has been found. Set policy to ignore to pass"),
 
-        DROPPED_VALUE(""),
+        DROPPED_NODE(""),
         
         INLINE_CONTEXT_IS_NOT_ALLOWED("Inline contexts are not allowed"),
 

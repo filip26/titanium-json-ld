@@ -98,7 +98,7 @@ final class ObjectExpansion1314 {
 
             // FIXME if the term is undefined and
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
-                switch (params.options().undefinedTermsPolicy()) {
+                switch (params.options().undefinedTerms()) {
                 case Fail:
                     throw new JsonLdException(ErrorCode.UNDEFINED_TERM,
                             "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");

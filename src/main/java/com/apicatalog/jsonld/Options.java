@@ -173,6 +173,8 @@ public final class Options {
 
     // a policy on how proceed with undefined terms during expansion
     private ProcessingPolicy undefinedTerms;
+    
+    private ProcessingPolicy droppedNodes;
 
     private Options() {
         // default values
@@ -208,6 +210,7 @@ public final class Options {
         this.uriValidation = DEFAULT_URI_VALIDATION;
         this.timeout = null;
         this.undefinedTerms = ProcessingPolicy.Ignore;
+        this.droppedNodes = ProcessingPolicy.Ignore;
     }
 
     private Options(Options options) {
@@ -243,6 +246,7 @@ public final class Options {
         this.uriValidation = options.uriValidation;
         this.timeout = options.timeout;
         this.undefinedTerms = options.undefinedTerms;
+        this.droppedNodes = options.droppedNodes;
     }
 
     /**
@@ -922,7 +926,7 @@ public final class Options {
      * 
      * @return the processing policy, never <code>null</code>
      */
-    public ProcessingPolicy undefinedTermsPolicy() {
+    public ProcessingPolicy undefinedTerms() {
         return undefinedTerms;
     }
 
@@ -933,7 +937,7 @@ public final class Options {
      * @param undefinedTerms the processing policy, never <code>null</code>
      * 
      */
-    public Options undefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
+    public Options undefinedTerms(ProcessingPolicy undefinedTerms) {
         this.undefinedTerms = undefinedTerms;
         return this;
     }
@@ -944,6 +948,15 @@ public final class Options {
 
     public Options useInlineContexts(boolean useInlineContext) {
         this.useInlineContexts = useInlineContext;
+        return this;
+    }
+    
+    public ProcessingPolicy droppedNodes() {
+        return droppedNodes;
+    }
+    
+    public Options droppedNodes(ProcessingPolicy droppedNodes) {
+        this.droppedNodes = droppedNodes;
         return this;
     }
 }

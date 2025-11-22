@@ -296,7 +296,7 @@ public final class ObjectExpansion {
         return null;
     }
 
-    private static Map<String, ?> normalizeValue(
+    private Map<String, ?> normalizeValue(
             final Map<String, ?> result,
             final String activeProperty,
             final boolean frameExpansion) throws JsonLdException {
@@ -378,7 +378,7 @@ public final class ObjectExpansion {
         return normalize(result, activeProperty, frameExpansion);
     }
 
-    private static Map<String, ?> normalize(
+    private Map<String, ?> normalize(
             final Map<String, ?> result,
             final String activeProperty,
             final boolean frameExpansion) throws JsonLdException {
@@ -405,6 +405,7 @@ public final class ObjectExpansion {
             if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
+                params.runtime().fire(EventType.onDroppedNode, activeProperty);
                 return null;
             }
 
@@ -412,6 +413,7 @@ public final class ObjectExpansion {
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
             if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
+                params.runtime().fire(EventType.onDroppedNode, activeProperty);
                 return null;
             }
 

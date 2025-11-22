@@ -58,6 +58,7 @@ public class TestOptions {
     public Integer httpStatus;
     public Set<String> httpLink;
     public Options.ProcessingPolicy undefinedTerms = Options.ProcessingPolicy.Ignore;
+    public Options.ProcessingPolicy droppedNodes = Options.ProcessingPolicy.Ignore;
 
     public static final TestOptions newOptions() {
         return new TestOptions();
@@ -156,6 +157,10 @@ public class TestOptions {
                 options.undefinedTerms = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
                 break;
 
+            case "droppedNodePolicy":
+                options.droppedNodes = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
+                break;
+
             case "useJCS":
                 options.useJcs = adapter.isTrue(entry.getValue());
                 break;
@@ -249,7 +254,10 @@ public class TestOptions {
                 .ifPresent(options::rdfStar);
 
         Optional.ofNullable(undefinedTerms)
-                .ifPresent(options::undefinedTermsPolicy);
+                .ifPresent(options::undefinedTerms);
+
+        Optional.ofNullable(droppedNodes)
+                .ifPresent(options::droppedNodes);
 
         Optional.ofNullable(useInlineContexts)
                 .ifPresent(options::useInlineContexts);

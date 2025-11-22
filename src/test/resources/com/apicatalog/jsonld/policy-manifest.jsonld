@@ -12,42 +12,60 @@
       "name": "drop free-floating nodes",
       "purpose": "Expand drops unreferenced nodes having only @id",
       "input": "policy/0001-in.jsonld",
-      "expectErrorCode": "dropped value"
+      "expectErrorCode": "dropped node",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
     }, {
       "@id": "#t0003",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "drop null and unmapped properties",
       "purpose": "Verifies that null values and unmapped properties are removed from expanded output",
       "input": "policy/0003-in.jsonld",
-      "expectErrorCode": "dropped value"
+      "expectErrorCode": "dropped node",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }      
     }, {
       "@id": "#t0008",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "@value with @language",
       "purpose": "Keep expanded values with @language, drop non-conforming value objects containing just @language",
       "input": "policy/0008-in.jsonld",
-      "expectErrorCode": "dropped value"
+      "expectErrorCode": "dropped node",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
     }, {
       "@id": "#t0046",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "Free-floating nodes",
       "purpose": "Expanding free-floating nodes causes them to be removed",
       "input": "policy/0046-in.jsonld",
-      "expectErrorCode": "dropped value"
+      "expectErrorCode": "dropped node",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
     }, {
       "@id": "#t0047",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "Free-floating values in sets and free-floating lists",
       "purpose": "Free-floating values in sets are removed, free-floating lists are removed completely",
       "input": "policy/0047-in.jsonld",
-      "expectErrorCode": "dropped value"
+      "expectErrorCode": "dropped node",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
     }, {
       "@id": "#t0065",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "Drop unmapped keys in reverse map",
       "purpose": "Keys that are not mapped to an IRI in a reverse-map are dropped",
       "input": "policy/0065-in.jsonld",
-      "expectErrorCode": "dropped value"
+      "expectErrorCode": "dropped node",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }      
     }
   ]
 }

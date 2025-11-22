@@ -39,7 +39,7 @@ public class Execution {
         onTermKey,
 
         onUndefinedTerm,
-        onDroppedValue,
+        onDroppedNode,
     }
 
     @FunctionalInterface
@@ -57,17 +57,28 @@ public class Execution {
         this.onContextKey = contextKeyCollector;
     }
 
+    public static Execution of(Options options) {
+        return of(options, new EventProcessor[0]);
+    }
+
     public static Execution of(Options options, EventProcessor... listeners) {
 
-        if (options.timeout() != null) {
+        if (options.timeout() != null
+                || options.droppedNodes() != null
+                || options.undefinedTerms() != null) {
 
-            if (listeners == null || listeners.length == 0) {
-                return new Execution(List.of(new TimeLimiter(options.timeout())::onEvent), null);
+            final var consumers = new ArrayList<EventProcessor>(listeners.length + 2);
+            if (options.timeout() != null) {
+                consumers.add(new TimeLimiter(options.timeout())::onEvent);
             }
-
-            final var consumers = new ArrayList<EventProcessor>(listeners.length + 1);
-            consumers.add(new TimeLimiter(options.timeout())::onEvent);
-            consumers.addAll(List.of(listeners));
+            if (options.droppedNodes() != null || options.undefinedTerms() != null) {
+                consumers.add(new PolicyEnforcer(
+                        options.undefinedTerms(),
+                        options.droppedNodes())::onEvent);
+            }
+            if (listeners.length > 0) {
+                consumers.addAll(List.of(listeners));
+            }
             return new Execution(consumers, null);
         }
 
