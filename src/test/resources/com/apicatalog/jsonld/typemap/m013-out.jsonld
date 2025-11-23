@@ -1,0 +1,5 @@
+{
+    "/input/@none": "@index",
+    "/input/@none/value": "http://example.org/value",
+    "/input": "http://example.org/input"
+}

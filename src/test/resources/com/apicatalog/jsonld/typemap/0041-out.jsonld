@@ -1,0 +1,5 @@
+{
+    "/nested/property": "http://example.com/property",
+    "/nested": "http://example.com/nested",
+    "/property": "http://example.com/property"
+}

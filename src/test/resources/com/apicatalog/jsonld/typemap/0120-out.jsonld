@@ -1,0 +1,5 @@
+{
+    "/at": "http://example.orb/vocab/@",
+    "/foo.bar": "http://example.orb/vocab/@foo.bar",
+    "/ignoreMe": "http://example.orb/vocab/ignoreMe"
+}

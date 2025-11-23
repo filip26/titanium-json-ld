@@ -1,0 +1,5 @@
+{
+    "/nested/prop": "http://example/prop",
+    "/nested": "http://example/nested",
+    "/prop": "http://example/foo-prop"
+}

@@ -1,0 +1,4 @@
+{
+    "/ex:foo/type": "@type",
+    "/ex:foo": "ex:foo"
+}

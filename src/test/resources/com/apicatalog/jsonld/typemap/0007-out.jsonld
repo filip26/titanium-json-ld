@@ -1,0 +1,5 @@
+{
+    "/ex:date": "http://example.org/vocab#date",
+    "/ex:embed/ex:parent": "http://example.org/vocab#parent",
+    "/ex:embed": "http://example.org/vocab#embed"
+}

@@ -1,0 +1,4 @@
+{
+    "/nested/foo": "ex:foo",
+    "/nested": "ex:nested"
+}

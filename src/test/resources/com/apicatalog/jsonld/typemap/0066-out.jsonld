@@ -1,0 +1,7 @@
+{
+    "/@reverse/knows/name": "http://xmlns.com/foaf/0.1/name",
+    "/@reverse/knows": "http://xmlns.com/foaf/0.1/knows",
+    "/@reverse/noTerm/name": "http://xmlns.com/foaf/0.1/name",
+    "/@reverse/noTerm": "http://example.com/vocab/noTerm",
+    "/name": "http://xmlns.com/foaf/0.1/name"
+}

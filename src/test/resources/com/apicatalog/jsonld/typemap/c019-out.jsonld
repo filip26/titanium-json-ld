@@ -1,0 +1,8 @@
+{
+    "/bar/prop": "http://example/bar-prop",
+    "/bar": "http://example/bar",
+    "/baz/prop": "http://example/base-prop",
+    "/baz": "http://example/baz",
+    "/foo/prop": "http://example/foo-prop",
+    "/foo": "http://example/foo"
+}

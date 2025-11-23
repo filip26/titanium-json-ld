@@ -1,0 +1,5 @@
+{
+    "/de": "http://example.org/vocab#german",
+    "/ex:test-default": "http://example.org/vocab#test-default",
+    "/nolang": "http://example.org/vocab#nolang"
+}

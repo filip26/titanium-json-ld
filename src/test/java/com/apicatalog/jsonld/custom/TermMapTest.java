@@ -52,14 +52,6 @@ class TermMapTest {
             .defaultParser(JakartaTestSuite.PARSER)
             .build();
 
-    static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
-            .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
-            .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
-            .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
-            .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
-            .fallback(LOADER)
-            .build();
-
     @ParameterizedTest(name = "{0}")
     @MethodSource( "data" )
     void testTermMapper(TestCase testCase) {
@@ -110,7 +102,7 @@ class TermMapTest {
 
     }
 
-    static final Stream<TestCase> data() throws JsonLdException {
+    private static final Stream<TestCase> data() throws JsonLdException {
         return TestManifest
                 .load(
                         "classpath:/com/apicatalog/jsonld/",

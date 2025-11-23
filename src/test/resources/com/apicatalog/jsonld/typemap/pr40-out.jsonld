@@ -1,0 +1,4 @@
+{
+    "/foo/bar": "http://example.org/other",
+    "/foo": "http://vocab.org/foo"
+}

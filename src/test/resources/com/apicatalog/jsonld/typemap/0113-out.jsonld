@@ -1,0 +1,4 @@
+{
+    "/toString": "http://example.org/toString",
+    "/valueOf": "http://example.org/valueOf"
+}

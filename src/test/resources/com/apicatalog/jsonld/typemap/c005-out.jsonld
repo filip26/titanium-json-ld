@@ -1,0 +1,8 @@
+{
+    "/a/b/a": "http://example.com/a",
+    "/a/b/c": "http://example.org/c",
+    "/a/b": "http://example/b",
+    "/a/c": "http://example.com/c",
+    "/a": "http://example/a",
+    "/c": "http://example/c"
+}

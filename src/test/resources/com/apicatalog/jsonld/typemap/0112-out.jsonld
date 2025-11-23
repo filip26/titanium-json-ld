@@ -1,0 +1,13 @@
+{
+    "/#fragment-works": "http://example.com/rel1./rel2##fragment-works",
+    "/..~1": "http://example.com/rel1./rel2#../",
+    "/..~1..~1..~1..~1..~1still-root": "http://example.com/rel1./rel2#../../../../../still-root",
+    "/..~1..~1.~1..~1.~1..~1..~1too-many-dots": "http://example.com/rel1./rel2#../.././.././../../too-many-dots",
+    "/..~1..~1parent-parent-eq-root": "http://example.com/rel1./rel2#../../parent-parent-eq-root",
+    "/..~1parent": "http://example.com/rel1./rel2#../parent",
+    "/.~1": "http://example.com/rel1./rel2#./",
+    "/~1~1example.org~1scheme-relative": "http://example.com/rel1./rel2#//example.org/scheme-relative",
+    "/~1absolute": "http://example.com/rel1./rel2#/absolute",
+    "/?query=works": "http://example.com/rel1./rel2#?query=works",
+    "/link": "http://example.com/rel1./rel2#link"
+}

@@ -1,0 +1,9 @@
+{
+    "/bar-1/bar-2/bar-2": "http://example/bar-2",
+    "/bar-1/bar-2/type": "@type",
+    "/bar-1/bar-2": "http://example/bar-2",
+    "/bar-1": "http://example/bar-1",
+    "/foo/0/bar": "http://example/bar",
+    "/foo": "http://example/foo",
+    "/type": "@type"
+}

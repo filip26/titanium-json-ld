@@ -1,0 +1,4 @@
+{
+    "/http:~1~1example.com~1property": "http://example.com/property",
+    "/url": "@id"
+}

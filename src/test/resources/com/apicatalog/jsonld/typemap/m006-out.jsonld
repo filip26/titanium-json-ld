@@ -1,0 +1,5 @@
+{
+    "/typemap/Foo": "@index",
+    "/typemap/Foo/label": "http://example/label",
+    "/typemap": "http://example/typemap"
+}

@@ -1,0 +1,10 @@
+{
+    "/datelist": "http://example.com/datelist",
+    "/dateprop": "http://example.com/dateprop",
+    "/dateprop2": "http://example.com/dateprop2",
+    "/dateset": "http://example.com/dateset",
+    "/idlist": "http://example.com/idlist",
+    "/idprop": "http://example.com/idprop",
+    "/idprop2": "http://example.com/idprop2",
+    "/idset": "http://example.com/idset"
+}

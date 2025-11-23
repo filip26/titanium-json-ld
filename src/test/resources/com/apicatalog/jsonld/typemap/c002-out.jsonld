@@ -1,0 +1,4 @@
+{
+    "/foo/bar": "http://example/bar",
+    "/foo": "http://example/foo"
+}

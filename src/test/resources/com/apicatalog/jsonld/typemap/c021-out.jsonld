@@ -1,0 +1,9 @@
+{
+    "/prop/prop/1/value": "@value",
+    "/prop/prop/3/prop/1/prop": "ex:typed",
+    "/prop/prop/3/prop/1/type": "@type",
+    "/prop/prop/3/prop": "ex:untyped",
+    "/prop/prop": "ex:typed",
+    "/prop/type": "@type",
+    "/prop": "ex:untyped"
+}

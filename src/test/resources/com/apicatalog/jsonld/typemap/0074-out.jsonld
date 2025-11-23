@@ -1,0 +1,5 @@
+{
+    "/owl:sameAs/link": "http://example.org/link",
+    "/owl:sameAs/rdfs:label": "http://www.w3.org/2000/01/rdf-schema#label",
+    "/owl:sameAs": "http://www.w3.org/2002/07/owl#sameAs"
+}

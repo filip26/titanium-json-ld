@@ -1,0 +1,8 @@
+{
+    "/foo": "http://example/base-foo",
+    "/prop/Inner": "@index",
+    "/prop/Inner/prop/index": "@index",
+    "/prop/Inner/prop/index/foo": "http://example/inner-foo",
+    "/prop/Inner/prop": "http://example/prop",
+    "/prop": "http://example/outer-prop"
+}

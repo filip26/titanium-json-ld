@@ -109,7 +109,9 @@ final class ObjectExpansion1314 {
                     params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
                 }
 
-                params.runtime().fire(EventType.TYPE_KEY, key, expandedProperty);
+                if (!Keywords.contains(key)) {
+                    params.runtime().fire(EventType.TYPE_KEY, key, expandedProperty);
+                }
 
                 final var value = adapter.property(key, element);
 
