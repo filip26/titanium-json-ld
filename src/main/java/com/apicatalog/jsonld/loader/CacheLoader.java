@@ -87,6 +87,10 @@ public final class CacheLoader implements DocumentLoader {
         return result;
     }
 
+    public Cache<Key, Document> cache() {
+        return cache;
+    }
+    
     /**
      * Simple in-memory cache interface used by {@link CacheLoader} and related
      * components.
@@ -120,5 +124,7 @@ public final class CacheLoader implements DocumentLoader {
          * @param value the value to cache
          */
         void put(final K key, V value);
+
+        int size();
     }
 }

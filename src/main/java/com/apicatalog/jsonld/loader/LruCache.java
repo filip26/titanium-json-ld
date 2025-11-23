@@ -49,7 +49,8 @@ public final class LruCache<K, V> implements CacheLoader.Cache<K, V> {
         cache.put(key, value);
     }
 
-    public long size() {
+    @Override
+    public int size() {
         return cache.size();
     }
 }

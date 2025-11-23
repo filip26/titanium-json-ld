@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.loader.CacheLoader;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -44,7 +45,6 @@ import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 class RemoteContextTest {
@@ -158,7 +158,7 @@ class RemoteContextTest {
      * @throws IOException
      */
     @Test
-    @Disabled("Run manually")
+    @Disabled
     void testPerformance() throws JsonLdException, TreeIOException, IOException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue62-in.json");
@@ -171,15 +171,18 @@ class RemoteContextTest {
 
             long start = System.nanoTime();
 
-            final var result = JsonLd.expand(document, Options.with(JakartaTestSuite.HTTP_LOADER));
+            final var loader = new CacheLoader(JakartaTestSuite.HTTP_LOADER, 256);
+
+            final var result = JsonLd.expand(document, Options.with(loader));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
+            System.out.println("Cached documents: " + loader.cache().size());
 
             assertNotNull(result);
 
             boolean match = Comparison.equals(
                     result, NativeAdapter.instance(),
-                    expected, JakartaAdapter.instance());
+                    expected.node(), expected.adapter());
 
             assertTrue(match);
         });
