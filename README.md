@@ -10,9 +10,9 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - Simple, easy-to-use API
 - Extensions (since v2.0):
   - JSON-LD-star expansion (experimental)
-  - Processing policies: undefined terms, time/space constraints
+  - Processing policies: undefined terms, dropped values, time/space constraints
   - Generated TypeMap / TermMap (experimental)
-  - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter
+  - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, LRUCache, in-memory
   - Generalized processing with [tree-io](https://github.com/filip26/tree-io) (Jakarta JSON, Jackson, or anything else)
     
 ### 🎯 Status

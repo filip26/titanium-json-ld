@@ -28,8 +28,8 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -49,7 +49,7 @@ public final class Frame {
     public static final Frame of(
             final Document frame,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         return of(
                 Expander.expandFrame(
@@ -62,7 +62,7 @@ public final class Frame {
     public static final Frame of(
             final TreeIO frame,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         return of(
                 Expander.expandFrame(

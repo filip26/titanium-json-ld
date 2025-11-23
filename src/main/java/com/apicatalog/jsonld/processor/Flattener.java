@@ -22,6 +22,7 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.flattening.Flattening;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeIO;
 
 /**
@@ -39,7 +40,7 @@ public final class Flattener {
             Document document, 
             TreeIO context, 
             Options options, 
-            ExecutionEvents runtime) throws JsonLdException {
+            Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
 //            return flatten(input, (Document) null, options, runtime);
 //        }
@@ -61,7 +62,7 @@ public final class Flattener {
             TreeIO document, 
             TreeIO context, 
             Options options, 
-            ExecutionEvents runtime) throws JsonLdException {
+            Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
 //            return flatten(input, (Document) null, options, runtime);
 //        }
@@ -95,7 +96,7 @@ public final class Flattener {
             final URI documentUrl,
             final TreeIO context,
             final Options options,
-            final ExecutionEvents runtime) throws JsonLdException {
+            final Execution runtime) throws JsonLdException {
 
         // 6.
         var flattenedOutput = Flattening.flatten(expandedInput, options.isOrdered());

@@ -238,48 +238,6 @@
       "expect": "issue333-out.json"
     },
     {
-      "@id": "#t0019",
-      "@type": [
-        "jld:NegativeEvaluationTest",
-        "jld:ExpandTest"
-      ],
-      "name": "Test undefined term fail policy",
-      "input": "undefined-term-1-in.json",
-      "expectErrorCode": "undefined term",
-      "option": {
-        "expandContext": "undefined-term-context.json",
-        "undefinedTermPolicy": "Fail"
-      }
-    },
-    {
-      "@id": "#t0020",
-      "@type": [
-        "jld:PositiveEvaluationTest",
-        "jld:ExpandTest"
-      ],
-      "name": "Test undefined term fail policy",
-      "input": "undefined-term-2-in.json",
-      "expect": "undefined-term-2-out.json",
-      "option": {
-        "expandContext": "undefined-term-context.json",
-        "undefinedTermPolicy": "Warn"
-      }
-    },
-    {
-      "@id": "#t0021",
-      "@type": [
-        "jld:PositiveEvaluationTest",
-        "jld:ExpandTest"
-      ],
-      "name": "Test undefined term fail policy",
-      "input": "undefined-term-3-in.json",
-      "expect": "undefined-term-3-out.json",
-      "option": {
-        "expandContext": "undefined-term-context.json",
-        "undefinedTermPolicy": "Fail"
-      }
-    },
-    {
       "@id": "#t0030",
       "@type": [
         "jld:NegativeEvaluationTest",

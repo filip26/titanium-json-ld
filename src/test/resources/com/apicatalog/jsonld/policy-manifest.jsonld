@@ -1,0 +1,113 @@
+{
+  "@context": ["context.jsonld", {"@base": "expand-manifest"}],
+  "@id": "",
+  "@type": "mf:Manifest",
+  "name": "Expansion",
+  "description": "These tests implement the requirements for the JSON-LD [Expansion Algorithm](https://www.w3.org/TR/json-ld11-api/#expansion-algorithm).",
+  "baseIri": "https://w3c.github.io/json-ld-api/tests/",
+  "sequence": [
+    {
+      "@id": "#t0001",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "drop free-floating nodes",
+      "purpose": "Expand drops unreferenced nodes having only @id",
+      "input": "policy/0001-in.jsonld",
+      "expectErrorCode": "DROPPED_NODE",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
+    }, {
+      "@id": "#t0003",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "drop null and unmapped properties",
+      "purpose": "Verifies that null values and unmapped properties are removed from expanded output",
+      "input": "policy/0003-in.jsonld",
+      "expectErrorCode": "DROPPED_NODE",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }      
+    }, {
+      "@id": "#t0008",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "@value with @language",
+      "purpose": "Keep expanded values with @language, drop non-conforming value objects containing just @language",
+      "input": "policy/0008-in.jsonld",
+      "expectErrorCode": "DROPPED_NODE",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
+    }, {
+      "@id": "#t0046",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Free-floating nodes",
+      "purpose": "Expanding free-floating nodes causes them to be removed",
+      "input": "policy/0046-in.jsonld",
+      "expectErrorCode": "DROPPED_NODE",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
+    }, {
+      "@id": "#t0047",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Free-floating values in sets and free-floating lists",
+      "purpose": "Free-floating values in sets are removed, free-floating lists are removed completely",
+      "input": "policy/0047-in.jsonld",
+      "expectErrorCode": "DROPPED_NODE",
+      "option": {
+        "droppedNodePolicy": "Fail"
+      }
+    }, {
+      "@id": "#t0065",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "Drop unmapped keys in reverse map",
+      "purpose": "Keys that are not mapped to an IRI in a reverse-map are dropped",
+      "input": "policy/0065-in.jsonld",
+      "expectErrorCode": "UNDEFINED_TERM",
+      "option": {
+        "undefinedTermPolicy": "Fail"
+      }
+  },
+      {
+        "@id": "#t0019",
+        "@type": [
+          "jld:NegativeEvaluationTest",
+          "jld:ExpandTest"
+        ],
+        "name": "Test undefined term fail policy",
+        "input": "policy/undefined-term-1-in.json",
+      "expectErrorCode": "UNDEFINED_TERM",
+        "option": {
+          "expandContext": "policy/undefined-term-context.json",
+          "undefinedTermPolicy": "Fail"
+        }
+      },
+      {
+        "@id": "#t0020",
+        "@type": [
+          "jld:PositiveEvaluationTest",
+          "jld:ExpandTest"
+        ],
+        "name": "Test undefined term fail policy",
+        "input": "policy/undefined-term-1-in.json",
+        "expect": "policy/undefined-term-1-out.json",
+        "option": {
+          "expandContext": "policy/undefined-term-context.json",
+          "undefinedTermPolicy": "Warn"
+        }
+      },
+      {
+        "@id": "#t0021",
+        "@type": [
+          "jld:PositiveEvaluationTest",
+          "jld:ExpandTest"
+        ],
+        "name": "Test undefined term fail policy",
+        "input": "policy/undefined-term-3-in.json",
+        "expect": "policy/undefined-term-3-out.json",
+        "option": {
+          "expandContext": "policy/undefined-term-context.json",
+          "undefinedTermPolicy": "Fail"
+        }
+      }
+  ]
+}

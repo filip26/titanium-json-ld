@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.custom;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.LinkedHashMap;
@@ -28,7 +27,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
@@ -38,14 +36,9 @@ import com.apicatalog.jsonld.runtime.TermMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.media.MediaType;
 
-class TermMapTest {
+class PoliciesTest {
 
     static ClasspathLoader LOADER = ClasspathLoader
             .newBuilder()
@@ -61,37 +54,32 @@ class TermMapTest {
             .build();
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource( "data" )
-    void testTermMapper(TestCase testCase) {
+    @MethodSource("data")
+    void testPolicy(TestCase testCase) {
 
         final var termMap = new LinkedHashMap<String, Object>();
 
         var termMapper = new TermMapCollector(termMap::put);
         try {
             var options = testCase.getOptions();
-            
-            options.loader( StaticLoader.newBuilder()
+
+            options.loader(StaticLoader.newBuilder()
                     .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
                     .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
                     .fallback(options.loader())
                     .build());
-                    
-            var runtime = Execution.of(options, termMapper);
 
-            var expanded = Expander.expand(
+            Expander.expand(
                     Document.load(testCase.input, options.loader()),
                     options,
-                    runtime);
+                    Execution.of(options, termMapper));
 
-            assertNotNull(expanded);
-
-            validateJson(
-                    testCase,
-                    options,
-                    termMap,
-                    NativeAdapter.instance());
+            if (testCase.expectErrorCode != null) {
+                JunitRunner.write(testCase, null, null, null);
+                fail("Expected error " + testCase.expectErrorCode);                
+            }
 
         } catch (JsonLdException e) {
 
@@ -107,49 +95,15 @@ class TermMapTest {
                 fail("Unexpected error " + e + ".");
             }
         }
-
     }
 
     static final Stream<TestCase> data() throws JsonLdException {
         return TestManifest
                 .load(
                         "classpath:/com/apicatalog/jsonld/",
-                        "termmap-manifest.jsonld",
+                        "policy-manifest.jsonld",
                         LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
-    }
-
-    static boolean validateJson(final TestCase testCase, final Options options, final Object result, final TreeAdapter resultAdapter) {
-
-        assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
-
-        try {
-            var expectedDocument = options.loader().loadDocument(testCase.expect, DocumentLoader.defaultOptions());
-
-            assertNotNull(expectedDocument);
-
-            // compare expected with the result
-            return compareJson(testCase, result, resultAdapter, expectedDocument.content());
-
-        } catch (JsonLdException | TreeIOException e) {
-            fail(e.getMessage());
-        }
-        return false;
-    }
-
-    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final TreeIO expected) throws TreeIOException {
-
-        if (TreeIO.deepEquals(expected.node(), expected.adapter(), result, resultAdapter)) {
-            return true;
-        }
-
-        JunitRunner.write(testCase,
-                new JakartaMaterializer().node(result, resultAdapter),
-                new JakartaMaterializer().node(expected),
-                null);
-
-        fail("Expected " + expected.node() + ", but was" + result);
-        return false;
     }
 }

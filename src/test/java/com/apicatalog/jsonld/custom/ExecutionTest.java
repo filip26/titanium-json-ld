@@ -40,8 +40,8 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -61,10 +61,16 @@ class ExecutionTest {
             .build();
 
     @Test
-    void testExpandTimeout() {
+    void testExpandTimeout() throws JsonLdException, TreeIOException, IOException {
+
+        var document = read("/com/apicatalog/jsonld/test/vc-utopia.jsonld");
+
+        var options = Options.with(UTOPIA_LOADER)
+                .timeout(Duration.ofNanos(0));
+
         var ex = assertThrows(JsonLdException.class, () -> JsonLd.expand(
-                Map.of(),
-                Options.newOptions().timeout(Duration.ofNanos(0))));
+                document,
+                options));
         assertEquals(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED, ex.code());
     }
 
@@ -88,7 +94,7 @@ class ExecutionTest {
 
         var keys = new ArrayList<Collection<String>>();
 
-        var runtime = ExecutionEvents.of(options);
+        var runtime = Execution.of(options);
         runtime.contextKeyCollector(keys::add);
 
         var expanded = Expander.expand(document, options, runtime);
@@ -116,7 +122,7 @@ class ExecutionTest {
 
         assertTrue(match);
     }
-    
+
     private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);

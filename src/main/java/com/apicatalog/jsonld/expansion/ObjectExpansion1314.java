@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -75,13 +76,9 @@ final class ObjectExpansion1314 {
             final String activeProperty,
             final String term) throws JsonLdException {
 
-        var keys = params.options().isOrdered()
+        final var keys = params.options().isOrdered()
                 ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
-
-//        if (activeProperty != null || term != null) {
-//            params.runtime().beginMap(term != null ? term : activeProperty);
-//        }
 
         // 13.
         while (keys.hasNext()) {
@@ -93,36 +90,26 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            params.runtime().tick();
-
             // 13.2.
             var expandedProperty = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                     .documentRelative(false)
                     .vocab(true)
                     .expand(key);
 
-            // FIXME if the term is undefined and
+            // FIXME if the term is undefined, i.e. is not URI or keyword
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
-                switch (params.options().undefinedTermsPolicy()) {
-                case Fail:
-                    throw new JsonLdException(ErrorCode.UNDEFINED_TERM,
-                            "An undefined term has been found [" + key + "]. Change policy to Ignore or Warn or define the term in a context");
-                case Warn:
-                    LOGGER.log(Level.WARNING, "An undefined term has been detected, term={0}", key);
-
-                case Ignore:
-                    continue;
-                }
+                params.runtime().fire(EventType.UNDEFINED_TERM, key);
+                continue;
             }
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
                 if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                    params.runtime().term(key, expandedProperty);
+                    params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
                 }
 
-                params.runtime().type(key, expandedProperty);
+                params.runtime().fire(EventType.TYPE_KEY, key, expandedProperty);
 
                 final var value = adapter.property(key, element);
 
@@ -140,7 +127,7 @@ final class ObjectExpansion1314 {
             final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
 
             if (typeMapping != null) {
-                params.runtime().type(key, typeMapping);
+                params.runtime().fire(EventType.TYPE_KEY, key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition
@@ -176,7 +163,7 @@ final class ObjectExpansion1314 {
                         ? adapter.keyStream(value).map(adapter::asString).sorted().iterator()
                         : adapter.keyStream(value).map(adapter::asString).iterator();
 
-                params.runtime().beginMap(key);
+                params.runtime().fire(EventType.BEGIN_MAP, key);
                 while (langCodes.hasNext()) {
 
                     final var langCode = langCodes.next();
@@ -224,9 +211,9 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.6.
                         langMaps.add(langMap);
                     }
-                    params.runtime().term(langCode, Keywords.LANGUAGE);
+                    params.runtime().fire(EventType.TERM_KEY, langCode, Keywords.LANGUAGE);
                 }
-                params.runtime().endMap(key);
+                params.runtime().fire(EventType.END_MAP, key);
 
                 expandedValue = List.copyOf(langMaps);
 
@@ -247,7 +234,7 @@ final class ObjectExpansion1314 {
                         ? adapter.keyStream(value).sorted().iterator()
                         : adapter.keys(value).iterator();
 
-                params.runtime().beginMap(key);
+                params.runtime().fire(EventType.BEGIN_MAP, key);
 
                 // 13.8.3.
                 while (valueKeys.hasNext()) {
@@ -258,7 +245,7 @@ final class ObjectExpansion1314 {
 
                     final var index = adapter.asString(valueKey);
 
-                    params.runtime().term(index, Keywords.INDEX);
+                    params.runtime().fire(EventType.TERM_KEY, index, Keywords.INDEX);
 
                     // 13.8.3.1.
                     Context mapContext = activeContext;
@@ -408,7 +395,7 @@ final class ObjectExpansion1314 {
                         indices.add(indexMap);
                     }
                 }
-                params.runtime().endMap(key);
+                params.runtime().fire(EventType.END_MAP, key);
                 expandedValue = indices;
             }
             // 13.9.
@@ -502,7 +489,7 @@ final class ObjectExpansion1314 {
             }
 
             if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                params.runtime().term(key, expandedProperty);
+                params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
             }
 
         }
@@ -1165,12 +1152,10 @@ final class ObjectExpansion1314 {
             final String term) throws JsonLdException {
 
         if (activeProperty != null || term != null) {
-            params.runtime().beginMap(term != null ? term : activeProperty);
+            params.runtime().fire(EventType.BEGIN_MAP, term != null ? term : activeProperty);
         }
 
         var activeContext = context;
-
-        params.runtime().tick();
 
         // step 3
         var propertyContext = activeContext
@@ -1194,9 +1179,9 @@ final class ObjectExpansion1314 {
 
         // steps 13-14
         expand(activeContext, element, adapter, activeProperty, term);
-        
+
         if (activeProperty != null || term != null) {
-            params.runtime().endMap(term != null ? term : activeProperty);
+            params.runtime().fire(EventType.END_MAP, term != null ? term : activeProperty);
         }
 
     }
@@ -1237,7 +1222,7 @@ final class ObjectExpansion1314 {
                 }
 
                 if (collection) {
-                    params.runtime().beginList(nestedKey);
+                    params.runtime().fire(EventType.BEGIN_LIST, nestedKey);
                 } else {
 //                    params.runtime().beginMap(nestedKey);
                 }
@@ -1255,7 +1240,7 @@ final class ObjectExpansion1314 {
                                         : nestedKey);
 
                 if (collection) {
-                    params.runtime().endList(nestedKey);
+                    params.runtime().fire(EventType.END_LIST, nestedKey);
                 } else {
 //                    params.runtime().endMap(nestedKey);
                 }

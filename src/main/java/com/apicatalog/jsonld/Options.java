@@ -120,7 +120,7 @@ public final class Options {
      * A context that is used to initialize the active context when expanding a
      * document.
      */
-    private Document expandContext;
+    private TreeIO expandContext;
 
     private boolean extractAllScripts;
 
@@ -174,6 +174,8 @@ public final class Options {
     // a policy on how proceed with undefined terms during expansion
     private ProcessingPolicy undefinedTerms;
 
+    private ProcessingPolicy droppedNodes;
+
     private Options() {
         // default values
         this.loader = null;
@@ -208,6 +210,7 @@ public final class Options {
         this.uriValidation = DEFAULT_URI_VALIDATION;
         this.timeout = null;
         this.undefinedTerms = ProcessingPolicy.Ignore;
+        this.droppedNodes = ProcessingPolicy.Ignore;
     }
 
     private Options(Options options) {
@@ -243,6 +246,7 @@ public final class Options {
         this.uriValidation = options.uriValidation;
         this.timeout = options.timeout;
         this.undefinedTerms = options.undefinedTerms;
+        this.droppedNodes = options.droppedNodes;
     }
 
     /**
@@ -414,7 +418,7 @@ public final class Options {
      *
      * @return the expand context, or {@code null} if none is set.
      */
-    public Document expandContext() {
+    public TreeIO expandContext() {
         return expandContext;
     }
 
@@ -614,8 +618,7 @@ public final class Options {
             this.expandContext = null;
             return this;
         }
-        this.expandContext = Document.of(
-                new TreeIO(Set.of(uri), NativeAdapter.instance()));
+        this.expandContext = new TreeIO(Set.of(uri), NativeAdapter.instance());
         return this;
     }
 
@@ -656,19 +659,8 @@ public final class Options {
             this.expandContext = null;
             return this;
         }
-        this.expandContext = Document.of(node);
-        return this;
-    }
 
-    /**
-     * Sets the expand context directly as a {@link Document}.
-     *
-     * @param context the document representing the context used when expanding, or
-     *                {@code null} to clear it
-     * @return this {@link Options} instance, for method chaining
-     */
-    public Options expandContext(Document context) {
-        this.expandContext = context;
+        this.expandContext = node;
         return this;
     }
 
@@ -922,7 +914,7 @@ public final class Options {
      * 
      * @return the processing policy, never <code>null</code>
      */
-    public ProcessingPolicy undefinedTermsPolicy() {
+    public ProcessingPolicy undefinedTerms() {
         return undefinedTerms;
     }
 
@@ -933,7 +925,7 @@ public final class Options {
      * @param undefinedTerms the processing policy, never <code>null</code>
      * 
      */
-    public Options undefinedTermsPolicy(ProcessingPolicy undefinedTerms) {
+    public Options undefinedTerms(ProcessingPolicy undefinedTerms) {
         this.undefinedTerms = undefinedTerms;
         return this;
     }
@@ -944,6 +936,15 @@ public final class Options {
 
     public Options useInlineContexts(boolean useInlineContext) {
         this.useInlineContexts = useInlineContext;
+        return this;
+    }
+
+    public ProcessingPolicy droppedNodes() {
+        return droppedNodes;
+    }
+
+    public Options droppedNodes(ProcessingPolicy droppedNodes) {
+        this.droppedNodes = droppedNodes;
         return this;
     }
 }

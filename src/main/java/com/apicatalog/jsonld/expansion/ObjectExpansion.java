@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.web.uri.UriUtils;
@@ -64,7 +65,7 @@ public final class ObjectExpansion {
     public Object expand(final Context context, final String property) throws JsonLdException {
 
         if (property != null || term != null) {
-            params.runtime().beginMap(term != null ? term : property);
+            params.runtime().fire(EventType.BEGIN_MAP, term != null ? term : property);
         }
 
         activeContext = initPreviousContext(
@@ -92,10 +93,9 @@ public final class ObjectExpansion {
         if (contextValue != null) {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
-                    .acceptInlineContext(params.options().useInlineContexts())
-                    .collectKeys(params.runtime()::onContextKeys)
+                    .useInline(params.options().useInlineContexts())
+                    .collectKeys(params.runtime()::contextKeys)
                     .build(contextValue, adapter, params.baseUrl());
-
         }
 
         // 10.
@@ -116,20 +116,19 @@ public final class ObjectExpansion {
                 .expand(activeContext, element, adapter, property, term);
 
         final var normalized = normalize(result, property, params);
-        
+
         if (property != null || term != null) {
-            params.runtime().endMap(term != null ? term : property);
+            params.runtime().fire(EventType.END_MAP, term != null ? term : property);
         }
-        
+
         return normalized;
 
     }
-    
+
     private Object normalize(
             final Map<String, Object> result,
             final String property,
-            final Params params
-            ) throws JsonLdException {
+            final Params params) throws JsonLdException {
         // 15.
         if (result.containsKey(Keywords.VALUE)) {
             return normalizeValue(result, property, params.frameExpansion());
@@ -166,13 +165,11 @@ public final class ObjectExpansion {
             boolean revert = true;
 
             final var it = adapter.keyStream(element)
-                    .map(adapter::stringValue)
+                    .map(adapter::asString)
                     .sorted()
                     .iterator();
 
             while (it.hasNext()) {
-
-                params.runtime().tick();
 
                 final var key = it.next();
 
@@ -213,8 +210,6 @@ public final class ObjectExpansion {
 
             final var key = typeKeys.next();
 
-            params.runtime().tick();
-
             var expandedKey = UriExpansion
                     .with(
                             activeContext,
@@ -229,7 +224,7 @@ public final class ObjectExpansion {
                     typeKey = key;
                 }
 
-                params.runtime().type(key, Keywords.TYPE);
+                params.runtime().fire(EventType.TYPE_KEY, key, Keywords.TYPE);
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))
@@ -240,22 +235,19 @@ public final class ObjectExpansion {
 
                 while (terms.hasNext()) {
 
-                    params.runtime().tick();
-
                     final var term = terms.next();
 
                     final var localContext = typeContext
                             .findTerm(term)
-                            .map(TermDefinition::getLocalContext)
-                            .orElse(null);
+                            .map(TermDefinition::getLocalContext);
 
-                    if (localContext != null) {
+                    if (localContext.isPresent()) {
 
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
-                                .collectKeys(params.runtime()::onContextKeys)
-                                .build(localContext,
+                                .collectKeys(params.runtime()::contextKeys)
+                                .build(localContext.get(),
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null));
@@ -302,7 +294,7 @@ public final class ObjectExpansion {
         return null;
     }
 
-    private static Map<String, ?> normalizeValue(
+    private Map<String, ?> normalizeValue(
             final Map<String, ?> result,
             final String activeProperty,
             final boolean frameExpansion) throws JsonLdException {
@@ -314,32 +306,32 @@ public final class ObjectExpansion {
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {
-            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT, "Invalid @value [" + result + "]");
+            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT, "Invalid value object=" + result );
         }
 
         // 15.2.
         var type = result.get(Keywords.TYPE);
 
         if (type == null
-                || type instanceof Collection<?> c && !c.contains(Keywords.JSON)
+                || type instanceof Collection c && !c.contains(Keywords.JSON)
                 || type instanceof String s && !s.equals(Keywords.JSON)) {
 
             var value = result.get(Keywords.VALUE);
 
             // 15.3.
-            if (value == null || value instanceof Collection<?> c && c.isEmpty()) {
+            if (value == null || value instanceof Collection c && c.isEmpty()) {
                 return null;
 
             } else if (!frameExpansion
                     && !(value instanceof String) && result.containsKey(Keywords.LANGUAGE)) {
                 // 15.4
-                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_VALUE, "Invalid @language=" + value);
 
             } else if (!frameExpansion
                     && type != null
                     && (!(type instanceof String uri) || UriUtils.isNotURI(uri))) {
                 // 15.5
-                throw new JsonLdException(ErrorCode.INVALID_TYPED_VALUE, "Invalid @type [" + type + "].");
+                throw new JsonLdException(ErrorCode.INVALID_TYPED_VALUE, "Invalid @type=" + type);
             }
         }
         return normalize(result, activeProperty, frameExpansion);
@@ -352,7 +344,7 @@ public final class ObjectExpansion {
 
         final var type = result.get(Keywords.TYPE);
 
-        if (!(type instanceof Collection)) {
+        if (type != null && !(type instanceof Collection)) {
             result.put(Keywords.TYPE, List.of(type));
         }
 
@@ -366,7 +358,7 @@ public final class ObjectExpansion {
 
         // 17.1.
         if (result.size() > 2 || result.size() == 2 && !result.containsKey(Keywords.INDEX)) {
-            throw new JsonLdException(ErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid object [" + result + "].");
+            throw new JsonLdException(ErrorCode.INVALID_SET_OR_LIST_OBJECT, "Invalid set or list object=" + result);
         }
 
         // 17.2.
@@ -384,7 +376,7 @@ public final class ObjectExpansion {
         return normalize(result, activeProperty, frameExpansion);
     }
 
-    private static Map<String, ?> normalize(
+    private Map<String, ?> normalize(
             final Map<String, ?> result,
             final String activeProperty,
             final boolean frameExpansion) throws JsonLdException {
@@ -400,6 +392,7 @@ public final class ObjectExpansion {
 
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {
+            params.runtime().fire(EventType.DROPPED_NODE, term);
             return null;
         }
 
@@ -411,6 +404,7 @@ public final class ObjectExpansion {
             if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
+                params.runtime().fire(EventType.DROPPED_NODE, term);
                 return null;
             }
 
@@ -418,6 +412,7 @@ public final class ObjectExpansion {
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
             if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
+                params.runtime().fire(EventType.DROPPED_NODE, term);
                 return null;
             }
 

@@ -28,7 +28,8 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -47,7 +48,7 @@ public final class Expansion {
             boolean fromMap,
             URI baseUrl,
             Options options,
-            ExecutionEvents runtime) {
+            Execution runtime) {
 
         /**
          * The {@code frameExpansion} flag.
@@ -104,7 +105,7 @@ public final class Expansion {
         if (params.runtime().collectsContextKeys()
                 && propertyContext != null
                 && propertyContext.isMap()) {
-            params.runtime().onContextKeys(propertyContext
+            params.runtime().contextKeys(propertyContext
                     .keyStream()
                     .map(propertyContext.adapter()::asString)
                     .toList());
@@ -120,12 +121,10 @@ public final class Expansion {
                     params);
 
             if (Keywords.SET.equals(expandedTerm)) {
-                params.runtime().term(term, null);
+                params.runtime().fire(EventType.TERM_KEY, term);
             }
             return scalar;
         }
-
-        params.runtime().tick();
 
         // 6. Otherwise element is a map
         return new ObjectExpansion(
@@ -185,6 +184,7 @@ public final class Expansion {
          * returning null.
          */
         if (property == null || Keywords.GRAPH.equals(property)) {
+            params.runtime().fire(EventType.DROPPED_NODE, property);
             return null;
         }
 
@@ -261,9 +261,9 @@ public final class Expansion {
         final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
                 && (nodeAdapter.type(node) != NodeType.COLLECTION
                         || nodeAdapter.isSingleElement(node));
-                
+
         if (!indexedSingleton) {
-            params.runtime().beginList(term);
+            params.runtime().fire(EventType.BEGIN_LIST, term);
         }
 
         final var result = new ArrayList<Object>();
@@ -272,8 +272,6 @@ public final class Expansion {
 
         // 5.2.
         for (final var item : nodeAdapter.asIterable(node)) {
-
-            params.runtime().tick();
 
             // 5.2.1
             var expanded = expand(
@@ -309,7 +307,7 @@ public final class Expansion {
         }
 
         if (!indexedSingleton) {
-            params.runtime().endList(term);
+            params.runtime().fire(EventType.END_LIST, term);
         }
 
         // 5.3
