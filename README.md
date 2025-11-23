@@ -8,14 +8,17 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - Secure, stable, high-performance implementation with ~3000 tests
 - Minimal external dependencies
 - Simple, easy-to-use API
-- Extensions (since v2.0):
-  - JSON-LD-star expansion (experimental)
-  - Processing policies: undefined terms, dropped values, time/space constraints
-  - Generated TypeMap / TermMap (experimental)
-  - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, LRUCache, in-memory
-  - Generalized processing with [tree-io](https://github.com/filip26/tree-io) (Jakarta JSON, Jackson, or anything else)
-    
-### 🎯 Status
+
+### 🚀 Coming in v2.0
+
+- Processing policies for undefined terms, dropped values, time/space constraints, and more
+- Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, LRU cache, in-memory  
+- Generalized processing via [tree-io](https://github.com/filip26/tree-io)  
+  (Native Java Map/List, Jakarta JSON, Jackson, and others)
+- JSON-LD-Star expansion (experimental)  
+- Generated TypeMap / TermMap (experimental)  
+
+### 📡 Status
 
 [![Java 17 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml)
 [![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)
@@ -24,7 +27,6 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 [![Javadoc](https://javadoc.io/badge2/com.apicatalog/titanium-json-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/titanium-json-ld)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/titanium-json-ld.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/com.apicatalog/titanium-json-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
 
 
 ### 🧩 Libraries & Tools
