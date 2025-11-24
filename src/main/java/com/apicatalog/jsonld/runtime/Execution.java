@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.Options;
 /**
  * A runtime execution events fired during a transformation processing.
  * 
- * @since 1.4.0
+ * @since 2.0.0
  */
 public class Execution {
 
@@ -34,10 +34,12 @@ public class Execution {
         END_MAP,
         BEGIN_LIST,
         END_LIST,
-        TYPE_KEY,
-        TERM_KEY,
-
+        
+        NEXT_ELEMENT,   //TODO
+        
         CONTEXT_KEYS,
+        TYPE_KEY,
+        TERM_KEY,        
 
         UNDEFINED_TERM,
         DROPPED_NODE,

@@ -109,7 +109,7 @@ public class JunitRunner {
 
                 try {
 
-                    QuadEmitter.create(toLd).emit(readQuads(testCase.input));
+                    QuadEmitter.create(toLd).emit(readQuads(testCase, testCase.input));
 
                 } catch (NQuadsReaderException e) {
                     fail(e);
@@ -153,12 +153,12 @@ public class JunitRunner {
             }
 
             if (result instanceof RdfQuadSet quads) {
-                return validateQuads(testCase, options, quads);
+                return validateQuads(testCase, options, quads, true);
             }
 
             // TODO remove
             if (result instanceof JsonStructure json) {
-                return validateJsonLd(testCase, options, json, JakartaAdapter.instance());
+                return validateJsonLd(testCase, options, json, JakartaAdapter.instance(), true);
             }
 //            if (result instanceof JsonNode json) {
 //                return validateJsonLd(testCase, options, json, Jackson2Adapter.instance());
@@ -170,7 +170,8 @@ public class JunitRunner {
                     testCase,
                     options,
                     result,
-                    NativeAdapter.instance());
+                    NativeAdapter.instance(),
+                    true);
 //            }
 
 //            fail("Unexpected result type [" + result.getClass() + "]");
@@ -215,7 +216,12 @@ public class JunitRunner {
         }
     }
 
-    public static boolean validateJsonLd(final TestCase testCase, final Options options, final Object result, final TreeAdapter resultAdapter) {
+    public static boolean validateJsonLd(
+            final TestCase testCase, 
+            final Options options, 
+            final Object result, 
+            final TreeAdapter resultAdapter,
+            final boolean fail) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -225,15 +231,21 @@ public class JunitRunner {
             assertNotNull(expectedDocument);
 
             // compare expected with the result
-            return compareJson(testCase, result, resultAdapter, expectedDocument.content());
+            return compareJson(testCase, result, resultAdapter, expectedDocument.content(), fail);
 
         } catch (JsonLdException | TreeIOException e) {
-            fail(e.getMessage());
+            if (fail) {
+                fail(e.getMessage());
+            }
         }
         return false;
     }
 
-    private boolean validateQuads(final TestCase testCase, final Options options, final RdfQuadSet result) throws NQuadsReaderException, RdfConsumerException {
+    public static boolean validateQuads(
+            final TestCase testCase,
+            final Options options,
+            final RdfQuadSet result,
+            final boolean fail) throws NQuadsReaderException, RdfConsumerException {
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
@@ -246,15 +258,23 @@ public class JunitRunner {
             // compare expected with the result
             return compareRdf(testCase,
                     result,
-                    readQuads(testCase.expect));
+                    readQuads(testCase, testCase.expect),
+                    fail);
 
         } catch (JsonLdException | IOException e) {
-            fail(e.getMessage());
+            if (fail) {
+                fail(e.getMessage());
+            }
         }
         return false;
     }
 
-    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final TreeIO expected) throws TreeIOException {
+    public static final boolean compareJson(
+            final TestCase testCase, 
+            final Object result, 
+            final TreeAdapter resultAdapter, 
+            final TreeIO expected,
+            final boolean fail) throws TreeIOException {
 
         if (Comparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
             return true;
@@ -265,7 +285,9 @@ public class JunitRunner {
                 new JakartaMaterializer().node(expected),
                 null);
 
-        fail("Expected " + expected.node() + ", but was" + result);
+        if (fail) {
+            fail("Expected " + expected.node() + ", but was" + result);
+        }
         return false;
     }
 
@@ -309,8 +331,12 @@ public class JunitRunner {
         writer.write(out.toString());
         writer.println();
     }
-    
-    public static final boolean compareRdf(final TestCase testCase, final RdfQuadSet result, final RdfQuadSet expected) {
+
+    public static final boolean compareRdf(
+            final TestCase testCase, 
+            final RdfQuadSet result, 
+            final RdfQuadSet expected,
+            final boolean fail) {
 
         try {
             boolean match = RdfComparison.equals(expected, result);
@@ -336,23 +362,27 @@ public class JunitRunner {
                 System.out.print(stringWriter.toString());
             }
 
-            assertTrue(match, "The result does not match expected output.");
+            if (fail) {
+                assertTrue(match, "The result does not match expected output.");
+            }
 
             return match;
 
         } catch (RdfConsumerException e) {
-            fail(e.getMessage());
+            if (fail) {
+                fail(e.getMessage());
+            }
         }
         return false;
     }
 
-    RdfQuadSet readQuads(URI uri) throws NQuadsReaderException, RdfConsumerException, JsonLdException, IOException {
+    static RdfQuadSet readQuads(TestCase testCase, URI uri) throws NQuadsReaderException, RdfConsumerException, JsonLdException, IOException {
         RdfQuadSet set = null;
 
         final var rebased = testCase.rebase(uri);
 
         if ("classpath".equals(rebased.getScheme())) {
-            try (var is = getClass().getResourceAsStream(rebased.getPath())) {
+            try (var is = testCase.getClass().getResourceAsStream(rebased.getPath())) {
                 set = testCase.readQuads(is);
             }
 

@@ -42,7 +42,7 @@ import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 public class EarlGenerator {
 
     public static final String FILE_NAME = "titanium-json-ld-earl.ttl";
-    public static final String VERSION = "2.0";
+    public static final String VERSION = "2.0.0";
     public static final String RELEASE_DATE = "2025-10-19";
 
     public static void main(String[] args) throws JsonLdException, IOException {
@@ -53,9 +53,7 @@ public class EarlGenerator {
     }
 
     public void generate(final Path path) throws JsonLdException, IOException {
-
-        try (PrintWriter writer = new PrintWriter(path.toFile())) {
-
+        try (final var writer = new PrintWriter(path.toFile())) {
             printHeader(writer);
             testCompact(writer);
             testExpand(writer);
@@ -68,7 +66,6 @@ public class EarlGenerator {
     }
 
     public void testExpand(PrintWriter writer) throws JsonLdException {
-
         TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,
@@ -77,16 +74,16 @@ public class EarlGenerator {
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
-                        (new EarlRunner(testCase)).execute(options -> JsonLd.expand(testCase.input, options))));
+                        (new EarlRunner(testCase))
+                                .execute(options -> JsonLd.expand(testCase.input, options))));
     }
 
     public void testCompact(final PrintWriter writer) throws JsonLdException {
-
         TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        JakartaTestSuite.LOADER)
+                        SuiteEvironment.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
@@ -142,7 +139,9 @@ public class EarlGenerator {
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         (new EarlRunner(testCase)).execute(options -> {
 
-                            final var toLd = JsonLd.fromRdf().options(options);
+                            final var toLd = JsonLd
+                                    .fromRdf(options)
+                                    .jsonParser(JakartaTestSuite.PARSER);
 
                             try {
                                 QuadEmitter.create(toLd).emit(

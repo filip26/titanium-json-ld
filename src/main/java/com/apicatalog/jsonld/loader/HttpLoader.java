@@ -276,7 +276,7 @@ public class HttpLoader implements DocumentLoader {
                         LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", url);
 
                     } else if (!acceptContent.test(contentType)) {
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported content-type '" + contentType + "'.");
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported content-type=" + contentType + ", url=" + url);
                     }
 
                     return read(contentType, targetUri, contextUri, response);

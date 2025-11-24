@@ -20,13 +20,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.IOException;
 import java.util.Objects;
 
-import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.test.TestCase.Type;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.nquads.NQuadsReaderException;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.java.NativeAdapter;
+
+import jakarta.json.JsonStructure;
 
 public class EarlRunner {
 
@@ -63,31 +66,28 @@ public class EarlRunner {
                 return false;
             }
 
-            Document expectedDocument = options.loader().loadDocument(testCase.expect, DocumentLoader.defaultOptions());
-
-            if (expectedDocument == null) {
-                return false;
+            if (result instanceof RdfQuadSet quads) {
+                return JunitRunner.validateQuads(testCase, options, quads, false);
             }
 
-            // compare expected with the result
-    //FIXMe
-//            if (expectedDocument.getJsonContent().isPresent()) {
-//
-//                return (result instanceof JsonStructure)
-//                        && JsonLdComparison.equals(
-//                                (JsonValue) expectedDocument.getJsonContent().get(),
-//                                JakartaAdapter.instance(),
-//                                (JsonStructure) result,
-//                                JakartaAdapter.instance());
-//
-//            } else if (expectedDocument instanceof QuadSetDocument) {
-//                return (result instanceof RdfQuadSet)
-//                        && RdfComparison.equals(
-//                                ((QuadSetDocument) expectedDocument).contentX(),
-//                                (RdfQuadSet) result);
-//            }
+            if (result instanceof JsonStructure json) {
+                return JunitRunner.validateJsonLd(
+                        testCase, 
+                        options, 
+                        json, 
+                        JakartaAdapter.instance(),
+                        false);
+            }
 
-        } catch (IOException e) {
+            return JunitRunner.validateJsonLd(
+                    testCase,
+                    options,
+                    result,
+                    NativeAdapter.instance(),
+                    false);
+
+
+        } catch (IOException | NQuadsReaderException e) {
             throw new IllegalStateException(e);
 
         } catch (JsonLdException e) {
