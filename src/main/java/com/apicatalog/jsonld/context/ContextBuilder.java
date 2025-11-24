@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +36,8 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
+import com.apicatalog.jsonld.runtime.Execution.TermsConsumer;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -74,7 +75,7 @@ public final class ContextBuilder {
 
     private boolean acceptInlineContext;
 
-    private Consumer<Collection<String>> collectKeys;
+    private TermsConsumer collectTerms;
 
     // runtime
     private ActiveContext result;
@@ -91,7 +92,7 @@ public final class ContextBuilder {
         this.propagate = true;
         this.validateScopedContext = true;
         this.acceptInlineContext = true;
-        this.collectKeys = null;
+        this.collectTerms = null;
 
         // runtime
         this.result = null;
@@ -195,8 +196,10 @@ public final class ContextBuilder {
                 throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT, "A context must be a map, context=" + itemContext);
             }
 
-            if (collectKeys != null) {
-                collectKeys.accept(adapter.keyStream(itemContext).map(adapter::asString).toList());
+            if (collectTerms != null) {
+                collectTerms.terms(
+                        EventType.CONTEXT_KEYS,
+                        adapter.keyStream(itemContext).map(adapter::asString).toList());
             }
 
             // 5.4. Otherwise, it's a context definition
@@ -545,8 +548,8 @@ public final class ContextBuilder {
         return this;
     }
 
-    public ContextBuilder collectKeys(Consumer<Collection<String>> collectKeys) {
-        this.collectKeys = collectKeys;
+    public ContextBuilder collectTerms(TermsConsumer collectTerms) {
+        this.collectTerms = collectTerms;
         return this;
     }
 
@@ -700,7 +703,7 @@ public final class ContextBuilder {
                     .newContext(loader, runtime)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
-                    .collectKeys(collectKeys)
+                    .collectTerms(collectTerms)
                     .build(newContext, newContextAdapter, remoteDocument.url());
 
 //FIXME

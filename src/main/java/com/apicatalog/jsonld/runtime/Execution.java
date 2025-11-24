@@ -18,7 +18,6 @@ package com.apicatalog.jsonld.runtime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
@@ -38,86 +37,89 @@ public class Execution {
         TYPE_KEY,
         TERM_KEY,
 
+        CONTEXT_KEYS,
+
         UNDEFINED_TERM,
         DROPPED_NODE,
     }
 
     @FunctionalInterface
-    public interface EventProcessor {
-        void onEvent(EventType type, String key, String value) throws JsonLdException;
+    public interface TermValueConsumer {
+        void term(EventType type, String term, String value) throws JsonLdException;
     }
 
-    private final Collection<EventProcessor> listeners;
-    private Consumer<Collection<String>> onContextKey;
+    @FunctionalInterface
+    public interface TermsConsumer {
+        void terms(EventType type, Collection<String> terms) throws JsonLdException;
+    }
+
+    private Collection<TermValueConsumer> keyValueConsumer;
+    private Collection<TermsConsumer> termsConsumer;
 
     protected Execution(
-            Collection<EventProcessor> listeners,
-            Consumer<Collection<String>> contextKeyCollector) {
-        this.listeners = listeners;
-        this.onContextKey = contextKeyCollector;
+            Collection<TermValueConsumer> keyValueConsumer,
+            Collection<TermsConsumer> valuesconsumer) {
+        this.keyValueConsumer = keyValueConsumer;
+        this.termsConsumer = valuesconsumer;
     }
 
     public static Execution of(Options options) {
-        return of(options, new EventProcessor[0]);
-    }
-
-    public static Execution of(Options options, EventProcessor... listeners) {
 
         if (options.timeout() != null
                 || options.droppedNodes() != null
                 || options.undefinedTerms() != null) {
 
-            final var consumers = new ArrayList<EventProcessor>(listeners.length + 2);
+            final var consumers = new ArrayList<TermValueConsumer>();
+
             if (options.timeout() != null) {
-                consumers.add(TimeLimiter.of(options.timeout())::onEvent);
+                consumers.add(TimeLimiter.of(options.timeout())::term);
             }
             if (options.droppedNodes() != null || options.undefinedTerms() != null) {
                 consumers.add(new PolicyEnforcer(
                         options.undefinedTerms(),
-                        options.droppedNodes())::onEvent);
+                        options.droppedNodes())::term);
             }
-            if (listeners.length > 0) {
-                consumers.addAll(List.of(listeners));
-            }
-            return new Execution(consumers, null);
+            return new Execution(consumers, List.of());
         }
 
-        if (listeners == null || listeners.length == 0) {
-            return new Execution(List.of(), null);
-        }
+        return new Execution(List.of(), List.of());
+    }
 
-        return new Execution(List.of(listeners), null);
+    public Execution add(TermValueConsumer consumer) {
+        if (keyValueConsumer.isEmpty()) {
+            keyValueConsumer = new ArrayList<>();
+        }
+        keyValueConsumer.add(consumer);
+        return this;
+    }
+
+    public Execution add(TermsConsumer consumer) {
+        if (termsConsumer.isEmpty()) {
+            termsConsumer = new ArrayList<>();
+        }
+        termsConsumer.add(consumer);
+        return this;
     }
 
     public void fire(EventType type, String key) throws JsonLdException {
-        for (final var consumer : listeners) {
-            consumer.onEvent(type, key, null);
+        for (final var consumer : keyValueConsumer) {
+            consumer.term(type, key, null);
         }
     }
 
     public void fire(EventType type, String key, String uri) throws JsonLdException {
-        for (final var consumer : listeners) {
-            consumer.onEvent(type, key, uri);
+        for (final var consumer : keyValueConsumer) {
+            consumer.term(type, key, uri);
         }
     }
 
-    /**
-     * Event fired when a new context key is encountered.
-     * 
-     * @param keys
-     */
-    public void contextKeys(Collection<String> keys) {
-        if (onContextKey != null) {
-            onContextKey.accept(keys);
+    public void fire(EventType type, Collection<String> values) throws JsonLdException {
+        for (final var consumer : termsConsumer) {
+            consumer.terms(type, values);
         }
     }
 
-    public boolean collectsContextKeys() {
-        return onContextKey != null;
-    }
-
-    public Execution contextKeyCollector(Consumer<Collection<String>> consumer) {
-        this.onContextKey = consumer;
-        return this;
+    public boolean hasValuesConsumer() {
+        return !termsConsumer.isEmpty();
     }
 }

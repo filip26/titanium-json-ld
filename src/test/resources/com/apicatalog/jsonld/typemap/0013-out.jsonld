@@ -1,7 +1,4 @@
 {
-    "/0/http:~1~1example.com~1term1": "http://example.com/term1",
-    "/0/http:~1~1example.com~1term2": "http://example.com/term2",
-    "/0/http:~1~1example.com~1term3": "http://example.com/term3",
-    "/0/http:~1~1example.com~1term4": "http://example.com/term4",
-    "/0/http:~1~1example.com~1term5": "http://example.com/term5"
+    "/0": "http://example.com/t1",
+    "/0/http:~1~1example.com~1term2/0": "http://example.com/t2"
 }

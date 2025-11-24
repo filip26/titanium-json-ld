@@ -74,7 +74,7 @@ class PoliciesTest {
             Expander.expand(
                     Document.load(testCase.input, options.loader()),
                     options,
-                    Execution.of(options, termMapper));
+                    Execution.of(options).add(termMapper));
 
             if (testCase.expectErrorCode != null) {
                 JunitRunner.write(testCase, null, null, null);

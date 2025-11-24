@@ -8,9 +8,9 @@ import java.util.function.BiConsumer;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.jsonld.runtime.Execution.EventProcessor;
+import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
 
-public final class TermMapCollector implements EventProcessor {
+public final class TermMapCollector implements TermValueConsumer {
 
     private final Deque<Object> path = new ArrayDeque<>();
     private final BiConsumer<String, Object> consumer;
@@ -20,7 +20,7 @@ public final class TermMapCollector implements EventProcessor {
     }
 
     @Override
-    public void onEvent(EventType type, String key, String value) throws JsonLdException {
+    public void term(EventType type, String key, String value) throws JsonLdException {
         switch (type) {
         case BEGIN_LIST:
             if (key != null) {

@@ -96,7 +96,7 @@ final class ObjectExpansion1314 {
                     .vocab(true)
                     .expand(key);
 
-            // FIXME if the term is undefined, i.e. is not URI or keyword
+            // if the term is undefined, i.e. is not URI or keyword
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
                 params.runtime().fire(EventType.UNDEFINED_TERM, key);
                 continue;
@@ -107,10 +107,6 @@ final class ObjectExpansion1314 {
 
                 if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
                     params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
-                }
-
-                if (!Keywords.contains(key)) {
-                    params.runtime().fire(EventType.TYPE_KEY, key, expandedProperty);
                 }
 
                 final var value = adapter.property(key, element);
@@ -501,11 +497,6 @@ final class ObjectExpansion1314 {
             processNest(activeContext, element, adapter);
         }
 
-//        if (activeProperty != null || term != null) {
-//            params.runtime().endMap(term != null ? term : activeProperty);
-//        }
-
-//        params.runtime().onEndMap(activeProperty);
     }
 
     public ObjectExpansion1314 nest(Map<String, Object> nest) {
@@ -605,8 +596,6 @@ final class ObjectExpansion1314 {
                         .documentRelative(true)
                         .vocab(false)
                         .expand(adapter.asString(value));
-
-//                params.runtime().onProperty(key, Keywords.ID, (String)expandedValue);
 
                 if (params.frameExpansion() && expandedValue != null) {
                     expandedValue = List.of(expandedValue);
@@ -738,9 +727,6 @@ final class ObjectExpansion1314 {
                             ? expandedItems
                             : List.of();
 
-//                    if (expandedItems != null) {
-//                        params.runtime().onTypeMapping(expandedItems);
-//                    }
                 }
 
             }
@@ -1142,6 +1128,21 @@ final class ObjectExpansion1314 {
                 || (Keywords.VALUE.equals(expandedProperty)
                         && Keywords.JSON.equals(inputType))) {
 
+            if (Keywords.TYPE.equals(expandedProperty)) {
+                if (expandedValue instanceof String typeValue) {
+                    params.runtime().fire(EventType.TYPE_KEY, Keywords.TYPE, typeValue);
+
+                } else if (expandedValue instanceof Collection<?> types && types.size() == 1) {
+                    
+                    params.runtime().fire(EventType.TYPE_KEY, Keywords.TYPE, (String) types.iterator().next());
+                    
+                } else if (params.runtime().hasValuesConsumer()
+                        && expandedValue instanceof Collection<?> types) {
+                                        
+                    params.runtime().fire(EventType.TYPE_KEY, types.stream().map(Object::toString).toList());
+                }
+            }
+
             result.put(expandedProperty, expandedValue);
         }
     }
@@ -1225,8 +1226,6 @@ final class ObjectExpansion1314 {
 
                 if (collection) {
                     params.runtime().fire(EventType.BEGIN_LIST, nestedKey);
-                } else {
-//                    params.runtime().beginMap(nestedKey);
                 }
 
                 // 14.2.2
@@ -1243,8 +1242,6 @@ final class ObjectExpansion1314 {
 
                 if (collection) {
                     params.runtime().fire(EventType.END_LIST, nestedKey);
-                } else {
-//                    params.runtime().endMap(nestedKey);
                 }
             }
 

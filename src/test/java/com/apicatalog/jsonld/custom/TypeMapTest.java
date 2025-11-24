@@ -37,7 +37,6 @@ import com.apicatalog.jsonld.runtime.TypeMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.media.MediaType;
@@ -58,16 +57,18 @@ class TypeMapTest {
 
         try {
             var options = testCase.getOptions();
-            
-            options.loader( StaticLoader.newBuilder()
+
+            options.loader(StaticLoader.newBuilder()
                     .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
                     .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
                     .fallback(options.loader())
                     .build());
-                    
-            var runtime = Execution.of(options, typeMapper);
+
+            var runtime = Execution.of(options)
+                    .add(typeMapper::term)
+                    .add(typeMapper::terms);
 
             var expanded = Expander.expand(
                     Document.load(testCase.input, options.loader()),
@@ -102,16 +103,9 @@ class TypeMapTest {
         return TestManifest
                 .load(
                         "classpath:/com/apicatalog/jsonld/",
-                        "termmap-manifest.jsonld",
+                        "typemap-manifest.jsonld",
                         LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
-    }
-
-    
-    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
-        try (final var is = getClass().getResourceAsStream(name)) {
-            return JakartaTestSuite.PARSER.parse(is);
-        }
     }
 }

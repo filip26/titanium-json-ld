@@ -102,13 +102,15 @@ public final class Expansion {
                 .orElse(null);
 
         // Extension: CBOR-LD collector
-        if (params.runtime().collectsContextKeys()
+        if (params.runtime().hasValuesConsumer()
                 && propertyContext != null
                 && propertyContext.isMap()) {
-            params.runtime().contextKeys(propertyContext
-                    .keyStream()
-                    .map(propertyContext.adapter()::asString)
-                    .toList());
+            params.runtime().fire(
+                    EventType.CONTEXT_KEYS,
+                    propertyContext
+                            .keyStream()
+                            .map(propertyContext.adapter()::asString)
+                            .toList());
         }
 
         // 4. If element is a scalar

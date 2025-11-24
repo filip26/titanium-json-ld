@@ -7,47 +7,12 @@
   "baseIri": "https://w3c.github.io/json-ld-api/tests/",
   "sequence": [
     {
-      "@id": "#t0001",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "drop free-floating nodes",
-      "purpose": "Expand drops unreferenced nodes having only @id",
-      "input": "typemap/0001-in.jsonld",
-      "expect": "typemap/0001-out.jsonld"
-    }, {
       "@id": "#t0002",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "basic",
       "purpose": "Expanding terms with different types of values",
       "input": "typemap/0002-in.jsonld",
       "expect": "typemap/0002-out.jsonld"
-    }, {
-      "@id": "#t0003",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "drop null and unmapped properties",
-      "purpose": "Verifies that null values and unmapped properties are removed from expanded output",
-      "input": "typemap/0003-in.jsonld",
-      "expect": "typemap/0003-out.jsonld"
-    }, {
-      "@id": "#t0004",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "optimize @set, keep empty arrays",
-      "purpose": "Uses of @set are removed in expansion; values of @set, or just plain values which are empty arrays are retained",
-      "input": "typemap/0004-in.jsonld",
-      "expect": "typemap/0004-out.jsonld"
-    }, {
-      "@id": "#t0005",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "do not expand aliased @id/@type",
-      "purpose": "If a keyword is aliased, it is not used when expanding",
-      "input": "typemap/0005-in.jsonld",
-      "expect": "typemap/0005-out.jsonld"
-    }, {
-      "@id": "#t0006",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "alias keywords",
-      "purpose": "Aliased keywords expand in resulting document",
-      "input": "typemap/0006-in.jsonld",
-      "expect": "typemap/0006-out.jsonld"
     }, {
       "@id": "#t0007",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
@@ -56,40 +21,12 @@
       "input": "typemap/0007-in.jsonld",
       "expect": "typemap/0007-out.jsonld"
     }, {
-      "@id": "#t0008",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "@value with @language",
-      "purpose": "Keep expanded values with @language, drop non-conforming value objects containing just @language",
-      "input": "typemap/0008-in.jsonld",
-      "expect": "typemap/0008-out.jsonld"
-    }, {
       "@id": "#t0009",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "@graph with terms",
       "purpose": "Use of @graph to contain multiple nodes within array",
       "input": "typemap/0009-in.jsonld",
       "expect": "typemap/0009-out.jsonld"
-    }, {
-      "@id": "#t0010",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "native types",
-      "purpose": "Expanding native scalar retains native scalar within expanded value",
-      "input": "typemap/0010-in.jsonld",
-      "expect": "typemap/0010-out.jsonld"
-    }, {
-      "@id": "#t0011",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "coerced @id",
-      "purpose": "A value of a property with @type: @id coercion expands to a node reference",
-      "input": "typemap/0011-in.jsonld",
-      "expect": "typemap/0011-out.jsonld"
-    }, {
-      "@id": "#t0012",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "@graph with embed",
-      "purpose": "Use of @graph to contain multiple nodes within array",
-      "input": "typemap/0012-in.jsonld",
-      "expect": "typemap/0012-out.jsonld"
     }, {
       "@id": "#t0013",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],

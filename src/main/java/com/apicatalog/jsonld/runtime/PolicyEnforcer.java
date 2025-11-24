@@ -6,10 +6,10 @@ import java.util.logging.Logger;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
-import com.apicatalog.jsonld.runtime.Execution.EventProcessor;
+import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 
-public final class PolicyEnforcer implements EventProcessor {
+public final class PolicyEnforcer implements TermValueConsumer {
 
     private static final Logger LOGGER = Logger.getLogger(PolicyEnforcer.class.getName());
     
@@ -25,7 +25,7 @@ public final class PolicyEnforcer implements EventProcessor {
     }
 
     @Override
-    public void onEvent(EventType type, String key, String value) throws JsonLdException {
+    public void term(EventType type, String key, String value) throws JsonLdException {
         switch (type) {
         case DROPPED_NODE:
             enforceNodes(droppedNodes, key);

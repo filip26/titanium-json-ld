@@ -70,7 +70,7 @@ class TermMapTest {
                     .fallback(options.loader())
                     .build());
                     
-            var runtime = Execution.of(options, termMapper);
+            var runtime = Execution.of(options).add(termMapper);
 
             var expanded = Expander.expand(
                     Document.load(testCase.input, options.loader()),

@@ -42,6 +42,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -92,10 +93,13 @@ class ExecutionTest {
 
         var options = Options.with(UTOPIA_LOADER);
 
-        var keys = new ArrayList<Collection<String>>();
+        final var keys = new ArrayList<Collection<String>>();
 
-        var runtime = Execution.of(options);
-        runtime.contextKeyCollector(keys::add);
+        var runtime = Execution.of(options).add((type, values) -> {
+            if (EventType.CONTEXT_KEYS == type) {
+                keys.add(values);
+            }
+        });
 
         var expanded = Expander.expand(document, options, runtime);
 

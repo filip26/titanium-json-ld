@@ -2,16 +2,19 @@ package com.apicatalog.jsonld.runtime;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
+import com.apicatalog.jsonld.runtime.Execution.TermsConsumer;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.jsonld.runtime.Execution.EventProcessor;
 
-public final class TypeMapCollector implements EventProcessor {
+public final class TypeMapCollector implements TermValueConsumer, TermsConsumer {
 
     private final Deque<Object> path = new ArrayDeque<>();
     private final BiConsumer<String, Object> consumer;
@@ -20,13 +23,42 @@ public final class TypeMapCollector implements EventProcessor {
         this.consumer = consumer;
     }
 
-    @Override
-    public void onEvent(EventType type, String key, String value) throws JsonLdException {
 
+    @Override
+    public void terms(EventType type, Collection<String> values) throws JsonLdException {
+        switch (type) {
+        case TYPE_KEY:
+            if (path.isEmpty()) {
+                consumer.accept("/", values);
+                return;
+            }
+
+            var pointer = new ArrayList<String>(path.size());
+            path.stream().map(Object::toString).forEach(pointer::add);
+            Collections.reverse(pointer);
+
+            consumer.accept("/" + String.join("/", pointer), values);
+
+//            if (path.peek() instanceof Integer order) {
+//                path.pop();
+//                path.push(order + 1);
+//            }
+
+            return;            
+            
+        default:
+            break;
+        }
+        
+    }
+    
+    @Override
+    public void term(EventType type, String key, String value) throws JsonLdException {
+//System.out.println("onEvent " + type + ", " + key + ", " + value);
         switch (type) {
         case BEGIN_LIST:
             if (key != null) {
-                path.push(key);
+                path.push(escapeJsonPointerSegment(key));
             }
             return;
 
@@ -44,16 +76,28 @@ public final class TypeMapCollector implements EventProcessor {
             path.pop();
             return;
 
+//        case TERM_KEY:
+//            if (!Keywords.contains(value)) {
+//                return;
+//            }
+//            return;
+            
         case TYPE_KEY:
             if (path.isEmpty()) {
-                consumer.accept("/" + escapeJsonPointerSegment(key), value);
+                if (Keywords.TYPE.equals(key)) {
+                    consumer.accept("/", value);
+                } else {
+                    consumer.accept("/" + escapeJsonPointerSegment(key), value);
+                }
                 return;
             }
 
             var pointer = new ArrayList<String>(path.size());
             path.stream().map(Object::toString).forEach(pointer::add);
             Collections.reverse(pointer);
-            pointer.add(escapeJsonPointerSegment(key));
+            if (!Keywords.TYPE.equals(key)) {
+                pointer.add(escapeJsonPointerSegment(key));
+            }
 
             consumer.accept("/" + String.join("/", pointer), value);
 

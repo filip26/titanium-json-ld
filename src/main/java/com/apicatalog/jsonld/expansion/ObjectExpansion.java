@@ -94,7 +94,9 @@ public final class ObjectExpansion {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .useInline(params.options().useInlineContexts())
-                    .collectKeys(params.runtime()::contextKeys)
+                    .collectTerms(params.runtime().hasValuesConsumer()
+                            ? params.runtime()::fire
+                            : null)
                     .build(contextValue, adapter, params.baseUrl());
         }
 
@@ -224,7 +226,9 @@ public final class ObjectExpansion {
                     typeKey = key;
                 }
 
-                params.runtime().fire(EventType.TYPE_KEY, key, Keywords.TYPE);
+                if (!Keywords.TYPE.equals(key)) {
+//                    params.runtime().fire(EventType.TYPE_KEY, key, Keywords.TYPE);
+                }
 
                 // 11.2
                 var terms = adapter.asStream(adapter.property(key, element))
@@ -246,7 +250,9 @@ public final class ObjectExpansion {
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .propagate(false)
-                                .collectKeys(params.runtime()::contextKeys)
+                                .collectTerms(params.runtime().hasValuesConsumer()
+                                        ? params.runtime()::fire
+                                        : null)
                                 .build(localContext.get(),
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)
@@ -306,7 +312,7 @@ public final class ObjectExpansion {
 
         if ((result.containsKey(Keywords.DIRECTION) || result.containsKey(Keywords.LANGUAGE))
                 && result.containsKey(Keywords.TYPE)) {
-            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT, "Invalid value object=" + result );
+            throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT, "Invalid value object=" + result);
         }
 
         // 15.2.
