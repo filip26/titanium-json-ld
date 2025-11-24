@@ -43,7 +43,7 @@ public class EarlGenerator {
 
     public static final String FILE_NAME = "titanium-json-ld-earl.ttl";
     public static final String VERSION = "2.0.0";
-    public static final String RELEASE_DATE = "2025-10-19";
+    public static final String RELEASE_DATE = "2025-11-24";
 
     public static void main(String[] args) throws JsonLdException, IOException {
 
@@ -217,52 +217,75 @@ public class EarlGenerator {
             System.out.println("Failed: " + testUri);
         }
 
-        writer.println();
-        writer.println("[ a earl:Assertion;");
-        writer.println("  earl:assertedBy <https://github.com/filip26>;");
-        writer.println("  earl:subject <https://github.com/filip26/titanium-json-ld>;");
-        writer.println("  earl:test <" + testUri + ">;");
-        writer.println("  earl:result [");
-        writer.println("    a earl:TestResult;");
-        writer.println("    earl:outcome " + (passed ? "earl:passed" : "earl:failed") + ";");
-        writer.println("    dc:date \"" + DateTimeFormatter.ISO_INSTANT.format(Instant.now().truncatedTo(ChronoUnit.SECONDS)) + "\"^^xsd:dateTime");
-        writer.println("  ];");
-        writer.println("  earl:mode earl:automatic;");
-        writer.println("] .");
+        var timestamp = DateTimeFormatter.ISO_INSTANT
+                .format(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+
+        String report = """
+                [ a earl:Assertion ;
+                  earl:assertedBy <https://github.com/filip26> ;
+                  earl:subject <https://github.com/filip26/titanium-json-ld> ;
+                  earl:test <%s> ;
+                  earl:result [
+                    a earl:TestResult ;
+                    earl:outcome %s ;
+                    dc:date "%s"^^xsd:dateTime
+                  ] ;
+                  earl:mode earl:automatic
+                ] .
+                """.formatted(
+                testUri,
+                passed ? "earl:passed" : "earl:failed",
+                timestamp);
+
+        writer.println(report);
     }
 
     void printHeader(PrintWriter writer) {
 
-        writer.println("@prefix dc: <http://purl.org/dc/terms/> .");
-        writer.println("@prefix doap: <http://usefulinc.com/ns/doap#> .");
-        writer.println("@prefix foaf: <http://xmlns.com/foaf/0.1/> .");
-        writer.println("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .");
-        writer.println("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .");
-        writer.println("@prefix earl: <http://www.w3.org/ns/earl#> .");
-        writer.println();
-        writer.println("<> foaf:primaryTopic <https://github.com/filip26/titanium-json-ld>;");
-        writer.println("  dc:issued \"" + DateTimeFormatter.ISO_INSTANT.format(Instant.now().truncatedTo(ChronoUnit.SECONDS)) + "\"^^xsd:dateTime;");
-        writer.println("  foaf:maker <https://github.com/filip26>.");
-        writer.println();
-        writer.println("<https://github.com/filip26/titanium-json-ld> a earl:TestSubject,");
-        writer.println("    doap:Project,");
-        writer.println("    earl:Software;");
-        writer.println("  dc:title \"Titanium\" ;");
-        writer.println("  dc:creator <https://github.com/filip26>;");
-        writer.println("  doap:name \"Titanium\";");
-        writer.println("  doap:description \"A JSON-LD 1.1 Processor & API for Java\";");
-        writer.println("  doap:developer <https://github.com/filip26>;");
-        writer.println("  doap:homepage <https://github.com/filip26/titanium-json-ld>;");
-        writer.println("  doap:license <https://github.com/filip26/titanium-json-ld/blob/main/LICENSE>;");
-        writer.println("  doap:release [");
-        writer.println("    doap:name \"Titanium v" + VERSION + "\";");
-        writer.println("    doap:revision \"" + VERSION + "\";");
-        writer.println("    doap:created \"" + RELEASE_DATE + "\"^^xsd:date;");
-        writer.println("  ] ;");
-        writer.println("  doap:programming-language \"Java\" .");
-        writer.println();
-        writer.println("<https://github.com/filip26> a earl:Assertor, foaf:Person;");
-        writer.println("  foaf:name \"Filip Kolarik\";");
-        writer.println("  foaf:homepage <https://github.com/filip26> .");
+        var timestamp = DateTimeFormatter.ISO_INSTANT
+                .format(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+
+        String prefixes = """
+                @prefix dc: <http://purl.org/dc/terms/> .
+                @prefix doap: <http://usefulinc.com/ns/doap#> .
+                @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+                @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+                @prefix earl: <http://www.w3.org/ns/earl#> .
+                """;
+
+        String primaryTopic = """
+                <> foaf:primaryTopic <https://github.com/filip26/titanium-json-ld> ;
+                  dc:issued "%s"^^xsd:dateTime ;
+                  foaf:maker <https://github.com/filip26> .
+                """.formatted(timestamp);
+
+        String project = """
+                <https://github.com/filip26/titanium-json-ld> a earl:TestSubject, doap:Project, earl:Software ;
+                  dc:title "Titanium" ;
+                  dc:creator <https://github.com/filip26> ;
+                  doap:name "Titanium" ;
+                  doap:description "A JSON-LD 1.1 Processor & API for Java" ;
+                  doap:developer <https://github.com/filip26> ;
+                  doap:homepage <https://github.com/filip26/titanium-json-ld> ;
+                  doap:license <https://github.com/filip26/titanium-json-ld/blob/main/LICENSE> ;
+                  doap:release [
+                    doap:name "Titanium v%s" ;
+                    doap:revision "%s" ;
+                    doap:created "%s"^^xsd:date
+                  ] ;
+                  doap:programming-language "Java" .
+                """.formatted(VERSION, VERSION, RELEASE_DATE);
+
+        String person = """
+                <https://github.com/filip26> a earl:Assertor, foaf:Person ;
+                  foaf:name "Filip Kolařík" ;
+                  foaf:homepage <https://github.com/filip26> .
+                """;
+
+        writer.println(prefixes);
+        writer.println(primaryTopic);
+        writer.println(project);
+        writer.println(person);
     }
 }
