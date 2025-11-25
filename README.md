@@ -166,7 +166,7 @@ JsonLd.expand(document)
       .get();
 ```
 
-📘 **Learn more:** See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
+👉 See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
 
 ## ⚙️ Installation
 

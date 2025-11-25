@@ -27,9 +27,12 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.Comparison;
+import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
@@ -37,9 +40,47 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 class NativeInputTest {
+
+    static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
+            .document(
+                    "urn:example:context",
+                    Document.of(new TreeIO(Map.of(
+                            "@context", Map.of(
+                                    "name", "http://xmlns.com/foaf/0.1/name",
+                                    "project", Map.of(
+                                            "@id", "http://xmlns.com/foaf/0.1/project",
+                                            "@type", "@id"),
+                                    "Person", "http://xmlns.com/foaf/0.1/Person",
+                                    "modified", Map.of(
+                                            "@id", "https://schema.org/dateModified",
+                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
+                            NativeAdapter.instance())))
+            .build();
+
+    static Map<String, Object> JSON_LD = Map.of(
+            "@context", "urn:example:context",
+            "@type", "Person",
+            "name", "Filip Kolařík",
+            "project", "https://github.com/filip26/titanium-json-ld",
+            "modified", "2025-11-25T01:02:03Z");
+
+    @Test
+    void testURNContextToRdf() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
+
+        final var set = new OrderedQuadSet();
+
+        JsonLd.toRdf(JSON_LD, new QuadAcceptor(set), Options.with(URN_LOADER));
+
+        final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-0-quads.nq");
+        assertNotNull(expected);
+
+        var match = RdfComparison.equals(set, expected);
+        assertTrue(match);
+    }
 
     @Test
     void testExpand() throws JsonLdException, IOException {

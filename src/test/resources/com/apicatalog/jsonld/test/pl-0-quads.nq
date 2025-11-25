@@ -1,0 +1,4 @@
+_:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:b0 <http://xmlns.com/foaf/0.1/name> "Filip Kolařík" .
+_:b0 <http://xmlns.com/foaf/0.1/project> <https://github.com/filip26/titanium-json-ld> .
+_:b0 <https://schema.org/dateModified> "2025-11-25T01:02:03Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
