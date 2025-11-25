@@ -1,3 +1,5 @@
 {
-    "/notype": "http://example.com/notype"
+    "/notype": "@none",
+    "/notype/6": "http://www.w3.org/2001/XMLSchema#boolean",
+    "/notype/8": "http://www.w3.org/2001/XMLSchema#date"
 }

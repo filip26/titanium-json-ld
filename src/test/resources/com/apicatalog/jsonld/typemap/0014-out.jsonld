@@ -1,19 +1,6 @@
 {
-    "/ex:property4/ex:property5/0/set": "@set",
-    "/ex:property4/ex:property5/0/set/0/type": "@type",
-    "/ex:property4/ex:property5/0/set/0/value": "@value",
-    "/ex:property4/ex:property5": "http://example.org/test#property5",
-    "/ex:property4/uri": "@id",
-    "/ex:property4": "http://example.org/test#property4",
-    "/ex:property6/0/set": "@set",
-    "/ex:property6/0/set/0/type": "@type",
-    "/ex:property6/0/set/0/value": "@value",
-    "/ex:property6": "http://example.org/test#property6",
-    "/http:~1~1example.org~1test#property3/uri": "@id",
-    "/http:~1~1example.org~1test#property3": "http://example.org/test#property3",
-    "/property1/http:~1~1example.org~1test#property4": "http://example.org/test#property4",
-    "/property1/uri": "@id",
-    "/property1": "http://example.org/test#property1",
-    "/property2": "http://example.org/test#property2",
-    "/uri": "@id"
+    "/ex:property4/ex:property5/0/set/0": "http://www.w3.org/2001/XMLSchema#date",
+    "/ex:property6/0/set/0": "http://www.w3.org/2001/XMLSchema#date",
+    "/property1": "@id",
+    "/property2": "@id"
 }
