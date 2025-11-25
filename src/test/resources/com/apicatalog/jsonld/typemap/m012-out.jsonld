@@ -1,7 +1,0 @@
-{
-    "/typemap/@none": "@index",
-    "/typemap/@none/label": "http://example/label",
-    "/typemap/none": "@index",
-    "/typemap/none/label": "http://example/label",
-    "/typemap": "http://example/typemap"
-}

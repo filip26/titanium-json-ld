@@ -1,7 +1,0 @@
-{
-  "@context": {
-    "@base": ".."
-  },
-  "@id": "relative-iri",
-  "http://prop": "value"
-}

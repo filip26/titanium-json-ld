@@ -1,8 +1,0 @@
-{
-    "/author/guest": "@index",
-    "/author/guest/0/prop": "http://example.com/prop",
-    "/author/guest/1/prop": "http://example.com/prop",
-    "/author/regular": "@index",
-    "/author/regular/http:~1~1example.com~1prop": "http://example.com/prop",
-    "/author": "http://example.com/author"
-}

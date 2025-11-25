@@ -1,5 +1,0 @@
-{
-    "/http://example.org/vocab#object/0/type": "@type",
-    "/http://example.org/vocab#object/0/value": "@value",
-    "/http:~1~1example.org~1vocab#object": "http://example.org/vocab#object"
-}

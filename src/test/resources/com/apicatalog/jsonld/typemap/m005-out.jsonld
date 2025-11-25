@@ -1,5 +1,0 @@
-{
-    "/idmap/foo": "@index",
-    "/idmap/foo/label": "http://example/label",
-    "/idmap": "http://example/idmap"
-}

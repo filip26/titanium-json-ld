@@ -1,5 +1,0 @@
-{
-    "/colliding": "http://example.com/vocab/collidingTerm",
-    "/collidingTerm": "http://example.com/vocab/collidingTerm",
-    "/http:~1~1example.com~1vocab~1collidingTerm": "http://example.com/vocab/collidingTerm"
-}

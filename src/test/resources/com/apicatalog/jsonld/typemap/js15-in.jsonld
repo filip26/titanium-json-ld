@@ -1,3 +1,0 @@
-{
-  "http://example.org/vocab#object": [{"@value": {"foo": "bar"}, "@type": "@json"}]
-}

@@ -1,9 +1,0 @@
-{
-    "/children/0/name": "http://example.com/vocab#name",
-    "/children/1/name": "http://example.com/vocab#name",
-    "/children": "http://example.com/vocab#parent",
-    "/name": "http://example.com/vocab#name",
-    "/pets/0/name": "http://example.com/vocab#name",
-    "/pets/1/name": "http://example.com/vocab#name",
-    "/pets": "http://example.com/vocab#owner"
-}

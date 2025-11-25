@@ -1,7 +1,0 @@
-{
-  "@context": {
-    "ignoreMe": "@ignoreMe"
-  },
-  "@type": "http://example.com/IgnoreTest",
-  "ignoreMe": "should not be here"
-}

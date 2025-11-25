@@ -1,5 +1,0 @@
-{
-    "/typemap/Type": "@index",
-    "/typemap/Type/a": "http://example.org/a",
-    "/typemap": "http://example/typemap"
-}

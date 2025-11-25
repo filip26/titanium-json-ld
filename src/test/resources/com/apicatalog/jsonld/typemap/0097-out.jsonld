@@ -1,7 +1,0 @@
-{
-    "/input/g1": "@index",
-    "/input/g1/value": "http://example.org/value",
-    "/input/g2": "@index",
-    "/input/g2/value": "http://example.org/value",
-    "/input": "http://example.org/input"
-}

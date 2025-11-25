@@ -1,6 +1,0 @@
-{
-    "/protected": "http://example.com/protected",
-    "/scope/unprotected": "http://example.com/something-else",
-    "/scope": "http://example.com/scope",
-    "/unprotected": "http://example.com/unprotected"
-}
