@@ -11,7 +11,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### 🚀 Coming in v2.0
 
-- Processing policies for undefined terms, dropped values, time/space constraints, and more
+- Processing policies for undefined terms, dropped values, time/space constraints, disallowed keywords, and more
 - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, LRU cache, in-memory  
 - Generalized processing via [tree-io](https://github.com/filip26/tree-io)  
   (Native Java Map/List, Jakarta JSON, Jackson, and others)
@@ -51,7 +51,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 📄 **See also:** [EARL Results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java)
 
-## 💡 Examples
+## 💡 Examples (v1.x.x)
 
 Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for working with JSON-LD documents.
 
@@ -167,6 +167,46 @@ JsonLd.expand(document)
 ```
 
 👉 See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
+
+## 🚀 Examples (v2.x.x)
+
+Convert JSON-LD written in plain Java into RDF using a custom static document loader and a custom URI space.
+
+```javascript
+    static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
+            .document(
+                    "urn:example:context",
+                    Document.of(new TreeIO(Map.of(
+                            "@context", Map.of(
+                                    "name", "http://xmlns.com/foaf/0.1/name",
+                                    "project", Map.of(
+                                            "@id", "http://xmlns.com/foaf/0.1/project",
+                                            "@type", "@id"),
+                                    "Person", "http://xmlns.com/foaf/0.1/Person",
+                                    "modified", Map.of(
+                                            "@id", "https://schema.org/dateModified",
+                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
+                            NativeAdapter.instance())))
+            .build();
+
+    Map<String, String> document = Map.of(
+            "@context", "urn:example:context",
+            "@type", "Person",
+            "name", "Filip Kolařík",
+            "project", "https://github.com/filip26/titanium-json-ld",
+            "modified", "2025-11-25T01:02:03Z");
+
+    var writer = new StringWriter();
+    JsonLd.toRdf(document, new NQuadsWriter(writer), Options.with(loader));
+    
+    System.out.println(writer.toString());
+    // prints
+    // _:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+    // _:b0 <http://xmlns.com/foaf/0.1/name> "Filip Kolařík" .
+    // _:b0 <http://xmlns.com/foaf/0.1/project> <https://github.com/filip26/titanium-json-ld> .
+    // _:b0 <https://schema.org/dateModified> "2025-11-25T01:02:03Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+
+```
 
 ## ⚙️ Installation
 

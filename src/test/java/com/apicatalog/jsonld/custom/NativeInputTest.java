@@ -61,7 +61,7 @@ class NativeInputTest {
                             NativeAdapter.instance())))
             .build();
 
-    static Map<String, Object> JSON_LD = Map.of(
+    static Map<String, String> JSON_LD = Map.of(
             "@context", "urn:example:context",
             "@type", "Person",
             "name", "Filip Kolařík",
