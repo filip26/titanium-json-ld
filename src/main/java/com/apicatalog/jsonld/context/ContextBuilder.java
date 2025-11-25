@@ -585,7 +585,7 @@ public final class ContextBuilder {
         // 5.2.3
         if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
             throw new JsonLdException(ErrorCode.CONTEXT_OVERFLOW,
-                    "Too many contexts, limit=" + MAX_REMOTE_CONTEXTS);
+                    "Too many contexts; limit=" + MAX_REMOTE_CONTEXTS);
         }
 
         remoteContexts.add(contextKey);
@@ -606,8 +606,9 @@ public final class ContextBuilder {
 
         // 5.2.5.
         if (loader == null) {
-            throw new JsonLdException(ErrorCode.MISSING_DOCUMENT_LOADER,
-                    "Document loader is not present, uri=" + contextUri);
+            throw new JsonLdException(
+                    ErrorCode.MISSING_DOCUMENT_LOADER,
+                    "Document loader is not present; cannot fetch %s".formatted(contextUri));
         }
 
         Document remoteDocument = null;
