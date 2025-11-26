@@ -173,40 +173,43 @@ JsonLd.expand(document)
 Convert JSON-LD written in plain Java into RDF using a custom static document loader and a custom URI space.
 
 ```javascript
-    static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
-            .document(
-                    "urn:example:context",
-                    Document.of(new TreeIO(Map.of(
-                            "@context", Map.of(
-                                    "name", "http://xmlns.com/foaf/0.1/name",
-                                    "project", Map.of(
-                                            "@id", "http://xmlns.com/foaf/0.1/project",
-                                            "@type", "@id"),
-                                    "Person", "http://xmlns.com/foaf/0.1/Person",
-                                    "modified", Map.of(
-                                            "@id", "https://schema.org/dateModified",
-                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
-                            NativeAdapter.instance())))
-            .build();
+static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
+    .document(
+        "urn:example:context",
+        Document.of(new TreeIO(Map.of(
+            "@context", Map.of(
+                "name", "http://xmlns.com/foaf/0.1/name",
+                "project", Map.of(
+                        "@id", "http://xmlns.com/foaf/0.1/project",
+                        "@type", "@id"),
+                "Person", "http://xmlns.com/foaf/0.1/Person",
+                "modified", Map.of(
+                        "@id", "https://schema.org/dateModified",
+                        "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
+            NativeAdapter.instance())))
+    .build();
 
-    Map<String, String> document = Map.of(
-            "@context", "urn:example:context",
-            "@type", "Person",
-            "name", "Filip Kolařík",
-            "project", "https://github.com/filip26/titanium-json-ld",
-            "modified", "2025-11-25T01:02:03Z");
+Map<String, String> document = Map.of(
+    "@context", "urn:example:context",
+    "@type", "Person",
+    "name", "Filip Kolařík",
+    "project", "https://github.com/filip26/titanium-json-ld",
+    "modified", "2025-11-25T01:02:03Z");
 
-    var writer = new StringWriter();
-    JsonLd.toRdf(document, new NQuadsWriter(writer), Options.with(loader));
-    
-    System.out.println(writer.toString());
-    // prints
-    // _:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-    // _:b0 <http://xmlns.com/foaf/0.1/name> "Filip Kolařík" .
-    // _:b0 <http://xmlns.com/foaf/0.1/project> <https://github.com/filip26/titanium-json-ld> .
-    // _:b0 <https://schema.org/dateModified> "2025-11-25T01:02:03Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+var writer = new StringWriter();
+JsonLd.toRdf(document, new NQuadsWriter(writer), Options.with(loader));
+
+System.out.println(writer.toString());
+// prints
+// _:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+// _:b0 <http://xmlns.com/foaf/0.1/name> "Filip Kolařík" .
+// _:b0 <http://xmlns.com/foaf/0.1/project> <https://github.com/filip26/titanium-json-ld> .
+// _:b0 <https://schema.org/dateModified> "2025-11-25T01:02:03Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
 
 ```
+
+## 🚀 Best Practices (v2.x.x)
+
 
 ## ⚙️ Installation
 
