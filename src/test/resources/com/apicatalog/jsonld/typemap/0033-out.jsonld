@@ -1,5 +1,4 @@
 {
-    "/created_at": "http://example.com/vocab#created_at",
-    "/homepage": "http://example.com/vocab#homepage",
-    "/name": "http://example.com/vocab#name"
+    "/created_at": "http://www.w3.org/2001/XMLSchema#date",
+    "/homepage": "@id"
 }

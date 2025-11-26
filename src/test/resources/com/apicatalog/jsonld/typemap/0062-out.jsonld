@@ -1,3 +1,16 @@
 {
-    "/links": "http://www.example.com/link"
+    "/": [
+        "http://example.com/some/deep/directory/and/link",
+        "http://example.com/some/deep/directory/and/file#fragment-works",
+        "http://example.com/some/deep/directory/and/file?query=works",
+        "http://example.com/some/deep/directory/and/",
+        "http://example.com/some/deep/directory/",
+        "http://example.com/some/deep/directory/parent",
+        "http://example.com/some/deep/parent-parent-eq-root",
+        "http://example.com/still-root",
+        "http://example.com/too-many-dots",
+        "http://example.com/absolute",
+        "http://example.org/scheme-relative"
+    ],
+    "/links": "@id"
 }

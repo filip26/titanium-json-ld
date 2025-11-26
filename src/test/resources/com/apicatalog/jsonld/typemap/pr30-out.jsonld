@@ -1,4 +1,6 @@
 {
-    "/id": "@id",
-    "/type": "@type"
+    "/": [
+        "http://example.org/ns/Bar",
+        "http://example.org/ns/Foo"
+    ]
 }

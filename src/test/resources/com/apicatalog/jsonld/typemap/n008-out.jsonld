@@ -1,4 +1,4 @@
 {
-    "/nest": "@nest",
-    "/p1": "http://example.org/p1"
+    "/nest/0": "http://example.org/T1",
+    "/nest/1": "http://example.org/T2"
 }

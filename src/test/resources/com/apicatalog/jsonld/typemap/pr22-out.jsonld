@@ -1,4 +1,5 @@
 {
-    "/foo/foo": "http://example.com/foo",
-    "/foo": "http://example.com/foo"
+    "/": "http://example.com/Parent",
+    "/foo": "http://example.com/Child",
+    "/foo/foo": "@id"
 }

@@ -1,4 +1,3 @@
 {
-    "/id": "@id",
-    "/type": "@type"
+    "/": "http://example/type"
 }

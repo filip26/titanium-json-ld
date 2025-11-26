@@ -1,5 +1,6 @@
 {
-    "/property/property/1/property": "http://example.com/vocab#property",
-    "/property/property": "http://example.com/vocab#property",
-    "/property": "http://example.com/vocab#property"
+    "/": "https://w3c.github.io/json-ld-api/tests/typemap/0060-in.jsonld#document-relative",
+    "/property": "http://example.org/test/#document-base-overwritten",
+    "/property/property/0": "https://w3c.github.io/json-ld-api/tests/typemap/0060-in.jsonld#document-relative",
+    "/property/property/1": "#document-relative"
 }

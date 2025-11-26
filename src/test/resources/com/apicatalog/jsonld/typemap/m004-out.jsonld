@@ -1,7 +1,4 @@
 {
-    "/typemap/_:bar": "@index",
-    "/typemap/_:bar/label": "http://example/label",
-    "/typemap/http:~1~1example.org~1foo": "@index",
-    "/typemap/http:~1~1example.org~1foo/label": "http://example/label",
-    "/typemap": "http://example/typemap"
+    "/typemap/_:bar": ["_:foo", "_:bar" ],
+    "/typemap/http:~1~1example.org~1foo": ["http://example.org/bar", "http://example.org/bar"]
 }

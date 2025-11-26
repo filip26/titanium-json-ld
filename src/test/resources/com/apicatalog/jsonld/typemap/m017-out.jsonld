@@ -1,4 +1,3 @@
 {
-    "/foo/bar": "@index",
-    "/foo": "http://example.org/ns/foo"
+    "/foo": "http://example.org/ns/bar"
 }

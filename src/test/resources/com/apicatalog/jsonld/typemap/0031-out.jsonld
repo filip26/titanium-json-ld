@@ -1,5 +1,5 @@
 {
-    "/ex:boolean": "http://example.org/vocab#boolean",
-    "/ex:double": "http://example.org/vocab#double",
-    "/ex:integer": "http://example.org/vocab#integer"
+    "/ex:boolean": "http://www.w3.org/2001/XMLSchema#boolean",
+    "/ex:double": "http://www.w3.org/2001/XMLSchema#double",
+    "/ex:integer": "http://www.w3.org/2001/XMLSchema#integer"
 }

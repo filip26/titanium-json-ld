@@ -1,4 +1,4 @@
 {
-    "/embed": "http://example.org/vocab#embed",
-    "/property": "http://example.org/vocab#property"
+    "/": "http://example.org/vocab#vocab-prefixed",
+    "/embed": "https://w3c.github.io/json-ld-api/tests/typemap/document-relative"
 }

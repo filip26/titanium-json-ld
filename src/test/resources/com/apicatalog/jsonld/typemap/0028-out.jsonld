@@ -1,5 +1,5 @@
 {
-    "/date": "http://example.org/vocab#date",
-    "/embed/expandedDate": "http://example.org/vocab#expandedDate",
-    "/embed": "http://example.org/vocab#embed"
+    "/": "http://example.org/vocab#test",
+    "/date": "http://example.org/vocab#dateTime",
+    "/embed/expandedDate": "http://example.org/vocab#dateTime"
 }

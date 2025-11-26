@@ -1,8 +1,6 @@
 {
-    "/author/guest": "@index",
-    "/author/guest/0/prop": "http://example.com/prop",
-    "/author/guest/1/prop": "http://example.com/prop",
-    "/author/regular": "@index",
-    "/author/regular/prop": "http://example.com/prop",
-    "/author": "http://example.com/author"
+    "/author": "@id",
+    "/author/guest/0/prop": "@vocab",
+    "/author/guest/1/prop": "@vocab",
+    "/author/regular/prop": "@vocab"
 }

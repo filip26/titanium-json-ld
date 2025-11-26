@@ -1,10 +1,10 @@
 {
-    "/datelist": "http://example.com/datelist",
-    "/dateprop": "http://example.com/dateprop",
-    "/dateprop2": "http://example.com/dateprop2",
-    "/dateset": "http://example.com/dateset",
-    "/idlist": "http://example.com/idlist",
-    "/idprop": "http://example.com/idprop",
-    "/idprop2": "http://example.com/idprop2",
-    "/idset": "http://example.com/idset"
+    "/datelist": "http://www.w3.org/2001/XMLSchema#date",
+    "/dateprop": "http://www.w3.org/2001/XMLSchema#date",
+    "/dateprop2": "http://www.w3.org/2001/XMLSchema#date",
+    "/dateset": "http://www.w3.org/2001/XMLSchema#date",
+    "/idlist": "@id",
+    "/idprop": "@id",
+    "/idprop2": "@id",
+    "/idset": "@id"
 }

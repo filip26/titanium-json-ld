@@ -1,4 +1,3 @@
 {
-    "/unprotected/protected": "ex:protected2",
-    "/unprotected": "ex:unprotected"
+    "/unprotected": "@id"
 }
