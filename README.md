@@ -20,7 +20,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### 📡 Status
 
-[![Java 17 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java17-build.yml)
+[![Java 21 CI](https://github.com/filip26/titanium-json-ld/actions/workflows/java21-build.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/java21-build.yml)
 [![CodeQL](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml/badge.svg)](https://github.com/filip26/titanium-json-ld/actions/workflows/codeql.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c530c6b43b0243c08ce81521c5b4cf6a)](https://app.codacy.com/gh/filip26/titanium-json-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
@@ -173,7 +173,7 @@ JsonLd.expand(document)
 Convert JSON-LD written in plain Java into RDF using a custom static document loader and a custom URI space.
 
 ```javascript
-static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
+static DocumentLoader loader = StaticLoader.newBuilder()
     .document(
         "urn:example:context",
         Document.of(new TreeIO(Map.of(
@@ -197,7 +197,11 @@ Map<String, String> document = Map.of(
     "modified", "2025-11-25T01:02:03Z");
 
 var writer = new StringWriter();
-JsonLd.toRdf(document, new NQuadsWriter(writer), Options.with(loader));
+
+JsonLd.toRdf(
+    document, 
+    new NQuadsWriter(writer), 
+    Options.with(loader));
 
 System.out.println(writer.toString());
 // prints
@@ -232,7 +236,7 @@ implementation("com.apicatalog:titanium-json-ld-jre8:1.7.0")
 ```
 
 > [!WARNING]
-> The upcoming **2.x version** is under active development and requires Java 17 or higher. 2.x milestone releases are provided for **testing and feedback purposes only** and **should not be used in production**.  
+> The upcoming **2.x version** is under active development and requires Java 21 or higher. 2.x milestone releases are provided for **testing and feedback purposes only** and **should not be used in production**.  
 >
 > Each milestone can introduce **breaking changes**.
 
@@ -288,7 +292,7 @@ Your support helps sustain development.
 Fork and clone the project repository.
 
 > [!NOTE]
-> **Version 2.0 is under active development!**  The new major version 2.0 requires Java 17 and is released in **milestones** before the final release.  
+> **Version 2.0 is under active development!**  The new major version 2.0 requires Java 21 and is released in **milestones** before the final release.  
 >
 > Each milestone can introduce **breaking changes** and is **intended only for testing**.
 
