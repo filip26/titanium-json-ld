@@ -83,26 +83,24 @@ public final class UriUtils {
     }
 
     public static final boolean isAbsoluteUri(final String uri, final UriValidationPolicy policy) {
-        switch (policy) {
-        case None:
-            return true;
-        case SchemeOnly:
-            return startsWithScheme(uri);
-        case Full:
-            if (uri == null
-                    || uri.length() < 3 // minimal form s(1):ssp(1)
-            ) {
-                return false;
-            } else {
-                try {
-                    return URI.create(uri).isAbsolute();
-                } catch (IllegalArgumentException e) {
-                    return false;
-                }
+        return switch (policy) {
+        case None -> true;
+
+        case SchemeOnly -> startsWithScheme(uri);
+
+        case Full -> {
+            if (uri == null || uri.length() < 3) { // minimal form s(1):ssp(1)
+                yield false;
             }
-        default:
-            return false;
+            try {
+                yield URI.create(uri).isAbsolute();
+            } catch (IllegalArgumentException e) {
+                yield false;
+            }
         }
+
+        default -> false;
+        };
 
     }
 
@@ -130,28 +128,29 @@ public final class UriUtils {
         return false;
     }
 
-    protected static final String recompose(final String scheme, final String authority, final String path, final String query, final String fragment) {
+    protected static final String recompose(
+            final String scheme, 
+            final String authority, 
+            final String path, 
+            final String query, 
+            final String fragment) {
 
-        final StringBuilder builder = new StringBuilder();
+        final var builder = new StringBuilder();
 
         if (scheme != null) {
-            builder.append(scheme);
-            builder.append(":");
+            builder.append(scheme).append(":");
         }
         if (authority != null) {
-            builder.append("//");
-            builder.append(authority);
+            builder.append("//").append(authority);
         }
         if (path != null) {
             builder.append(path);
         }
         if (query != null) {
-            builder.append('?');
-            builder.append(query);
+            builder.append('?').append(query);
         }
         if (fragment != null) {
-            builder.append('#');
-            builder.append(fragment);
+            builder.append('#').append(fragment);
         }
         return builder.toString();
     }

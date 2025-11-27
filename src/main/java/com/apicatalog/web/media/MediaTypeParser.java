@@ -51,9 +51,9 @@ final class MediaTypeParser {
     private MediaTypeParser() {
     }
 
-    public static MediaType parse(String mediaTypeString) {
+    public static MediaType parse(String lexicalValue) {
 
-        final var input = mediaTypeString.toCharArray();
+        final var input = lexicalValue.toCharArray();
         final var stringBuilder = new StringBuilder();
         final var params = new LinkedHashMap<String, List<String>>();
 

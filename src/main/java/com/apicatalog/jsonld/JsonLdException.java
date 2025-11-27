@@ -27,8 +27,8 @@ import java.util.Optional;
  */
 public final class JsonLdException extends Exception {
 
-    private static final long serialVersionUID = -7548366490116267200L;
-
+    private static final long serialVersionUID = 6891343596565067450L;
+    
     private final ErrorCode code;
     
     // a node that caused the exception, if any
@@ -40,7 +40,7 @@ public final class JsonLdException extends Exception {
      * @param code the error code (must not be {@code null})
      */
     public JsonLdException(ErrorCode code) {
-        super(Objects.requireNonNull(code, "code must not be null").description());
+        super(Objects.requireNonNull(code, "The error code must not be null").description());
         this.code = code;
     }
 
@@ -53,7 +53,7 @@ public final class JsonLdException extends Exception {
      */
     public JsonLdException(ErrorCode code, String message) {
         super(message);
-        this.code = Objects.requireNonNull(code, "code must not be null");
+        this.code = Objects.requireNonNull(code, "The error code must not be null");
     }
 
     /**
@@ -64,7 +64,7 @@ public final class JsonLdException extends Exception {
      * @param cause the cause of the exception
      */
     public JsonLdException(ErrorCode code, Throwable cause) {
-        super(Objects.requireNonNull(code, "code must not be null").description(), cause);
+        super(Objects.requireNonNull(code, "The error code must not be null").description(), cause);
         this.code = code;
     }
 
@@ -78,7 +78,7 @@ public final class JsonLdException extends Exception {
      */
     public JsonLdException(ErrorCode code, String message, Throwable cause) {
         super(message, cause);
-        this.code = Objects.requireNonNull(code, "code must not be null");
+        this.code = Objects.requireNonNull(code, "The error code must not be null");
     }
 
     /**

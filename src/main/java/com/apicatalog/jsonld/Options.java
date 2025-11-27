@@ -798,35 +798,6 @@ public final class Options {
         return useNumericId;
     }
 
-//    public Cache<String, JsonValue> getContextCache() {
-//        return contextCache;
-//    }
-//
-//    public void setContextCache(Cache<String, JsonValue> contextCache) {
-//        this.contextCache = contextCache;
-//    }
-//
-
-    /**
-     * Returns the cache used for storing retrieved remote documents.
-     *
-     * @return the document cache, or {@code null} if none is configured
-     */
-    public Cache<String, Document> getDocumentCache() {
-        return documentCache;
-    }
-
-    /**
-     * Sets the cache used to store retrieved remote documents.
-     *
-     * @param documentCache the cache to use, or {@code null} to disable caching
-     * @return this {@link Options} instance, for method chaining
-     */
-    public Options setDocumentCache(Cache<String, Document> documentCache) {
-        this.documentCache = documentCache;
-        return this;
-    }
-
     /**
      * Indicates whether the JSON-LD-star is enabled.
      *
@@ -930,21 +901,43 @@ public final class Options {
         return this;
     }
 
+    /**
+     * 
+     * @since 2.0.0
+     * 
+     */
     public boolean useInlineContexts() {
         return useInlineContexts;
     }
 
+    /**
+     * 
+     * @since 2.0.0
+     * 
+     */
     public Options useInlineContexts(boolean useInlineContext) {
         this.useInlineContexts = useInlineContext;
         return this;
     }
 
+    /**
+     * 
+     * @return the actual policy for dropped free floating nodes
+     * 
+     * @since 2.0.0
+     */
     public ProcessingPolicy droppedNodes() {
         return droppedNodes;
     }
 
-    public Options droppedNodes(ProcessingPolicy droppedNodes) {
-        this.droppedNodes = droppedNodes;
+    /**
+     * 
+     * @param the policy to apply when free floating nodes to drop appears
+     * 
+     * @since 2.0.0
+     */
+    public Options droppedNodes(ProcessingPolicy policy) {
+        this.droppedNodes = policy;
         return this;
     }
 }

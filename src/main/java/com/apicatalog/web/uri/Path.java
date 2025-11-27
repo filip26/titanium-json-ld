@@ -26,12 +26,16 @@ public record Path(
         String leaf,
         boolean relative) {
 
-    public static final Path EMPTY = new Path(null, null, true);
+    private static final Path EMPTY = new Path(null, null, true);
 
     private static final Pattern SEGMENTS_DEL_RE = Pattern.compile("/");
 
     public Path {
         segments = segments != null ? List.copyOf(segments) : List.of();
+    }
+
+    public static final Path empty() {
+        return EMPTY;
     }
 
     public static final Path of(final String path) {
@@ -130,8 +134,8 @@ public record Path(
         return (relative
                 ? ""
                 : "/")
-                .concat(String.join("/", segments))
-                .concat(segments.isEmpty() ? "" : "/")
-                .concat(leaf != null ? leaf : "");
+                + String.join("/", segments)
+                + (segments.isEmpty() ? "" : "/")
+                + (leaf != null ? leaf : "");
     }
 }
