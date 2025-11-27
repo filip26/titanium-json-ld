@@ -1,3 +1,7 @@
 {
-    "/foo": "http://example.org/foo"
+    "/": [
+        "http://example/t2",
+        "http://example/t1"
+    ],
+    "/foo": "@id"
 }

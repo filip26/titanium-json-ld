@@ -125,9 +125,9 @@ public final class JsonLdException extends Exception {
         CONTEXT_OVERFLOW("Maximum number of @context URLs exceeded"),
 
         /**
-         * A cycle in IRI mappings has been detected.
+         * A cycle in URI mappings has been detected.
          */
-        CYCLIC_IRI_MAPPING("A cycle in IRI mappings has been detected"),
+        CYCLIC_IRI_MAPPING("A cycle in URI mappings has been detected"),
 
         /**
          * An <code>@id</code> entry was encountered whose value was not a string.
@@ -188,10 +188,10 @@ public final class JsonLdException extends Exception {
         INVALID_BASE_DIRECTION("The value of @direction is not \"ltr\", \"rtl\", or null and thus invalid"),
 
         /**
-         * An invalid base IRI has been detected, i.e., it is neither an IRI nor
+         * An invalid base URI has been detected, i.e., it is neither an URI nor
          * <code>null</code>.
          */
-        INVALID_BASE_IRI("An invalid base IRI has been detected"),
+        INVALID_BASE_IRI("An invalid base URI has been detected"),
 
         /**
          * An <code>@container</code> entry was encountered whose value was not one of
@@ -219,9 +219,9 @@ public final class JsonLdException extends Exception {
         INVALID_DEFAULT_LANGUAGE("The value of the default language is not a string or null and thus invalid"),
 
         /**
-         * A local context contains a term that has an invalid or missing IRI mapping.
+         * A local context contains a term that has an invalid or missing URI mapping.
          */
-        INVALID_IRI_MAPPING("A local context contains a term that has an invalid or missing IRI mapping"),
+        INVALID_IRI_MAPPING("A local context contains a term that has an invalid or missing URI mapping"),
 
         /**
          * An invalid JSON literal was detected.
@@ -306,9 +306,9 @@ public final class JsonLdException extends Exception {
 
         /**
          * An <code>@type</code> entry in a term definition was encountered whose value
-         * could not be expanded to an IRI.
+         * could not be expanded to an URI.
          */
-        INVALID_TYPE_MAPPING("An @type entry in a term definition was encountered whose value could not be expanded to an IRI"),
+        INVALID_TYPE_MAPPING("An @type entry in a term definition was encountered whose value could not be expanded to an URI"),
 
         /**
          * An invalid value for an <code>@type</code> entry has been detected, i.e., the
@@ -333,17 +333,17 @@ public final class JsonLdException extends Exception {
         INVALID_VALUE_OBJECT("A value object with disallowed entries has been detected"),
 
         /**
-         * An invalid vocabulary mapping has been detected, i.e., it is neither an IRI
+         * An invalid vocabulary mapping has been detected, i.e., it is neither an URI
          * nor <code>null</code>.
          */
         INVALID_VOCAB_MAPPING("An invalid vocabulary mapping has been detected"),
 
         /**
-         * When compacting an IRI would result in an IRI which could be confused with a
-         * compact IRI (because its IRI scheme matches a term definition and it has no
-         * IRI authority).
+         * When compacting an URI would result in an URI which could be confused with a
+         * compact URI (because its URI scheme matches a term definition and it has no
+         * URI authority).
          */
-        IRI_CONFUSED_WITH_PREFIX("When compacting an IRI would result in an IRI which could be confused with a compact IRI"),
+        IRI_CONFUSED_WITH_PREFIX("When compacting an URI would result in an URI which could be confused with a compact URI"),
 
         /**
          * A keyword redefinition has been detected.

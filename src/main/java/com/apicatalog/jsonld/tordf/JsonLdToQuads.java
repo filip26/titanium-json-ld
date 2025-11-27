@@ -248,7 +248,7 @@ public final class JsonLdToQuads {
 
         // 6.
         if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
-            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
+            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute URI nor @json and value is skipped.", datatype);
             return;
         }
 

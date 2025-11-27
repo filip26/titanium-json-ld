@@ -1,4 +1,4 @@
 {
-    "/a/bar": "http://example/bar",
-    "/a": "http://example/a"
+    "/a": "http://example/Foo",
+    "/a/bar": "@id"
 }

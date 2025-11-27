@@ -1,5 +1,3 @@
 {
-    "/a/bar": "http://example.org/bar",
-    "/a/type": "@type",
-    "/a": "http://example/a"
+    "/a": "http://example/Foo"
 }

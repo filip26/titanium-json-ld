@@ -45,7 +45,7 @@ interface RdfTripleConsumer {
      * Sets a named graph as the active scope. Ensures that subsequent triples are
      * associated with the specified graph.
      * 
-     * @param graph The name of the graph (IRI or blank node identifier prefixed
+     * @param graph The name of the graph (URI or blank node identifier prefixed
      *              with "_:"); never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
@@ -56,13 +56,13 @@ interface RdfTripleConsumer {
     RdfTripleConsumer namedGraph(String graph) throws RdfConsumerException;
 
     /**
-     * Accepts an RDF triple where the object is an IRI or a blank node. The triple
+     * Accepts an RDF triple where the object is an URI or a blank node. The triple
      * is processed within the currently active graph scope.
      * 
-     * @param subject   The subject of the triple (IRI or blank node identifier
+     * @param subject   The subject of the triple (URI or blank node identifier
      *                  prefixed with "_:"); never {@code null}.
-     * @param predicate The predicate of the triple (IRI); never {@code null}.
-     * @param object    The object of the triple (IRI or blank node identifier
+     * @param predicate The predicate of the triple (URI); never {@code null}.
+     * @param object    The object of the triple (URI or blank node identifier
      *                  prefixed with "_:"); never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
@@ -80,11 +80,11 @@ interface RdfTripleConsumer {
      * Optimized for efficient handling of typed literals. The triple is processed
      * within the currently active graph scope.
      * 
-     * @param subject   The subject of the triple (IRI or blank node identifier
+     * @param subject   The subject of the triple (URI or blank node identifier
      *                  prefixed with "_:"); never {@code null}.
-     * @param predicate The predicate of the triple (IRI); never {@code null}.
+     * @param predicate The predicate of the triple (URI); never {@code null}.
      * @param literal   The literal value of the object; never {@code null}.
-     * @param datatype  The datatype IRI of the literal; never {@code null}.
+     * @param datatype  The datatype URI of the literal; never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
      * 
@@ -102,9 +102,9 @@ interface RdfTripleConsumer {
      * for efficient handling of language-tagged literals. The triple is processed
      * within the currently active graph scope.
      * 
-     * @param subject   The subject of the triple (IRI or blank node identifier
+     * @param subject   The subject of the triple (URI or blank node identifier
      *                  prefixed with "_:"); never {@code null}.
-     * @param predicate The predicate of the triple (IRI); never {@code null}. 
+     * @param predicate The predicate of the triple (URI); never {@code null}. 
      * @param literal   The literal value of the object; never {@code null}.
      * @param language  The language tag of the literal; never {@code null}.
      * @param direction The text direction of the literal (optional, may be

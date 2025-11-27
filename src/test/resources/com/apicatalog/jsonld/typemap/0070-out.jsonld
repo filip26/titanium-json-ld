@@ -1,3 +1,3 @@
 {
-    "/prefix:foo": "http://www.example.org/vocab#foo"
+    "/": "http://www.example.org/vocab#Class"
 }

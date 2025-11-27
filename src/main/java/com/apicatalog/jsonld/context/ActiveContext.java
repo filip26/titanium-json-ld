@@ -41,7 +41,7 @@ public final class ActiveContext implements Context {
 
     private Version version;
 
-    // the current base IRI
+    // the current base URI
     private URI baseUri;
 
     // the original base URL

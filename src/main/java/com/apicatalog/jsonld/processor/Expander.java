@@ -113,11 +113,11 @@ public final class Expander {
             final Options options,
             final Execution runtime) throws JsonLdException {
 
-        // 5. Initialize a new empty active context. The base IRI and
+        // 5. Initialize a new empty active context. The base URI and
         // original base URL of the active context is set to the documentUrl
         // from remote document, if available; otherwise to the base option from
         // options.
-        // If set, the base option from options overrides the base IRI.
+        // If set, the base option from options overrides the base URI.
         URI baseUrl = baseUrl(document, options);
         URI baseUri = document;
 

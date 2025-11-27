@@ -1,7 +1,3 @@
 {
-    "/foo": "http://example.org/foo",
-    "/p/foo": "http://example.com/foo",
-    "/p/nested/nested-prop": "http://example.org/nested-prop",
-    "/p/nested": "http://example.com/nested",
-    "/p": "http://example.org/p"
+    "/p": "http://example.org/Type"
 }

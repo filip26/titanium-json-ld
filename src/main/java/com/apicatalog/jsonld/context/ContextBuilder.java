@@ -163,7 +163,7 @@ public final class ContextBuilder {
                 }
 
                 // 5.1.2. Initialize result as a newly-initialized active context, setting both
-                // base IRI and original base URL to the value of original base URL in active
+                // base URI and original base URL to the value of original base URL in active
                 // context, and, if propagate is false, previous context in result to the
                 // previous value of result.
                 result = propagate
@@ -372,18 +372,18 @@ public final class ContextBuilder {
                                     new Object[] { valueString, contextValue, baseUrl });
 
                             throw new JsonLdException(ErrorCode.INVALID_BASE_IRI,
-                                    "A relative base IRI cannot be resolved, @base=" + valueString +
-                                            ". Use Options.setBase() method to set an absolute IRI.");
+                                    "A relative base URI cannot be resolved, @base=" + valueString +
+                                            ". Use Options.setBase() method to set an absolute URI.");
                         }
 
                     } else if (valueString != null && !valueString.isBlank()) {
                         throw new JsonLdException(ErrorCode.INVALID_BASE_IRI,
-                                "An invalid base IRI has been detected, @base=" + valueString);
+                                "An invalid base URI has been detected, @base=" + valueString);
                     }
 
                 } else {
                     throw new JsonLdException(ErrorCode.INVALID_BASE_IRI,
-                            "An invalid base IRI has been detected, @base=" + baseValue);
+                            "An invalid base URI has been detected, @base=" + baseValue);
                 }
             }
 

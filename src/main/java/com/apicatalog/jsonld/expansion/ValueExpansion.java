@@ -50,7 +50,7 @@ public final class ValueExpansion {
      * @return A {@code Map} representing the expanded value object, typically
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
      *         {@code @language}, or {@code @direction}.
-     * @throws JsonLdException If an error occurs during IRI expansion.
+     * @throws JsonLdException If an error occurs during URI expansion.
      * 
      * @see <a href="https://www.w3.org/TR/json-ld11-api/#value-expansion">Value
      *      Expansion Algorithm</a>

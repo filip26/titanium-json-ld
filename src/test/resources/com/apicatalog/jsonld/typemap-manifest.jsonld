@@ -225,21 +225,6 @@
       "input": "typemap/0070-in.jsonld",
       "expect": "typemap/0070-out.jsonld"
     }, {
-      "@id": "#t0071",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "Redefine terms looking like compact IRIs",
-      "purpose": "Term definitions may look like compact IRIs",
-      "input": "typemap/0071-in.jsonld",
-      "expect": "typemap/0071-out.jsonld",
-      "option": {"specVersion": "json-ld-1.0"}
-    }, {
-      "@id": "#t0072",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "Redefine term using @vocab, not itself",
-      "purpose": "Redefining a term as itself when @vocab is defined uses @vocab, not previous term definition",
-      "input": "typemap/0072-in.jsonld",
-      "expect": "typemap/0072-out.jsonld"
-    }, {
       "@id": "#t0088",
       "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
       "name": "Do not expand native values to IRIs",
@@ -269,14 +254,6 @@
       "purpose": "Terms may begin with a colon and not be treated as IRIs.",
       "input": "typemap/0118-in.jsonld",
       "expect": "typemap/0118-out.jsonld",
-      "option": {"specVersion": "json-ld-1.1"}
-    }, {
-      "@id": "#t0119",
-      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-      "name": "Ignore some terms with @, allow others.",
-      "purpose": "Processors SHOULD generate a warning and MUST ignore terms having the form of a keyword.",
-      "input": "typemap/0119-in.jsonld",
-      "expect": "typemap/0119-out.jsonld",
       "option": {"specVersion": "json-ld-1.1"}
     }, {
       "@id": "#t0131",

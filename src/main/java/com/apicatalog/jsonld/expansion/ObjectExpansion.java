@@ -158,7 +158,7 @@ public final class ObjectExpansion {
         // If from map is undefined or false, and element does not contain an entry
         // expanding to @value,
         // and element does not consist of a single entry expanding to @id (where
-        // entries are IRI expanded),
+        // entries are URI expanded),
         // set active context to previous context from active context,
         // as the scope of a term-scoped context does not apply when processing new node
         // objects.
@@ -271,7 +271,7 @@ public final class ObjectExpansion {
         // element
         // expanding to @type (if any), ordering entries lexicographically by key. Both
         // the key and
-        // value of the matched entry are IRI expanded.
+        // value of the matched entry are URI expanded.
         if (typeKey != null) {
 
             final var type = adapter.property(typeKey, element);

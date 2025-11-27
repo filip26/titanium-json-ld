@@ -1,6 +1,3 @@
 {
-    "/p/nestedNode/foo": "http://example/foo",
-    "/p/nestedNode": "http://example/nestedNode",
-    "/p/subjectReference": "http://example/subjectReference",
-    "/p": "http://example/p"
+    "/p": "http://example/Type"
 }

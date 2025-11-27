@@ -1,4 +1,6 @@
 {
-    "/type1": "@type",
-    "/type2": "@type"
+    "/": [
+        "http://example.org/Type1",
+        "http://example.org/Type2"
+    ]
 }

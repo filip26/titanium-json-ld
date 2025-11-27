@@ -1,6 +1,4 @@
 {
-    "/type": "@type",
-    "/v/type": "@type",
-    "/v/value": "@value",
-    "/v": "http://example/v"
+    "/": "http://example/Type",
+    "/v": "http://example/value-type"
 }

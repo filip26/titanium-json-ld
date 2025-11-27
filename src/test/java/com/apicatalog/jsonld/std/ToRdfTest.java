@@ -50,7 +50,7 @@ public class ToRdfTest {
 
         // blank nodes as predicates are not supported - wont'fix
         assumeFalse("#te075".equals(testCase.id));
-        // invalid IRI/URI are not accepted - wont'fix
+        // invalid URI are not accepted - wont'fix
         assumeFalse("#tli12".equals(testCase.id));
 
         assertTrue(new JunitRunner(testCase).execute());

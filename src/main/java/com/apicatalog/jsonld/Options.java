@@ -98,8 +98,8 @@ public final class Options {
     private DocumentLoader loader;
 
     /**
-     * The base IRI to use when expanding or compacting the document. If set, this
-     * overrides the input document's IRI.
+     * The base URI to use when expanding or compacting the document. If set, this
+     * overrides the input document's URI.
      */
     private URI base;
 
@@ -111,7 +111,7 @@ public final class Options {
     private boolean compactArrays;
 
     /**
-     * Determines if IRIs are compacted relative to the base option or document
+     * Determines if URIs are compacted relative to the base option or document
      * location when compacting.
      */
     private boolean compactToRelative;
@@ -280,9 +280,9 @@ public final class Options {
     }
 
     /**
-     * The base IRI to use when expanding or
+     * The base URI to use when expanding or
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a> the
-     * document. If set, this overrides the input document's IRI.
+     * document. If set, this overrides the input document's URI.
      *
      * @return the base URI or <code>null</code>
      */
@@ -304,11 +304,11 @@ public final class Options {
     }
 
     /**
-     * Determines if IRIs are compacted relative to the {@link #base()} option or
+     * Determines if URIs are compacted relative to the {@link #base()} option or
      * document location when
      * <a href="https://www.w3.org/TR/json-ld11-api/#dfn-compact">compacting</a>.
      *
-     * @return <code>true</code> if IRI relativization is enabled
+     * @return <code>true</code> if URI relativization is enabled
      */
     public boolean isCompactToRelative() {
         return compactToRelative;
@@ -363,7 +363,7 @@ public final class Options {
 
     /**
      * Indicates if the processor is configured to convert the data into generalized
-     * RDF, which permits subjects or objects that are not strict IRIs or Literals.
+     * RDF, which permits subjects or objects that are not strict URIs or Literals.
      *
      * @return <code>true</code> if generalized RDF is enabled.
      */
@@ -423,9 +423,9 @@ public final class Options {
     }
 
     /**
-     * Sets the base IRI to use when expanding or compacting a document.
+     * Sets the base URI to use when expanding or compacting a document.
      *
-     * @param base the base IRI as a {@link URI}, or {@code null} to clear it
+     * @param base the base URI as a {@link URI}, or {@code null} to clear it
      * @return this {@link Options} instance, for method chaining
      */
     public Options base(URI base) {
@@ -434,14 +434,14 @@ public final class Options {
     }
 
     /**
-     * Sets the base IRI to use when expanding or compacting a document.
+     * Sets the base URI to use when expanding or compacting a document.
      *
      * <p>
      * This is a convenience method equivalent to {@link #base(URI)}, using
      * {@link URI#create(String)} to construct the URI.
      * </p>
      *
-     * @param base the base IRI as a string
+     * @param base the base URI as a string
      * @return this {@link Options} instance, for method chaining
      * @throws IllegalArgumentException if the given string violates {@link URI}
      *                                  syntax rules
@@ -469,7 +469,7 @@ public final class Options {
     }
 
     /**
-     * Sets whether IRIs are compacted relative to the base IRI or document location
+     * Sets whether URIs are compacted relative to the base URI or document location
      * during compaction.
      *
      * @param compactToRelative {@code true} to enable relative compaction;
@@ -532,7 +532,7 @@ public final class Options {
 
     /**
      * Sets whether the processor produces generalized RDF, which allows subjects or
-     * objects that are not IRIs or literals (for example, blank nodes as
+     * objects that are not URIs or literals (for example, blank nodes as
      * predicates).
      * 
      * <p>

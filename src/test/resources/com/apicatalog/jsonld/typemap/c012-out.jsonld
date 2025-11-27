@@ -1,4 +1,4 @@
 {
-    "/bar/baz": "http://example/baz",
-    "/bar": "http://example/bar"
+    "/": "http://example/Foo",
+    "/bar/baz": "@vocab"
 }

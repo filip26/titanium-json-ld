@@ -51,7 +51,7 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * </p>
  * 
  * <pre>{@code
- * String expandedIri = UriExpansion
+ * String expanded = UriExpansion
  *         .with(activeContext)
  *         .vocab(true)
  *         .expand("myTerm");
@@ -94,7 +94,7 @@ public final class UriExpansion {
 
     /**
      * Creates a new {@link UriExpansion} instance for the given active context.
-     * This is the entry point for configuring and executing an IRI expansion.
+     * This is the entry point for configuring and executing an URI expansion.
      *
      * @param activeContext the active context to use for expansion
      * @param loader
@@ -109,12 +109,12 @@ public final class UriExpansion {
     }
 
     /**
-     * Performs IRI expansion on a string value according to the configured
+     * Performs URI expansion on a string value according to the configured
      * parameters.
      *
-     * @param value the string to expand (e.g., a term, compact IRI, or absolute
-     *              IRI)
-     * @return the fully expanded IRI as a {@link String}, or {@code null} if the
+     * @param value the string to expand (e.g., a term, compact URI, or absolute
+     *              URI)
+     * @return the fully expanded URI as a {@link String}, or {@code null} if the
      *         value has an invalid keyword-like form
      * @throws JsonLdException if an error occurs during context processing
      */
@@ -140,9 +140,9 @@ public final class UriExpansion {
                 .filter(term -> vocab || Keywords.contains(term.getUriMapping()));
 
         // 4. if active context has a term definition for value,
-        // and the associated IRI mapping is a keyword, return that keyword.
+        // and the associated URI mapping is a keyword, return that keyword.
         // 5. If vocab is true and the active context has a term definition for value,
-        // return the associated IRI mapping
+        // return the associated URI mapping
         if (definition.isPresent()) {
             return definition.get().getUriMapping();
         }
@@ -150,14 +150,14 @@ public final class UriExpansion {
         String result = value;
 
         // 6. If value contains a colon (:) anywhere after the first character, it is
-        // a compact IRI, or a blank node identifier
+        // a compact URI, or a blank node identifier
         final int splitIndex = result.indexOf(':', 1);
 
         if (splitIndex != -1) {
             // 6.1. Split value into a prefix and suffix
             // at the first occurrence of a colon (:).
             // 6.2. If prefix is underscore (_) or suffix begins with double-forward-slash
-            // (//), return value as it is already an IRI or a blank node identifier.
+            // (//), return value as it is already an URI or a blank node identifier.
             if ((splitIndex == 1 && result.charAt(0) == '_')
                     || (((splitIndex + 2) < result.length())
                             && result.charAt(splitIndex + 1) == '/'
@@ -182,7 +182,7 @@ public final class UriExpansion {
     }
 
     /**
-     * Sets the {@code documentRelative} flag. If {@code true}, relative IRIs are
+     * Sets the {@code documentRelative} flag. If {@code true}, relative URIs are
      * resolved against the document's base URI.
      *
      * @param value the new value for the {@code documentRelative} flag
@@ -242,7 +242,7 @@ public final class UriExpansion {
     }
 
     /**
-     * Implements step 3 of the IRI Expansion algorithm. If a local context exists,
+     * Implements step 3 of the URI Expansion algorithm. If a local context exists,
      * this method ensures a term definition is created for the given value if it's
      * defined in that context.
      *
@@ -285,13 +285,13 @@ public final class UriExpansion {
     }
 
     /**
-     * Implements steps 6.3 and 6.4 of the IRI Expansion algorithm. This method
-     * handles the expansion of a potential compact IRI (prefix:suffix).
+     * Implements steps 6.3 and 6.4 of the URI Expansion algorithm. This method
+     * handles the expansion of a potential compact URI (prefix:suffix).
      *
-     * @param prefix the prefix part of the compact IRI
-     * @param suffix the suffix part of the compact IRI
+     * @param prefix the prefix part of the compact URI
+     * @param suffix the suffix part of the compact URI
      * @param result the original value, to be returned if expansion fails
-     * @return the expanded IRI or the original result
+     * @return the expanded URI or the original result
      * @throws JsonLdException if an error occurs during term creation
      */
     private String initPropertyContext(
@@ -313,7 +313,7 @@ public final class UriExpansion {
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its
-        // IRI mapping.
+        // URI mapping.
         return activeContext.findTerm(prefix)
                 .filter(TermDefinition::isPrefix)
                 .map(TermDefinition::getUriMapping)
@@ -322,11 +322,11 @@ public final class UriExpansion {
     }
 
     /**
-     * Implements steps 7-9 of the IRI Expansion algorithm. Applies vocabulary
+     * Implements steps 7-9 of the URI Expansion algorithm. Applies vocabulary
      * mapping or document-relative resolution as a final step.
      *
-     * @param result the IRI to be finalized
-     * @return the finalized, expanded IRI
+     * @param result the URI to be finalized
+     * @return the finalized, expanded URI
      */
     private String expandResult(final String result) {
         // 7. If vocab is true, and active context has a vocabulary mapping,
