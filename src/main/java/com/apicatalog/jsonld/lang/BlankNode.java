@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.Arrays;
 import java.util.function.IntPredicate;
 
 public final class BlankNode {
@@ -88,6 +87,12 @@ public final class BlankNode {
             return true;
         }
 
-        return Arrays.stream(chars, 3, chars.length - 1).allMatch(PN_CHARS.or(ch -> ch == '.'));
+        for (int i = 3; i < chars.length; i++) {
+            if (PN_CHARS.test(chars[i]) || chars[i] == '.') {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 }

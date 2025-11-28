@@ -30,21 +30,22 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.loader.HttpLoader.Client;
 
-final class NativeHttpClient implements HttpLoaderClient {
+final class JavaHttpClient implements HttpLoader.Client {
 
     private final HttpClient httpClient;
 
     private Duration timeout;
     private Collection<Entry<String, String>> headers;
 
-    NativeHttpClient(final HttpClient httpClient) {
+    JavaHttpClient(final HttpClient httpClient) {
         this.httpClient = httpClient;
         this.timeout = null;
         this.headers = null;
     }
 
-    public HttpLoaderClient.Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException {
+    public HttpLoader.Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException {
 
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
@@ -75,18 +76,18 @@ final class NativeHttpClient implements HttpLoaderClient {
     }
 
     @Override
-    public HttpLoaderClient timeout(Duration timeout) {
+    public Client timeout(Duration timeout) {
         this.timeout = timeout;
         return this;
     }
 
     @Override
-    public HttpLoaderClient headers(Collection<Entry<String, String>> headers) {
+    public Client headers(Collection<Entry<String, String>> headers) {
         this.headers = headers;
         return this;
     }
 
-    private static class HttpResponseImpl implements HttpLoaderClient.Response {
+    private static class HttpResponseImpl implements HttpLoader.Response {
 
         private final HttpResponse<InputStream> response;
 

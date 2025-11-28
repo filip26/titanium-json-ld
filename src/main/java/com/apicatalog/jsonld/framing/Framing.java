@@ -26,7 +26,7 @@ import java.util.Set;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 /**
@@ -244,7 +244,7 @@ public final class Framing {
                     }
 
                     // 4.7.3.1.
-                    if (item instanceof Map itemMap && LdAdapter.isList(itemMap)) {
+                    if (item instanceof Map itemMap && JsonLdAdapter.isList(itemMap)) {
 
                         Object listFrameValue = null;
 
@@ -270,7 +270,7 @@ public final class Framing {
                         for (final var listItem : NativeAdapter.asCollection(itemMap.get(Keywords.LIST))) {
 
                             // 4.7.3.1.1.
-                            if (LdAdapter.isReference(listItem)) {
+                            if (JsonLdAdapter.isReference(listItem)) {
 
                                 FramingState listState = new FramingState(state);
                                 listState.setEmbedded(true);
@@ -301,9 +301,9 @@ public final class Framing {
                             }
                         }
 
-                        LdAdapter.setOrAdd(output, property, Map.of(Keywords.LIST, list));
+                        JsonLdAdapter.setOrAdd(output, property, Map.of(Keywords.LIST, list));
 
-                    } else if (LdAdapter.isReference(item)) {
+                    } else if (JsonLdAdapter.isReference(item)) {
 
                         FramingState clonedState = new FramingState(state);
                         clonedState.setEmbedded(true);
@@ -320,14 +320,14 @@ public final class Framing {
                                 .ordered(ordered)
                                 .frame();
 
-                    } else if (item instanceof Map itemMap && LdAdapter.isValueNode(itemMap)) {
+                    } else if (item instanceof Map itemMap && JsonLdAdapter.isValueNode(itemMap)) {
 
                         if (Frame.of(subframe).matchValue(item)) {
-                            LdAdapter.setOrAdd(output, property, item);
+                            JsonLdAdapter.setOrAdd(output, property, item);
                         }
 
                     } else {
-                        LdAdapter.setOrAdd(output, property, item);
+                        JsonLdAdapter.setOrAdd(output, property, item);
                     }
                 }
             }
@@ -362,7 +362,7 @@ public final class Framing {
                     defaultValue = Keywords.NULL;
                 }
 
-                LdAdapter.setOrAdd(output, property, Map.of(Keywords.PRESERVE, defaultValue));
+                JsonLdAdapter.setOrAdd(output, property, Map.of(Keywords.PRESERVE, defaultValue));
             }
 
             // 4.7.5. - reverse properties
@@ -402,7 +402,7 @@ public final class Framing {
                                 output.put(Keywords.REVERSE, reverse);
                             }
 
-                            LdAdapter.setOrAdd(
+                            JsonLdAdapter.setOrAdd(
                                     reverse,
                                     (String) reverseEntry.getKey(),
                                     reverseResult.values());
@@ -424,6 +424,6 @@ public final class Framing {
             result.put(Integer.toHexString(result.size()), value);
             return;
         }
-        LdAdapter.setOrAdd(result, property, value);
+        JsonLdAdapter.setOrAdd(result, property, value);
     }
 }

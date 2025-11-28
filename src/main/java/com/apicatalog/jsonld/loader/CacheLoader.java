@@ -16,6 +16,8 @@
 package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
@@ -126,5 +128,40 @@ public final class CacheLoader implements DocumentLoader {
         void put(final K key, V value);
 
         int size();
+    }
+    
+    public static final class LruCache<K, V> implements CacheLoader.Cache<K, V> {
+
+        private final Map<K, V> cache;
+
+        public LruCache(final int maxCapacity) {
+            this.cache = new LinkedHashMap<K, V>((int) (maxCapacity / 0.75 + 1), 0.75f, true) {
+                
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                    return this.size() > maxCapacity;
+                }
+            };
+        }
+
+        @Override
+        public boolean containsKey(final K key) {
+            return cache.containsKey(key);
+        }
+
+        @Override
+        public V get(final K key) {
+            return cache.get(key);
+        }
+
+        @Override
+        public void put(final K key, V value) {
+            cache.put(key, value);
+        }
+
+        @Override
+        public int size() {
+            return cache.size();
+        }
     }
 }

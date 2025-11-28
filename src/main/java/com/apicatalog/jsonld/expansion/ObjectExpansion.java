@@ -26,7 +26,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -306,7 +306,7 @@ public final class ObjectExpansion {
             final boolean frameExpansion) throws JsonLdException {
 
         // 15.1.
-        if (LdAdapter.isNotValueNode(result)) {
+        if (JsonLdAdapter.isNotValueNode(result)) {
             throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT);
         }
 
@@ -392,7 +392,7 @@ public final class ObjectExpansion {
                 && ((activeProperty == null || activeProperty.isBlank())
                         || Keywords.GRAPH.equals(activeProperty)
                         || Keywords.INCLUDED.equals(activeProperty)
-                        || !LdAdapter.isAnnotation(result.get(Keywords.ANNOTATION)))) {
+                        || !JsonLdAdapter.isAnnotation(result.get(Keywords.ANNOTATION)))) {
             throw new JsonLdException(ErrorCode.INVALID_ANNOTATION);
         }
 

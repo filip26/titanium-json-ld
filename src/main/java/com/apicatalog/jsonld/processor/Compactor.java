@@ -165,7 +165,7 @@ public final class Compactor {
             if (col.isEmpty()) {
                 return Map.of();
 
-            } else if (!TreeIO.isEmptyOrNull(contextSource)) {
+            } else if (!contextSource.isEmptyOrNull()) {
                 return Map.of(
                         Keywords.CONTEXT,
                         contextSource,

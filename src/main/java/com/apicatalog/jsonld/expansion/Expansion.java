@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.NodeType;
@@ -293,7 +293,7 @@ public final class Expansion {
                             .map(TermDefinition::getContainerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-                expanded = LdAdapter.toList(list);
+                expanded = JsonLdAdapter.toList(list);
             }
 
             // 5.2.3

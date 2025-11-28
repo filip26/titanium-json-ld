@@ -29,7 +29,7 @@ import com.apicatalog.web.uri.UriUtils;
 /**
  * @since 2.0.0
  */
-public class LdAdapter {
+public class JsonLdAdapter {
 
     private static final Set<String> GRAPH_ALLOWED_KEYS = Set.of(
             Keywords.GRAPH,

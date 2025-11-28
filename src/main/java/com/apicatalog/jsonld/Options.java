@@ -21,7 +21,6 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.lang.Embed;
-import com.apicatalog.jsonld.loader.CacheLoader.Cache;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads.RdfJsonLiteralWriter;
@@ -161,12 +160,6 @@ public final class Options {
     // allows inline contexts
     private boolean useInlineContexts;
 
-    // context cache
-//    private Cache<String, JsonValue> contextCache;
-
-    // document cache
-    private Cache<String, Document> documentCache;
-
     private UriValidationPolicy uriValidation;
 
     private Duration timeout;
@@ -205,8 +198,6 @@ public final class Options {
         // custom
         this.useNumericId = DEFAULT_NUMERIC_ID;
         this.useInlineContexts = DEFAULT_INLINE_CONTEXTS;
-//        this.contextCache = new LruCache<>(256);
-        this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
         this.timeout = null;
         this.undefinedTerms = ProcessingPolicy.Ignore;
@@ -241,8 +232,6 @@ public final class Options {
         // custom
         this.useNumericId = options.useNumericId;
         this.useInlineContexts = options.useInlineContexts;
-//        this.contextCache = options.contextCache;
-        this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
         this.timeout = options.timeout;
         this.undefinedTerms = options.undefinedTerms;
@@ -921,6 +910,8 @@ public final class Options {
     }
 
     /**
+     * A processing policy on how proceed with dropped free floating nodes during
+     * expansion.
      * 
      * @return the actual policy for dropped free floating nodes
      * 

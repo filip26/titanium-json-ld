@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
@@ -214,7 +214,7 @@ public final class JsonLdToQuads {
             final String predicate) throws JsonLdException, RdfConsumerException {
 
         // 1. - 2.
-        if (LdAdapter.isNode(item)) {
+        if (JsonLdAdapter.isNode(item)) {
 
             if (item.get(Keywords.ID) instanceof String idString
                     && (BlankNode.isWellFormed(idString)
@@ -226,7 +226,7 @@ public final class JsonLdToQuads {
         }
 
         // 3.
-        if (LdAdapter.isList(item)) {
+        if (JsonLdAdapter.isList(item)) {
 
             @SuppressWarnings("unchecked")
             final var list = (Collection<Map<String, Object>>) item.get(Keywords.LIST);
@@ -235,7 +235,7 @@ public final class JsonLdToQuads {
         }
 
         // 4.
-        if (!LdAdapter.isValueNode(item)) {
+        if (!JsonLdAdapter.isValueNode(item)) {
             return;
         }
 

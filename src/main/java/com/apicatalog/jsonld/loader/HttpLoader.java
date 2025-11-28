@@ -15,7 +15,9 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -51,13 +53,13 @@ import com.apicatalog.web.uri.UriResolver;
  * </p>
  *
  * <p>
- * The loader uses a configurable {@link HttpLoaderClient} to send HTTP requests
- * and a {@link TreeParser} to parse the retrieved content into {@link Document}
+ * The loader uses a configurable {@link Client} to send HTTP requests and a
+ * {@link TreeParser} to parse the retrieved content into {@link Document}
  * instances.
  * </p>
  *
  * @see DocumentLoader
- * @see HttpLoaderClient
+ * @see Client
  * @see TreeParser
  */
 public class HttpLoader implements DocumentLoader {
@@ -90,6 +92,7 @@ public class HttpLoader implements DocumentLoader {
             && (MediaType.JSON_LD.match(contentType)
                     || MediaType.JSON.match(contentType)
                     || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));
+
     /**
      * Default vendor headers added to every HTTP request.
      * 
@@ -105,26 +108,28 @@ public class HttpLoader implements DocumentLoader {
      */
     public static final int MAX_REDIRECTIONS = 10;
 
-    private final int maxRedirections;
-
-    private final HttpLoaderClient client;
+    private final Client client;
 
     private final TreeParser parser;
 
     private Predicate<MediaType> acceptContent;
+    private int maxRedirections;
 
     /**
      * Constructs a new {@link HttpLoader}.
      *
-     * @param httpClient      the HTTP client used for network requests
-     * @param parser          the parser for decoding JSON documents
-     * @param maxRedirections the maximum number of HTTP redirects to follow
+     * @param httpClient the HTTP client used for network requests
+     * @param parser     the parser for decoding JSON documents
      */
-    protected HttpLoader(HttpLoaderClient httpClient, TreeParser parser, int maxRedirections) {
+    protected HttpLoader(Client httpClient, TreeParser parser) {
         this.client = httpClient;
-        this.maxRedirections = maxRedirections;
         this.parser = parser;
+        this.maxRedirections = MAX_REDIRECTIONS;
         this.acceptContent = DEFAULT_JSON_LD_CONTENT;
+    }
+
+    public static HttpLoader newLoader(final Client client, TreeParser reader) {
+        return new HttpLoader(client, reader).headers(VENDOR_HEADERS);
     }
 
     /**
@@ -152,22 +157,7 @@ public class HttpLoader implements DocumentLoader {
      * @return a configured {@link HttpLoader} instance
      */
     public static HttpLoader newLoader(final HttpClient client, TreeParser reader) {
-        return new HttpLoader(new NativeHttpClient(client), reader, MAX_REDIRECTIONS)
-                .headers(VENDOR_HEADERS);
-    }
-
-    /**
-     * Creates a new {@link HttpLoader} with a custom maximum number of
-     * redirections.
-     *
-     * @param client          the HTTP client to use
-     * @param reader          the parser to use for JSON parsing
-     * @param maxRedirections the maximum number of redirects to follow
-     * @return a configured {@link HttpLoader}
-     */
-    public static HttpLoader newLoader(final HttpClient client, TreeParser reader, int maxRedirections) {
-        return new HttpLoader(new NativeHttpClient(client), reader, maxRedirections)
-                .headers(VENDOR_HEADERS);
+        return newLoader(new JavaHttpClient(client), reader);
     }
 
     /**
@@ -294,7 +284,7 @@ public class HttpLoader implements DocumentLoader {
             final MediaType contentType,
             final URI targetUri,
             final URI contextUrl,
-            final HttpLoaderClient.Response response) throws JsonLdException {
+            final Response response) throws JsonLdException {
 
         try (final var is = response.body()) {
 
@@ -393,4 +383,161 @@ public class HttpLoader implements DocumentLoader {
                 .append(";q=0.9,*/*;q=0.1")
                 .toString();
     }
+
+    public HttpLoader maxRedirections(int maxRedirections) {
+        this.maxRedirections = maxRedirections;
+        return this;
+    }
+
+    public int maxRedirections() {
+        return maxRedirections;
+    }
+
+    /**
+     * Low-level HTTP transport component used internally by {@link HttpLoader},
+     * which is an implementation of the
+     * {@link com.apicatalog.jsonld.loader.DocumentLoader} interface.
+     * <p>
+     * {@code HttpLoaderClient} defines how HTTP requests are executed and how
+     * responses are represented when loading remote JSON-LD documents. It is not
+     * used directly by JSON-LD processors, but by higher-level loaders such as
+     * {@link HttpLoader}.
+     * </p>
+     *
+     * <p>
+     * Implementations are responsible for sending HTTP requests, handling
+     * redirects, and exposing response data (status code, headers, and body stream)
+     * via the {@link Response} interface.
+     * </p>
+     *
+     * @see HttpLoader
+     * @see com.apicatalog.jsonld.loader.DocumentLoader
+     */
+    public interface Client {
+
+        /**
+         * Sends an HTTP request to the given target URI and returns a {@link Response}
+         * representing the HTTP result.
+         * <p>
+         * Implementations should typically:
+         * </p>
+         * <ul>
+         * <li>Perform an HTTP GET request to the specified {@code targetUri}</li>
+         * <li>Include an {@code Accept} header suitable for JSON-LD content types
+         * (e.g., {@code application/ld+json} and related profiles)</li>
+         * <li>Apply any headers or timeout previously configured through
+         * {@link #headers(Collection)} or {@link #timeout(Duration)}</li>
+         * </ul>
+         *
+         * @param url             the absolute URL of the remote resource to request
+         * @param requestProfiles JSON-LD profile URIs to include in the {@code Accept}
+         *                        header, may be empty
+         * @return a {@link Response} representing the HTTP response, including headers
+         *         and body stream
+         * @throws JsonLdException if the request fails or cannot be processed
+         */
+        Response send(URI url, Collection<String> requestProfiles) throws JsonLdException;
+
+        /**
+         * Configures the read timeout for HTTP requests made by this client.
+         * <p>
+         * If a server does not respond within the specified duration, a
+         * {@link JsonLdException} with code
+         * {@link com.apicatalog.jsonld.JsonLdException.ErrorCode#LOADING_DOCUMENT_TIMEOUT}
+         * may be thrown by the loader.
+         * </p>
+         *
+         * @param timeout the maximum duration to wait for a response, or {@code null}
+         *                to disable timeouts
+         * @return this {@link Client} instance for method chaining
+         * @throws UnsupportedOperationException if the implementation does not support
+         *                                       timeout configuration
+         * @since 1.4.0
+         */
+        default Client timeout(Duration timeout) {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * Sets additional HTTP headers to be included in all requests made by this
+         * client.
+         * <p>
+         * These headers supplement or override default headers such as
+         * {@code User-Agent} or {@code Accept}.
+         * </p>
+         *
+         * @param headers a collection of HTTP header entries (name/value pairs)
+         * @return this {@link Client} instance for method chaining
+         * @throws UnsupportedOperationException if the implementation does not support
+         *                                       custom headers
+         * @since 2.0.0
+         */
+        default Client headers(Collection<Entry<String, String>> headers) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * Represents an HTTP response returned by {@link Client#send(URI, Collection)}.
+     * <p>
+     * The {@link HttpLoader} uses this data to interpret content types, detect
+     * redirects, parse link headers, and read the response body as a JSON-LD
+     * document or remote context.
+     * </p>
+     * <p>
+     * Implementations must ensure that associated resources (such as network
+     * streams) are released when {@link #close()} is called.
+     * </p>
+     */
+    public interface Response extends Closeable {
+
+        /**
+         * Returns the response body as an {@link InputStream}.
+         * <p>
+         * The caller is responsible for reading and closing this stream. Closing the
+         * {@link Response} must also close this stream.
+         * </p>
+         *
+         * @return an input stream providing the response body
+         */
+        InputStream body();
+
+        /**
+         * Returns the raw values of all {@code Link} headers present in the response.
+         * <p>
+         * The {@link HttpLoader} parses these values to discover alternate
+         * representations or external context documents.
+         * </p>
+         *
+         * @return a collection of raw {@code Link} header values, or an empty
+         *         collection if none are present
+         */
+        Collection<String> links();
+
+        /**
+         * Returns the MIME type of the response as indicated by the
+         * {@code Content-Type} header, if present.
+         *
+         * @return an {@link Optional} containing the content type value, or empty if
+         *         not specified
+         */
+        Optional<String> contentType();
+
+        /**
+         * Returns the {@code Location} header value, typically used to handle HTTP
+         * redirections (3xx status codes).
+         *
+         * @return an {@link Optional} containing the location URI as a string, or empty
+         *         if not provided
+         */
+        Optional<String> location();
+
+        /**
+         * Returns the HTTP status code of this response.
+         *
+         * @return the numeric HTTP status code (e.g. 200, 301, 404)
+         */
+        int statusCode();
+    }
+
 }

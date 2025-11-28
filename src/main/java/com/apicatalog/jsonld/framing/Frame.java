@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeIO;
@@ -141,8 +141,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (embed instanceof Map map && LdAdapter.isValueNode(map)) {
-                embed = LdAdapter.findValue(embed).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+            if (embed instanceof Map map && JsonLdAdapter.isValueNode(map)) {
+                embed = JsonLdAdapter.findValue(embed).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (embed instanceof String stringValue) {
@@ -184,8 +184,8 @@ public final class Frame {
                 return defaultValue;
             }
 
-            if (value instanceof Map map && LdAdapter.isValueNode(map)) {
-                value = LdAdapter.findValue(value).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_FRAME));
+            if (value instanceof Map map && JsonLdAdapter.isValueNode(map)) {
+                value = JsonLdAdapter.findValue(value).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_FRAME));
             }
 
             if (value instanceof String bool) {
@@ -291,7 +291,7 @@ public final class Frame {
     }
 
     public boolean isValuePattern() {
-        return LdAdapter.isValueNode(expanded);
+        return JsonLdAdapter.isValueNode(expanded);
     }
 
     public boolean matchValue(Object value) {
@@ -299,18 +299,18 @@ public final class Frame {
     }
 
     public boolean isDefaultObject(String property) {
-        return LdAdapter.isDefault(expanded.get(property))
+        return JsonLdAdapter.isDefault(expanded.get(property))
                 || expanded.get(property) instanceof Collection array
                         && array.size() == 1
-                        && LdAdapter.isDefault(array.iterator().next());
+                        && JsonLdAdapter.isDefault(array.iterator().next());
     }
 
     public boolean isPattern() {
-        return LdAdapter.isNode(expanded);
+        return JsonLdAdapter.isNode(expanded);
     }
 
     public boolean isReference() {
-        return LdAdapter.isReference(expanded);
+        return JsonLdAdapter.isReference(expanded);
     }
 
     public boolean matchNode(FramingState state, Object value, boolean requireAll) throws JsonLdException {
@@ -330,7 +330,7 @@ public final class Frame {
     }
 
     public boolean isList() {
-        return LdAdapter.isList(expanded);
+        return JsonLdAdapter.isList(expanded);
     }
 
     public boolean isDefault(String graphKey) {

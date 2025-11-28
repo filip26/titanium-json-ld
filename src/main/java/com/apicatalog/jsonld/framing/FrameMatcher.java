@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 public final class FrameMatcher {
@@ -180,14 +180,14 @@ public final class FrameMatcher {
 
                     if (!nodeValues.isEmpty()
                             && nodeValues.iterator().next() instanceof Map nodeValueMap
-                            && LdAdapter.isList(nodeValueMap)) {
+                            && JsonLdAdapter.isList(nodeValueMap)) {
 
                         final var first = (Map<?, ?>) nodeValues.iterator().next();
 
                         final var nodeListValue = first.get(Keywords.LIST);
 
                         if (((Collection<?>) listValue).iterator().next() instanceof Map map
-                                && LdAdapter.isValueNode(map)) {
+                                && JsonLdAdapter.isValueNode(map)) {
 
                             final Frame frame = Frame.of(listValue);
                             boolean match = false;
@@ -208,8 +208,8 @@ public final class FrameMatcher {
                                 return true;
                             }
 
-                        } else if (LdAdapter.isNode(((Collection<?>) listValue).iterator().next())
-                                || LdAdapter.isReference(((Collection<?>) listValue).iterator().next())) {
+                        } else if (JsonLdAdapter.isNode(((Collection<?>) listValue).iterator().next())
+                                || JsonLdAdapter.isReference(((Collection<?>) listValue).iterator().next())) {
 
                             final Frame frame = Frame.of(listValue);
                             boolean match = false;

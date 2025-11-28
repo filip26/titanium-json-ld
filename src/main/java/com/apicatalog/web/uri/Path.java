@@ -34,7 +34,7 @@ public record Path(
         segments = segments != null ? List.copyOf(segments) : List.of();
     }
 
-    public static final Path empty() {
+    public static final Path of() {
         return EMPTY;
     }
 

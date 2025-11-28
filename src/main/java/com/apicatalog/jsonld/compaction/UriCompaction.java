@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.uri.UriRelativizer;
 
@@ -124,7 +124,7 @@ public final class UriCompaction {
 
             // 4.5.
             if (node instanceof Map<?, ?> map && map.containsKey(Keywords.INDEX)
-                    && LdAdapter.isNotGraph(map)) { // TODO was !Gra...isGraph
+                    && JsonLdAdapter.isNotGraph(map)) { // TODO was !Gra...isGraph
 
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX.concat(Keywords.SET));
@@ -139,7 +139,7 @@ public final class UriCompaction {
                 containers.add(Keywords.SET);
 
                 // 4.7.
-            } else if (node instanceof Map valueMap && LdAdapter.isList(valueMap)) {
+            } else if (node instanceof Map valueMap && JsonLdAdapter.isList(valueMap)) {
 
                 // 4.7.1.
                 if (!valueMap.containsKey(Keywords.INDEX)) {
@@ -241,7 +241,7 @@ public final class UriCompaction {
                 }
 
                 // 4.8.
-            } else if (node instanceof Map<?, ?> map && LdAdapter.isGraph(map)) {
+            } else if (node instanceof Map<?, ?> map && JsonLdAdapter.isGraph(map)) {
 
                 // 4.8.1.
                 if (map.containsKey(Keywords.INDEX)) {
@@ -284,7 +284,7 @@ public final class UriCompaction {
             } else {
 
                 // 4.9.1.
-                if (node instanceof Map map && LdAdapter.isValueNode(map)) {
+                if (node instanceof Map map && JsonLdAdapter.isValueNode(map)) {
 
                     // 4.9.1.1.
                     if (map.containsKey(Keywords.DIRECTION)
@@ -380,7 +380,7 @@ public final class UriCompaction {
                 final var idValue = valueMap.get(Keywords.ID);
 
                 // JSON-LD-star
-                if (options.isRdfStar() && LdAdapter.isEmbedded(idValue)) {
+                if (options.isRdfStar() && JsonLdAdapter.isEmbedded(idValue)) {
                     preferredValues.add(Keywords.ID);
                     preferredValues.add(Keywords.VOCAB);
 
@@ -416,7 +416,7 @@ public final class UriCompaction {
                 preferredValues.add(Keywords.NONE);
 
                 if (node instanceof Map<?, ?> map
-                        && LdAdapter.isList(map)
+                        && JsonLdAdapter.isList(map)
                         && map.get(Keywords.LIST) instanceof Collection<?> array
                         && array.isEmpty()) {
 

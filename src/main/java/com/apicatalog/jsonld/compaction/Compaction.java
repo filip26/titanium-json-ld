@@ -32,7 +32,7 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
@@ -95,7 +95,11 @@ public final class Compaction {
         }
 
         if (element instanceof Map map) {
-            return compactObject(activeProperty, (Map<String, ?>) map);
+            
+            @SuppressWarnings("unchecked")
+            final var typedMap = (Map<String, ?>) map;
+            
+            return compactObject(activeProperty, typedMap);
         }
 
         // return scalar
@@ -192,7 +196,7 @@ public final class Compaction {
         }
 
         // 8.
-        if (LdAdapter.isList(object)
+        if (JsonLdAdapter.isList(object)
                 && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.LIST)).isPresent()) {
 
             return Compaction
@@ -262,7 +266,7 @@ public final class Compaction {
 
                     // JSON-LD-star
                 } else if (options.isRdfStar()
-                        && LdAdapter.isEmbedded(expandedValue)) {
+                        && JsonLdAdapter.isEmbedded(expandedValue)) {
                     compactedValue = Compaction.with(activeContext, options, runtime)
                             .compactArrays(compactArrays)
                             .ordered(ordered)
@@ -313,7 +317,7 @@ public final class Compaction {
                                 && activeContext.findTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent());
 
                 // 12.2.5.
-                LdAdapter.setOrAdd(result, alias, compactedValue, asArray);
+                JsonLdAdapter.setOrAdd(result, alias, compactedValue, asArray);
 
                 // 12.2.6.
                 continue;
@@ -348,7 +352,7 @@ public final class Compaction {
                                         .isPresent();
 
                         // 12.3.2.1.2.
-                        LdAdapter.setOrAdd(result, entry.getKey(), entry.getValue(), asArray);
+                        JsonLdAdapter.setOrAdd(result, entry.getKey(), entry.getValue(), asArray);
 
                     } else {
 
@@ -438,7 +442,7 @@ public final class Compaction {
                     }
 
                     // 12.7.2.3.
-                    LdAdapter.setOrAdd(
+                    JsonLdAdapter.setOrAdd(
                             (Map<String, Object>) result.computeIfAbsent(nestTerm, k -> new LinkedHashMap<String, Object>()),
                             itemActiveProperty,
                             List.of());
@@ -447,7 +451,7 @@ public final class Compaction {
 
                     // 12.7.3.
                 } else {
-                    LdAdapter.setOrAdd(result, itemActiveProperty, List.of());
+                    JsonLdAdapter.setOrAdd(result, itemActiveProperty, List.of());
                 }
 
             }
@@ -511,10 +515,10 @@ public final class Compaction {
                 var expandedItemValue = expandedItem;
 
                 if (expandedItem instanceof Map map) {
-                    if (LdAdapter.isList(map)) {
+                    if (JsonLdAdapter.isList(map)) {
                         expandedItemValue = map.get(Keywords.LIST);
 
-                    } else if (LdAdapter.isGraph(map)) {
+                    } else if (JsonLdAdapter.isGraph(map)) {
                         expandedItemValue = map.get(Keywords.GRAPH);
                     }
                 }
@@ -527,7 +531,7 @@ public final class Compaction {
 
                 // 12.8.7.
                 if (expandedItem instanceof Map expandedItemMap
-                        && LdAdapter.isList(expandedItemMap)) {
+                        && JsonLdAdapter.isList(expandedItemMap)) {
 
                     // 12.8.7.1.
                     compactedItem = NativeAdapter.asCollection(compactedItem);
@@ -553,7 +557,7 @@ public final class Compaction {
                         }
 
                         // 12.8.7.2.3.
-                        LdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
+                        JsonLdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
 
                         // 12.8.7.3.
                     } else {
@@ -561,7 +565,7 @@ public final class Compaction {
                     }
 
                     // 12.8.8.
-                } else if (expandedItem instanceof Map expandedItemMap && LdAdapter.isGraph(expandedItemMap)) {
+                } else if (expandedItem instanceof Map expandedItemMap && JsonLdAdapter.isGraph(expandedItemMap)) {
 
                     boolean followup = false;
 
@@ -587,7 +591,7 @@ public final class Compaction {
                         // 12.8.8.1.3.
 //                        nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
 
-                        LdAdapter.setOrAdd(
+                        JsonLdAdapter.setOrAdd(
                                 (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
                                 mapKey,
                                 compactedItem,
@@ -596,7 +600,7 @@ public final class Compaction {
                         // 12.8.8.2.
                     } else if (container.contains(Keywords.GRAPH)
                             && container.contains(Keywords.INDEX)
-                            && LdAdapter.isSimpleGraph(expandedItemMap)) {
+                            && JsonLdAdapter.isSimpleGraph(expandedItemMap)) {
 
                         // 12.8.8.2.2.
                         final String mapKey = expandedItemMap.containsKey(Keywords.INDEX)
@@ -606,7 +610,7 @@ public final class Compaction {
                         // 12.8.8.2.3.
 //                        nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
 
-                        LdAdapter.setOrAdd(
+                        JsonLdAdapter.setOrAdd(
                                 (Map<String, Object>) nestResult
                                         .computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
                                 mapKey,
@@ -615,7 +619,7 @@ public final class Compaction {
 
                         // 12.8.8.3.
                     } else if (container.contains(Keywords.GRAPH)
-                            && LdAdapter.isSimpleGraph(expandedItemMap)) {
+                            && JsonLdAdapter.isSimpleGraph(expandedItemMap)) {
 
                         // 12.8.8.3.1.
                         if (compactedItem instanceof Collection array && array.size() > 1) {
@@ -625,7 +629,7 @@ public final class Compaction {
                         }
 
                         // 12.8.8.3.2.
-                        LdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
+                        JsonLdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
 
                     } else {
                         followup = true;
@@ -664,7 +668,7 @@ public final class Compaction {
                         }
 
                         // 12.8.8.4.4.
-                        LdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
+                        JsonLdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
                     }
 
                     // 12.8.9.
@@ -884,7 +888,7 @@ public final class Compaction {
                     }
 
                     // 12.8.9.10.
-                    LdAdapter.setOrAdd(
+                    JsonLdAdapter.setOrAdd(
                             (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
                             mapKey,
                             compactedItem,
@@ -892,7 +896,7 @@ public final class Compaction {
 
                     // 12.8.10.
                 } else {
-                    LdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
+                    JsonLdAdapter.setOrAdd(nestResult, itemActiveProperty, compactedItem, asArray);
                 }
 
                 if (nestResult != null && nestResultKey != null) {

@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.LdAdapter;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.tree.io.java.NativeAdapter;
 
 public final class NodeMapBuilder {
@@ -233,7 +233,7 @@ public final class NodeMapBuilder {
             }
         }
         // 6.
-        else if (LdAdapter.isNode(element, NativeAdapter.instance())) {
+        else if (JsonLdAdapter.isNode(element, NativeAdapter.instance())) {
 
             String id = null;
 

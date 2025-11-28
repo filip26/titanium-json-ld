@@ -95,8 +95,7 @@ public final class ValueCompaction {
                 && activePropertyDefinition
                         .map(TermDefinition::getTypeMapping)
                         .filter(type::equals).isPresent())
-                ||
-                (value.get(Keywords.TYPE) instanceof Collection<?> types
+                || (value.get(Keywords.TYPE) instanceof Collection<?> types
                         && activePropertyDefinition
                                 .map(TermDefinition::getTypeMapping)
                                 .filter(types::contains)
@@ -147,16 +146,16 @@ public final class ValueCompaction {
             // 10.
         } else if ((((value.get(Keywords.LANGUAGE) instanceof String langString
                 && language != null
-                && (language.equalsIgnoreCase(langString)))
+                && language.equalsIgnoreCase(langString))
                 || ((language == null || Keywords.NULL.equals(language))
-                        && ((!(value.get(Keywords.LANGUAGE) instanceof String langString)
-                                || Keywords.NULL.equals(langString)))))
+                        && (!(value.get(Keywords.LANGUAGE) instanceof String langString)
+                                || Keywords.NULL.equals(langString))))
                 && ((direction != null && direction != Direction.NULL
                         && value.get(Keywords.DIRECTION) instanceof String dirString
                         && direction == Direction.valueOf(dirString.toUpperCase()))
                         || ((direction == null || direction == Direction.NULL)
-                                && ((!(value.get(Keywords.DIRECTION) instanceof String dirString)
-                                        || Direction.NULL == Direction.valueOf(dirString.toUpperCase()))))))
+                                && (!(value.get(Keywords.DIRECTION) instanceof String dirString)
+                                        || Direction.NULL == Direction.valueOf(dirString.toUpperCase())))))
                 && (!value.containsKey(Keywords.INDEX)
                         || activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())) {
 
