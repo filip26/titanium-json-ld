@@ -132,29 +132,6 @@ public class HttpLoader implements DocumentLoader {
     }
 
     /**
-     * Creates a new {@link HttpLoader} using the given {@link Client} and parser.
-     *
-     * @param client the HTTP client to use for network calls
-     * @param reader the JSON parser used to parse responses
-     * @return a configured {@link HttpLoader} instance
-     */
-    public static HttpLoader newLoader(final Client client, TreeParser reader) {
-        return new HttpLoader(client, reader, Map.of()).headers(VENDOR_HEADERS);
-    }
-
-    /**
-     * Creates a new {@link HttpLoader} using the given {@link Client} and parser.
-     *
-     * @param client  the HTTP client to use for network calls
-     * @param reader  the JSON parser used to parse responses
-     * @param parsers the content-type to parser mapping table
-     * @return a configured {@link HttpLoader} instance
-     */
-    public static HttpLoader newLoader(final Client client, TreeParser reader, Map<MediaType, TreeParser> parsers) {
-        return new HttpLoader(client, reader, parsers).headers(VENDOR_HEADERS);
-    }
-
-    /**
      * Creates a new {@link HttpLoader} with a default {@link HttpClient}.
      *
      * @param parser the {@link TreeParser} used to parse retrieved content
@@ -166,8 +143,25 @@ public class HttpLoader implements DocumentLoader {
                         .newBuilder()
                         .followRedirects(Redirect.NEVER)
                         .build(),
-                parser)
-                .headers(VENDOR_HEADERS);
+                parser,
+                Map.of());
+    }
+
+    /**
+     * Creates a new {@link HttpLoader} with a default {@link HttpClient}.
+     *
+     * @param parser  the {@link TreeParser} used to parse retrieved content
+     * @param parsers the content-type to parser mapping table
+     * @return a new configured {@link HttpLoader}
+     */
+    public static HttpLoader newLoader(final TreeParser parser, Map<MediaType, TreeParser> parsers) {
+        return newLoader(
+                HttpClient
+                        .newBuilder()
+                        .followRedirects(Redirect.NEVER)
+                        .build(),
+                parser,
+                parsers);
     }
 
     /**
@@ -175,11 +169,47 @@ public class HttpLoader implements DocumentLoader {
      * parser.
      *
      * @param client the HTTP client to use for network calls
+     * @param parser the JSON parser used to parse responses
+     * @return a configured {@link HttpLoader} instance
+     */
+    public static HttpLoader newLoader(final HttpClient client, TreeParser parser) {
+        return newLoader(client, parser, Map.of());
+    }
+
+    /**
+     * Creates a new {@link HttpLoader} using the given {@link HttpClient} and
+     * parser.
+     *
+     * @param client  the HTTP client to use for network calls
+     * @param parser  the JSON parser used to parse responses
+     * @param parsers the content-type to parser mapping table
+     * @return a configured {@link HttpLoader} instance
+     */
+    public static HttpLoader newLoader(final HttpClient client, TreeParser parser, Map<MediaType, TreeParser> parsers) {
+        return newLoader(new JavaHttpClient(client), parser, parsers);
+    }
+
+    /**
+     * Creates a new {@link HttpLoader} using the given {@link Client} and parser.
+     *
+     * @param client the HTTP client to use for network calls
      * @param reader the JSON parser used to parse responses
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final HttpClient client, TreeParser reader) {
-        return newLoader(new JavaHttpClient(client), reader);
+    public static HttpLoader newLoader(final Client client, TreeParser reader) {
+        return newLoader(client, reader, Map.of());
+    }
+
+    /**
+     * Creates a new {@link HttpLoader} using the given {@link Client} and parser.
+     *
+     * @param client  the HTTP client to use for network calls
+     * @param parser  the JSON parser used to parse responses
+     * @param parsers the content-type to parser mapping table
+     * @return a configured {@link HttpLoader} instance
+     */
+    public static HttpLoader newLoader(final Client client, TreeParser parser, Map<MediaType, TreeParser> parsers) {
+        return new HttpLoader(client, parser, parsers).headers(VENDOR_HEADERS);
     }
 
     /**
@@ -326,7 +356,14 @@ public class HttpLoader implements DocumentLoader {
             final Response response) throws JsonLdException {
 
         final var parser = parsers.getOrDefault(contentType, defaultParser);
-        
+
+        if (parser == null) {
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                    """
+                            Response content-type=%s cannot be parsed, parser is not defined, url=%s
+                            """.formatted(contentType, targetUri));
+        }
+
         try (final var is = response.body()) {
 
             final var content = parser.parse(is);
