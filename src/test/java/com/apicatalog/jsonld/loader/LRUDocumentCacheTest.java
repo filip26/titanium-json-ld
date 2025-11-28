@@ -60,7 +60,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testLoadDocument() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        CacheLoader cachedLoader = new CacheLoader(loader, 2);
+        CacheLoader cachedLoader = CacheLoader.of(loader, 2);
 
         Options options = Options.DEFAULT;
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -79,7 +79,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testCacheSize() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        CacheLoader cachedLoader = new CacheLoader(loader, 2);
+        CacheLoader cachedLoader = CacheLoader.of(loader, 2);
 
         Options options = Options.DEFAULT;
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -103,7 +103,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testLoadDocumentsWithDifferentOptions() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        CacheLoader cachedLoader = new CacheLoader(loader, 2);
+        CacheLoader cachedLoader = CacheLoader.of(loader, 2);
 
         // Using options with same inside should lead to cache hit.
         Options options = Options.DEFAULT;
@@ -121,7 +121,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testCachingEqualOptions() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        CacheLoader cachedLoader = new CacheLoader(loader, 2);
+        CacheLoader cachedLoader = CacheLoader.of(loader, 2);
         
         Options options = new Options(true, "profile", List.of("first", "second"));
         cachedLoader.loadDocument(URI.create("http://localhost/1"), options);
@@ -138,7 +138,7 @@ public class LRUDocumentCacheTest {
     @Test
     void testCachingProfilesOrderMatter() throws JsonLdException {
         RecordRequestLoader loader = new RecordRequestLoader();
-        CacheLoader cachedLoader = new CacheLoader(loader, 2);
+        CacheLoader cachedLoader = CacheLoader.of(loader, 2);
         Options options = null;
 
         options = new Options(true, "profile", List.of("first", "second"));

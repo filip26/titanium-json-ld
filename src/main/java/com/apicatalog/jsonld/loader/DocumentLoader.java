@@ -60,14 +60,14 @@ public interface DocumentLoader {
      * specific profiles or extract script elements.
      * </p>
      *
-     * @param url     the absolute URI of the document to load (must not be
+     * @param uri     the absolute URI of the document to load (must not be
      *                {@code null})
      * @param options loader configuration options controlling retrieval behavior
      * @return the loaded {@link Document} representation
      * @throws JsonLdException if the document cannot be retrieved, parsed, or
      *                         resolved
      */
-    Document loadDocument(URI url, Options options) throws JsonLdException;
+    Document loadDocument(URI uri, Options options) throws JsonLdException;
 
     /**
      * Returns the default {@link Options} instance used by loaders that do not

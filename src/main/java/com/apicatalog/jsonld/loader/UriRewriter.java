@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
@@ -58,16 +59,18 @@ public final class UriRewriter implements DocumentLoader {
 
             var document = loader.loadDocument(target, options);
 
-            // update URL
-            if (document != null && document.url() != null && target.equals(document.url())) {
-                return Document.of(
-                        document.content(),
-                        document.contentType(),
-                        document.profile(),
-                        url,
-                        document.context());
+            if (document != null) {
+                // update URL
+                if (target.equals(document.url())) {
+                    return Document.of(
+                            document.content(),
+                            document.contentType(),
+                            document.profile(),
+                            url,
+                            document.context());
+                }
+                return document;
             }
-            return document;
         }
 
         Entry<String, String> base = null;
@@ -100,6 +103,7 @@ public final class UriRewriter implements DocumentLoader {
 
             return document;
         }
+
         return loader.loadDocument(url, options);
     }
 
@@ -120,17 +124,21 @@ public final class UriRewriter implements DocumentLoader {
         }
 
         public Builder rewrite(URI from, URI to) {
-            rewrite.put(from, to);
+            rewrite.put(
+                    Objects.requireNonNull(from),
+                    Objects.requireNonNull(to));
             return this;
         }
 
         public Builder rebase(String from, String to) {
-            rebase.put(from, to);
+            rebase.put(
+                    Objects.requireNonNull(from),
+                    Objects.requireNonNull(to));
             return this;
         }
 
         public Builder loader(DocumentLoader loader) {
-            this.loader = loader;
+            this.loader = Objects.requireNonNull(loader);
             return this;
         }
 

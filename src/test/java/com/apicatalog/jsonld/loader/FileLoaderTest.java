@@ -32,7 +32,7 @@ import com.apicatalog.web.media.MediaType;
 
 class FileLoaderTest {
 
-    public static FileLoader FILE_LOADER = new FileLoader(JakartaTestSuite.PARSER);
+    public static FileLoader FILE_LOADER = FileLoader.of(JakartaTestSuite.PARSER);
 
     @Test
     void testLoadJson() throws URISyntaxException, JsonLdException {

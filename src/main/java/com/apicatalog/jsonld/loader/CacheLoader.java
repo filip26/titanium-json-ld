@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
@@ -44,14 +45,26 @@ public final class CacheLoader implements DocumentLoader {
     private static record Key(URI url, Options options) {
     }
 
+    private CacheLoader(DocumentLoader loader, Cache<Key, Document> cache) {
+        this.loader = loader;
+        this.cache = cache;
+    }
+
     /**
      * Creates a new caching loader backed by a default {@link LruCache}.
      *
-     * @param loader    the underlying {@link DocumentLoader} used for cache misses
-     * @param cacheSize the maximum number of documents to retain in the cache
+     * @param loader  the underlying {@link DocumentLoader} used for cache misses
+     * @param maxSize the maximum number of documents to retain in the cache
      */
-    public CacheLoader(DocumentLoader loader, int cacheSize) {
-        this(loader, new LruCache<>(cacheSize));
+    public static final CacheLoader of(DocumentLoader loader, int maxSize) {
+
+        if (maxSize <= 0) {
+            throw new IllegalArgumentException("The maximum cache size must be positive integer value, maxsize=" + maxSize);
+        }
+
+        return new CacheLoader(
+                Objects.requireNonNull(loader),
+                new LruCache<>(maxSize));
     }
 
     /**
@@ -60,30 +73,31 @@ public final class CacheLoader implements DocumentLoader {
      * @param loader the underlying {@link DocumentLoader} used for cache misses
      * @param cache  the cache used to store loaded documents
      */
-    public CacheLoader(DocumentLoader loader, Cache<Key, Document> cache) {
-        this.loader = loader;
-        this.cache = cache;
+    public static final CacheLoader of(DocumentLoader loader, Cache<Key, Document> cache) {
+        return new CacheLoader(
+                Objects.requireNonNull(loader),
+                Objects.requireNonNull(cache));
     }
 
     /**
      * Loads a JSON-LD document from cache if available, otherwise delegates to the
      * underlying loader and stores the result.
      *
-     * @param url     the URI of the document to load
+     * @param uri     the URI of the document to load
      * @param options loader configuration options
      * @return the loaded or cached {@link Document}
      * @throws JsonLdException if the underlying loader fails to retrieve the
      *                         document
      */
     @Override
-    public Document loadDocument(URI url, Options options) throws JsonLdException {
-        
-        var key = new Key(url, options);
-        
+    public Document loadDocument(final URI uri, final Options options) throws JsonLdException {
+
+        final var key = new Key(uri, options);
+
         var result = cache.get(key);
 
         if (result == null) {
-            result = loader.loadDocument(url, options);
+            result = loader.loadDocument(uri, options);
             cache.put(key, result);
         }
         return result;
@@ -92,7 +106,7 @@ public final class CacheLoader implements DocumentLoader {
     public Cache<Key, Document> cache() {
         return cache;
     }
-    
+
     /**
      * Simple in-memory cache interface used by {@link CacheLoader} and related
      * components.
@@ -129,14 +143,14 @@ public final class CacheLoader implements DocumentLoader {
 
         int size();
     }
-    
-    public static final class LruCache<K, V> implements CacheLoader.Cache<K, V> {
+
+    public static final class LruCache<K, V> implements Cache<K, V> {
 
         private final Map<K, V> cache;
 
         public LruCache(final int maxCapacity) {
             this.cache = new LinkedHashMap<K, V>((int) (maxCapacity / 0.75 + 1), 0.75f, true) {
-                
+
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                     return this.size() > maxCapacity;

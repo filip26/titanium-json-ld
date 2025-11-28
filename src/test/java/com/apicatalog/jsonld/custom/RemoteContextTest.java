@@ -171,7 +171,7 @@ class RemoteContextTest {
 
             long start = System.nanoTime();
 
-            final var loader = new CacheLoader(JakartaTestSuite.HTTP_LOADER, 256);
+            final var loader = CacheLoader.of(JakartaTestSuite.HTTP_LOADER, 256);
 
             final var result = JsonLd.expand(document, Options.with(loader));
 

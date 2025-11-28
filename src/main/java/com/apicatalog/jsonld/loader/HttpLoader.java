@@ -88,7 +88,7 @@ public class HttpLoader implements DocumentLoader {
      *
      * @since 2.0.0
      */
-    public static final Predicate<MediaType> DEFAULT_JSON_LD_CONTENT = contentType -> contentType != null
+    public static final Predicate<MediaType> JSON_LD_CONTENT = contentType -> contentType != null
             && (MediaType.JSON_LD.match(contentType)
                     || MediaType.JSON.match(contentType)
                     || contentType.subtype().toLowerCase().endsWith(PLUS_JSON));
@@ -110,7 +110,8 @@ public class HttpLoader implements DocumentLoader {
 
     private final Client client;
 
-    private final TreeParser parser;
+    private final Map<MediaType, TreeParser> parsers;
+    private final TreeParser defaultParser;
 
     private Predicate<MediaType> acceptContent;
     private int maxRedirections;
@@ -118,18 +119,39 @@ public class HttpLoader implements DocumentLoader {
     /**
      * Constructs a new {@link HttpLoader}.
      *
-     * @param httpClient the HTTP client used for network requests
-     * @param parser     the parser for decoding JSON documents
+     * @param client  the HTTP client used for network requests
+     * @param parser  the default parser for decoding JSON documents
+     * @param parsers the content-type to parser mapping table
      */
-    protected HttpLoader(Client httpClient, TreeParser parser) {
-        this.client = httpClient;
-        this.parser = parser;
+    protected HttpLoader(Client client, TreeParser parser, Map<MediaType, TreeParser> parsers) {
+        this.client = client;
+        this.defaultParser = parser;
+        this.parsers = parsers;
         this.maxRedirections = MAX_REDIRECTIONS;
-        this.acceptContent = DEFAULT_JSON_LD_CONTENT;
+        this.acceptContent = JSON_LD_CONTENT;
     }
 
+    /**
+     * Creates a new {@link HttpLoader} using the given {@link Client} and parser.
+     *
+     * @param client the HTTP client to use for network calls
+     * @param reader the JSON parser used to parse responses
+     * @return a configured {@link HttpLoader} instance
+     */
     public static HttpLoader newLoader(final Client client, TreeParser reader) {
-        return new HttpLoader(client, reader).headers(VENDOR_HEADERS);
+        return new HttpLoader(client, reader, Map.of()).headers(VENDOR_HEADERS);
+    }
+
+    /**
+     * Creates a new {@link HttpLoader} using the given {@link Client} and parser.
+     *
+     * @param client  the HTTP client to use for network calls
+     * @param reader  the JSON parser used to parse responses
+     * @param parsers the content-type to parser mapping table
+     * @return a configured {@link HttpLoader} instance
+     */
+    public static HttpLoader newLoader(final Client client, TreeParser reader, Map<MediaType, TreeParser> parsers) {
+        return new HttpLoader(client, reader, parsers).headers(VENDOR_HEADERS);
     }
 
     /**
@@ -199,25 +221,31 @@ public class HttpLoader implements DocumentLoader {
                             || response.statusCode() == 303
                             || response.statusCode() == 307) {
 
-                        final Optional<String> location = response.location();
+                        final var location = response.location();
 
                         if (location.isPresent()) {
                             targetUri = UriResolver.resolveAsUri(targetUri, location.get());
                             continue;
                         }
 
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Header location is required for code [" + response.statusCode() + "].");
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                                """
+                                        HTTP Location header is required for status code=%d but is not present, url=%s
+                                        """.formatted(response.statusCode(), url));
                     }
 
                     if (response.statusCode() != 200) {
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unexpected response code [" + response.statusCode() + "] for URL [" + url + "].");
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                                """
+                                        Unexpected HTTP response status code=%d, url=%s
+                                        """.formatted(response.statusCode(), url));
                     }
 
                     contentType = response.contentType()
                             .map(MediaType::of)
                             .orElse(null);
 
-                    final Collection<String> linkValues = response.links();
+                    final var linkValues = response.links();
 
                     if (linkValues != null && !linkValues.isEmpty()) {
 
@@ -226,7 +254,7 @@ public class HttpLoader implements DocumentLoader {
                                 || (!MediaType.JSON.match(contentType)
                                         && !contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
 
-                            final URI baseUri = targetUri;
+                            final var baseUri = targetUri;
 
                             final var alternate = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
@@ -246,7 +274,7 @@ public class HttpLoader implements DocumentLoader {
                                 && (MediaType.JSON.match(contentType)
                                         || contentType.subtype().toLowerCase().endsWith(PLUS_JSON))) {
 
-                            final URI baseUri = targetUri;
+                            final var baseUri = targetUri;
 
                             final List<Link> contextUris = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
@@ -254,7 +282,10 @@ public class HttpLoader implements DocumentLoader {
                                     .collect(Collectors.toList());
 
                             if (contextUris.size() > 1) {
-                                throw new JsonLdException(ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS);
+                                throw new JsonLdException(ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS,
+                                        """
+                                                Only one context link header is allowed but got %s, url=%s
+                                                """.formatted(contextUris, url));
 
                             } else if (contextUris.size() == 1) {
                                 contextUri = contextUris.get(0).target();
@@ -263,17 +294,25 @@ public class HttpLoader implements DocumentLoader {
                     }
 
                     if (contentType == null) {
-                        LOGGER.log(Level.WARNING, "GET on URL [{0}] does not return content-type header.", url);
+                        LOGGER.log(Level.WARNING,
+                                "HTTP GET on URL [{0}] does not return content-type header.",
+                                url);
 
                     } else if (!acceptContent.test(contentType)) {
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported content-type=" + contentType + ", url=" + url);
+                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                                """
+                                        Unsupported content-type=%s, url=%s
+                                        """.formatted(contentType, url));
                     }
 
                     return read(contentType, targetUri, contextUri, response);
                 }
             }
 
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Too many redirections");
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                    """
+                            Too many redirections detected, maximum=%d, url=%s
+                            """.formatted(maxRedirections, url));
 
         } catch (IOException e) {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
@@ -286,6 +325,8 @@ public class HttpLoader implements DocumentLoader {
             final URI contextUrl,
             final Response response) throws JsonLdException {
 
+        final var parser = parsers.getOrDefault(contentType, defaultParser);
+        
         try (final var is = response.body()) {
 
             final var content = parser.parse(is);
@@ -539,5 +580,4 @@ public class HttpLoader implements DocumentLoader {
          */
         int statusCode();
     }
-
 }

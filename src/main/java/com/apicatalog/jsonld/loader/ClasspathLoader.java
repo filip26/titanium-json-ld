@@ -80,24 +80,24 @@ public final class ClasspathLoader implements DocumentLoader {
      * {@link JsonLdException} is thrown.
      * </p>
      *
-     * @param url     the {@code classpath:} URI of the resource to load
+     * @param uri     the {@code classpath:} URI of the resource to load
      * @param options ignored in this implementation
      * @return a {@link Document} representing the loaded resource
      * @throws JsonLdException if the scheme is unsupported or the resource cannot
      *                         be loaded
      */
     @Override
-    public Document loadDocument(URI url, Options options) throws JsonLdException {
+    public Document loadDocument(URI uri, Options options) throws JsonLdException {
 
-        if (!"classpath".equalsIgnoreCase(url.getScheme())) {
+        if (!"classpath".equalsIgnoreCase(uri.getScheme())) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Unsupported URL scheme [" + url.getScheme() + "]. Only classpath: scheme is accepted, url=" + url);
+                    "Unsupported URL scheme [" + uri.getScheme() + "]. Only classpath: scheme is accepted, url=" + uri);
         }
 
-        final var path = url.getPath() != null
-                ? url.getPath()
-                : url.getSchemeSpecificPart();
+        final var path = uri.getPath() != null
+                ? uri.getPath()
+                : uri.getSchemeSpecificPart();
 
         final var contentType = FileLoader.fromFileExtension(path); // detect media type
         
@@ -106,7 +106,7 @@ public final class ClasspathLoader implements DocumentLoader {
         if (parser == null) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Cannot parse content-type=" + contentType + ", uri=" + url + ", base=" + baseClass.getPackageName());            
+                    "Cannot parse content-type=" + contentType + ", uri=" + uri + ", base=" + baseClass.getPackageName());            
         }
 
         try (final var is = baseClass.getResourceAsStream(path)) {
@@ -116,12 +116,12 @@ public final class ClasspathLoader implements DocumentLoader {
             return Document.of(
                     node,
                     contentType,
-                    url);
+                    uri);
 
         } catch (TreeIOException | IOException e) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Document loader failed for uri=" + url + ", base=" + baseClass.getPackageName(),
+                    "Document loader failed for uri=" + uri + ", base=" + baseClass.getPackageName(),
                     e);
         }
     }

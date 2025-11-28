@@ -69,7 +69,7 @@ class HttpLoaderTest {
     }
 
     @Test
-    void testPlainTextContentType() throws URISyntaxException, JsonLdException, IOException {
+    void testPlainTextContentType() throws URISyntaxException, IOException {
 
         server.when(
                 "/text.plain",
@@ -87,7 +87,7 @@ class HttpLoaderTest {
     }
 
     @Test
-    void testAcceptAnyContentType() throws URISyntaxException, JsonLdException, IOException {
+    void testAcceptAnyContentType() throws URISyntaxException, IOException, JsonLdException {
 
         server.when(
                 "/text.plain",
@@ -102,13 +102,13 @@ class HttpLoaderTest {
                         DocumentLoader.defaultOptions());
 
         // reset shared instance state
-        JakartaTestSuite.HTTP_LOADER.accept(HttpLoader.DEFAULT_JSON_LD_CONTENT);
+        JakartaTestSuite.HTTP_LOADER.accept(HttpLoader.JSON_LD_CONTENT);
 
         assertNotNull(remote);
     }
 
     @Test
-    void testTimeout() throws URISyntaxException, JsonLdException, IOException {
+    void testTimeout() {
 
         server.listen(Duration.ofSeconds(5));
 
@@ -127,7 +127,7 @@ class HttpLoaderTest {
         assertEquals(ErrorCode.LOADING_DOCUMENT_TIMEOUT, ex.code());
     }
 
-    private final byte[] readBytes(final String name) throws JsonLdException, IOException {
+    private final byte[] readBytes(final String name) throws IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return is.readAllBytes();
         }
