@@ -40,15 +40,15 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.tree.io.java.JavaTree;
 
 class NativeInputTest {
 
     static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
             .document(
-                    "urn:example:context",
-                    Document.of(new TreeIO(Map.of(
+                    "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
+                    Document.of(JavaTree.of(Map.of(
                             "@context", Map.of(
                                     "name", "http://xmlns.com/foaf/0.1/name",
                                     "project", Map.of(
@@ -57,12 +57,11 @@ class NativeInputTest {
                                     "Person", "http://xmlns.com/foaf/0.1/Person",
                                     "modified", Map.of(
                                             "@id", "https://schema.org/dateModified",
-                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
-                            NativeAdapter.instance())))
+                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))))))
             .build();
 
     static Map<String, String> JSON_LD = Map.of(
-            "@context", "urn:example:context",
+            "@context", "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
             "@type", "Person",
             "name", "Filip Kolařík",
             "project", "https://github.com/filip26/titanium-json-ld",
@@ -91,7 +90,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_EXPANDED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }
@@ -105,7 +104,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_COMPACTED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }
@@ -123,7 +122,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_FLATTENED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }
@@ -137,7 +136,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_COMPACTED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }

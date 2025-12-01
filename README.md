@@ -170,12 +170,12 @@ JsonLd.expand(document)
 
 ## 🚀 Examples (v2.x.x)
 
-Convert JSON-LD written in plain Java into RDF using a custom static document loader and a custom URI space.
+Convert JSON-LD written in plain Java into RDF using a custom static document loader and a UUID URN space.
 
 ```javascript
 static DocumentLoader loader = StaticLoader.newBuilder()
     .document(
-        "urn:example:context",
+        "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
         Document.of(new TreeIO(Map.of(
             "@context", Map.of(
                 "name", "http://xmlns.com/foaf/0.1/name",
@@ -190,7 +190,7 @@ static DocumentLoader loader = StaticLoader.newBuilder()
     .build();
 
 Map<String, String> document = Map.of(
-    "@context", "urn:example:context",
+    "@context", "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
     "@type", "Person",
     "name", "Filip Kolařík",
     "project", "https://github.com/filip26/titanium-json-ld",
