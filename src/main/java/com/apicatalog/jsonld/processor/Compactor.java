@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 
 /**
  *
@@ -41,7 +41,7 @@ public final class Compactor {
     }
 
     public static final Collection<?> expand(
-            final TreeIO input,
+            final Tree input,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -85,7 +85,7 @@ public final class Compactor {
     public static final Map<String, ?> compact(
             final Object expanded,
             final URI baseUrl,
-            final TreeIO context,
+            final Tree context,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -130,7 +130,7 @@ public final class Compactor {
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
-            final TreeIO contextSource,
+            final Tree contextSource,
             final Options options,
             final Execution runtime) throws JsonLdException {
 

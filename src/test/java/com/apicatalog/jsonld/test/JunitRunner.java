@@ -43,11 +43,11 @@ import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonStructure;
@@ -170,7 +170,7 @@ public class JunitRunner {
                     testCase,
                     options,
                     result,
-                    NativeAdapter.instance(),
+                    JavaAdapter.instance(),
                     true);
 //            }
 
@@ -273,7 +273,7 @@ public class JunitRunner {
             final TestCase testCase, 
             final Object result, 
             final TreeAdapter resultAdapter, 
-            final TreeIO expected,
+            final Tree expected,
             final boolean fail) throws TreeIOException {
 
         if (Comparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
@@ -281,8 +281,8 @@ public class JunitRunner {
         }
 
         write(testCase,
-                new JakartaMaterializer().node(result, resultAdapter),
-                new JakartaMaterializer().node(expected),
+                JakartaMaterializer.node(result, resultAdapter),
+                JakartaMaterializer.node(expected),
                 null);
 
         if (fail) {

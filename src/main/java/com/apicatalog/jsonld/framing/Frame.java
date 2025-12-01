@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
@@ -60,7 +60,7 @@ public final class Frame {
     }
 
     public static final Frame of(
-            final TreeIO frame,
+            final Tree frame,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -342,7 +342,7 @@ public final class Frame {
         return false;
     }
 
-    private static Collection<String> keysOf(TreeIO frame) {
+    private static Collection<String> keysOf(Tree frame) {
         return frame.isMap()
                 ? frame.keyStream().map(String.class::cast).toList()
                 : List.of();

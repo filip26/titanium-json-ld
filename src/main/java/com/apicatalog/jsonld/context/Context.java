@@ -32,8 +32,9 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.tree.io.java.JavaTree;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -96,7 +97,7 @@ public interface Context {
 
     // TODO move to Frame.context()
     @Deprecated
-    public static TreeIO extract(TreeIO document) throws JsonLdException {
+    public static Tree extract(Tree document) throws JsonLdException {
 
         final var node = document.node();
         final var adapter = document.adapter();
@@ -108,7 +109,7 @@ public interface Context {
         final var context = adapter.property(Keywords.CONTEXT, node);
 
         if (context != null) {
-            return new TreeIO(context, adapter);
+            return new Tree(context, adapter);
         }
 
 //        if (context != null
@@ -120,11 +121,11 @@ public interface Context {
 //            return new PolyNode(context, adapter);
 //        }
 
-        return new TreeIO(Map.of(), NativeAdapter.instance());
+        return JavaTree.of(Map.of());
 
     }
 
-    public static TreeIO unwrap(TreeIO context) {
+    public static Tree unwrap(Tree context) {
 
         Object node = context.node();
         var adapter = context.adapter();
@@ -146,21 +147,21 @@ public interface Context {
 
         if (node == null || adapter.isNull(node) || adapter.isEmpty(node)) {
             node = Map.of();
-            adapter = NativeAdapter.instance();
+            adapter = JavaAdapter.instance();
             changed = true;
         }
 
         return changed
-                ? new TreeIO(node, adapter)
+                ? new Tree(node, adapter)
                 : context;
     }
 
     public static Map<String, ?> inject(
             final Map<String, ?> node,
-            final TreeIO context) throws JsonLdException {
+            final Tree context) throws JsonLdException {
 
         // 9.3.
-        if (!TreeIO.isEmptyOrNull(context)) {
+        if (context != null && !context.isEmptyOrNull()) {
             final var compacted = new LinkedHashMap<String, Object>(node.size() + 1);
             compacted.put(Keywords.CONTEXT, context);
             compacted.putAll(node);
@@ -196,7 +197,7 @@ public interface Context {
         }
 
         // 5.2.5.2.
-        if (!TreeIO.isMap(document.content())) {
+        if (document.content() == null || !document.content().isMap()) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
         }
 
@@ -292,7 +293,7 @@ public interface Context {
             return ctx;
         }
 
-        public Builder update(TreeIO node, boolean acceptInline, URI baseUrl) throws JsonLdException {
+        public Builder update(Tree node, boolean acceptInline, URI baseUrl) throws JsonLdException {
             return update(node.node(), node.adapter(), acceptInline, baseUrl);
         }
 

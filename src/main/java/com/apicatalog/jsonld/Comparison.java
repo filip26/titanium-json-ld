@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.Tree.NodeType;
 
 /**
  * Structural equality for JSON-LD values as defined by the
@@ -88,20 +88,20 @@ public final class Comparison {
 
         final var type1 = adapter1.type(value1);
 
-        if (type1 == NodeType.TREE_IO) {
+        if (type1 == NodeType.TREE) {
 
             return equals(
-                    ((TreeIO) value1).node(), ((TreeIO) value1).adapter(),
+                    ((Tree) value1).node(), ((Tree) value1).adapter(),
                     value2, adapter2,
                     parentProperty);
         }
 
         final var type2 = adapter2.type(value2);
 
-        if (type2 == NodeType.TREE_IO) {
+        if (type2 == NodeType.TREE) {
             return equals(
                     value1, adapter1,
-                    ((TreeIO) value2).node(), ((TreeIO) value2).adapter(),
+                    ((Tree) value2).node(), ((Tree) value2).adapter(),
                     parentProperty);
         }
 
@@ -109,7 +109,7 @@ public final class Comparison {
             return false;
         }
 
-        final var nativeEquals = adapter1.isCompatibleWith(adapter2);
+        final var nativeEquals = adapter1.isEqualTo(adapter2);
 
         return switch (type1) {
         case NULL, TRUE, FALSE -> true;
@@ -132,11 +132,11 @@ public final class Comparison {
                         adapter1.binaryValue(value1),
                         adapter2.binaryValue(value2));
 
-        case COLLECTION -> arrayEquals(value1, adapter1, value2, adapter2, parentProperty);
+        case SEQUENCE -> arrayEquals(value1, adapter1, value2, adapter2, parentProperty);
 
         case MAP -> objectEquals(value1, adapter1, value2, adapter2);
 
-        case TREE_IO -> throw new IllegalStateException();
+        case TREE -> throw new IllegalStateException();
 
         default -> false;
 

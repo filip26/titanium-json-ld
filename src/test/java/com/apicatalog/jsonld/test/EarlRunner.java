@@ -27,7 +27,7 @@ import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.model.RdfQuadSet;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 import jakarta.json.JsonStructure;
 
@@ -83,7 +83,7 @@ public class EarlRunner {
                     testCase,
                     options,
                     result,
-                    NativeAdapter.instance(),
+                    JavaAdapter.instance(),
                     false);
 
 

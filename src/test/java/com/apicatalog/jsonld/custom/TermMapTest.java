@@ -39,10 +39,10 @@ import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.media.MediaType;
 
 class TermMapTest {
@@ -83,7 +83,7 @@ class TermMapTest {
                     testCase,
                     options,
                     termMap,
-                    NativeAdapter.instance());
+                    JavaAdapter.instance());
 
         } catch (JsonLdException e) {
 
@@ -130,15 +130,15 @@ class TermMapTest {
         return false;
     }
 
-    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final TreeIO expected) throws TreeIOException {
+    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final Tree expected) throws TreeIOException {
 
-        if (TreeIO.deepEquals(expected.node(), expected.adapter(), result, resultAdapter)) {
+        if (expected.isIsomorphicTo(result, resultAdapter)) {
             return true;
         }
 
         JunitRunner.write(testCase,
-                new JakartaMaterializer().node(result, resultAdapter),
-                new JakartaMaterializer().node(expected),
+                JakartaMaterializer.node(result, resultAdapter),
+                JakartaMaterializer.node(expected),
                 null);
 
         fail("Expected " + expected.node() + ", but was" + result);

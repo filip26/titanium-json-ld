@@ -30,8 +30,8 @@ import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 /**
  *
@@ -59,7 +59,7 @@ public final class Expander {
     }
 
     public static final Collection<?> expand(
-            final TreeIO document,
+            final Tree document,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -73,7 +73,7 @@ public final class Expander {
 
     
     public static final Collection<?> expand(
-            final TreeIO node,
+            final Tree node,
             final Context context,
             final URI baseUrl,
             final Options options,
@@ -99,7 +99,7 @@ public final class Expander {
     }
 
     public static final Collection<?> expandFrame(
-            final TreeIO node,
+            final Tree node,
             final Context context,
             final URI baseUrl,
             final Options options,
@@ -151,7 +151,7 @@ public final class Expander {
         if (context != null) {
             builder.update(
                     context.toString(),
-                    NativeAdapter.instance(),
+                    JavaAdapter.instance(),
                     true,
                     context);
         }
@@ -166,7 +166,7 @@ public final class Expander {
     }
 
     private static final Collection<?> expand(
-            final TreeIO node,
+            final Tree node,
             final Context context,
             final URI baseUrl,
             boolean frameExpansion,
@@ -205,12 +205,12 @@ public final class Expander {
 
     //TODO replace with Context.unwrap?
     @Deprecated
-    private static Object extractExpansionContext(final TreeIO context) throws JsonLdException {
+    private static Object extractExpansionContext(final Tree context) throws JsonLdException {
         // Defensive null check — optional, but safer in utility code
         Objects.requireNonNull(context, "context must not be null");
 
         // Case 1: Collection
-        if (context.isCollection()) {
+        if (context.isSequence()) {
             // Single-element collection: check if it’s a map with @context key
             if (context.isSingleElement()) {
                 final var element = context.singleElement();

@@ -51,7 +51,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 📄 **See also:** [EARL Results from the JSON-LD 1.1 Test Suite](https://w3c.github.io/json-ld-api/reports/#subj_Titanium_JSON_LD_Java)
 
-## 💡 Examples (v1.x.x)
+## Examples (v1.x.x)
 
 Titanium provides a high-level [`JsonLd`](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/com/apicatalog/jsonld/JsonLd.html) API for working with JSON-LD documents.
 
@@ -168,15 +168,15 @@ JsonLd.expand(document)
 
 👉 See the [Javadoc API Reference](https://javadoc.io/doc/com.apicatalog/titanium-json-ld/latest/) for advanced configuration and usage options.
 
-## 🚀 Examples (v2.x.x)
+## Examples (v2.x.x)
 
-Convert JSON-LD written in plain Java into RDF using a custom static document loader and a UUID URN space.
+Convert JSON-LD written in plain Java into RDF using a custom static document loader and UUID URN space.
 
 ```javascript
 static DocumentLoader loader = StaticLoader.newBuilder()
     .document(
         "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
-        Document.of(new TreeIO(Map.of(
+        Document.of(JavaTree.of(Map.of(
             "@context", Map.of(
                 "name", "http://xmlns.com/foaf/0.1/name",
                 "project", Map.of(
@@ -185,8 +185,7 @@ static DocumentLoader loader = StaticLoader.newBuilder()
                 "Person", "http://xmlns.com/foaf/0.1/Person",
                 "modified", Map.of(
                         "@id", "https://schema.org/dateModified",
-                        "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
-            NativeAdapter.instance())))
+                        "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))))))
     .build();
 
 Map<String, String> document = Map.of(
@@ -211,9 +210,6 @@ System.out.println(writer.toString());
 // _:b0 <https://schema.org/dateModified> "2025-11-25T01:02:03Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
 
 ```
-
-## 🚀 Best Practices (v2.x.x)
-
 
 ## ⚙️ Installation
 

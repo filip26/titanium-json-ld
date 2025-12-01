@@ -30,8 +30,8 @@ import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.java.JavaTree;
 
 /**
  * The {@code JsonLd} class provides high-level static methods to process
@@ -108,20 +108,20 @@ public final class JsonLd {
             final Map<String, ?> document,
             final Options options) throws JsonLdException {
 
-        return expand(new TreeIO(document, NativeAdapter.instance()), options);
+        return expand(JavaTree.of(document), options);
     }
 
     /**
-     * Expands a JSON-LD document provided as a {@link TreeIO} node.
+     * Expands a JSON-LD document provided as a {@link Tree} node.
      *
-     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     * @param document a {@link Tree} representation of the JSON-LD document to
      *                 expand
      * @param options  options to configure expansion
      * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
     public static final Collection<?> expand(
-            final TreeIO document,
+            final Tree document,
             final Options options) throws JsonLdException {
 
         return Expander.expand(
@@ -213,18 +213,18 @@ public final class JsonLd {
     }
 
     /**
-     * Compacts a JSON-LD document and context provided as {@link TreeIO} node.
+     * Compacts a JSON-LD document and context provided as {@link Tree} node.
      *
-     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     * @param document a {@link Tree} representation of the JSON-LD document to
      *                 compact
-     * @param context  a {@link TreeIO} representation of the context to use
+     * @param context  a {@link Tree} representation of the context to use
      * @param options  options to configure compaction
      * @return the compacted JSON-LD document
      * @throws JsonLdException if compaction fails
      */
     public static final Map<String, ?> compact(
-            final TreeIO document,
-            final TreeIO context,
+            final Tree document,
+            final Tree context,
             final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
@@ -254,8 +254,8 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return compact(
-                new TreeIO(document, NativeAdapter.instance()),
-                new TreeIO(context, NativeAdapter.instance()),
+                JavaTree.of(document),
+                JavaTree.of(context),
                 options);
     }
 
@@ -363,7 +363,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                new TreeIO(document, NativeAdapter.instance()),
+                JavaTree.of(document),
                 null,
                 options);
     }
@@ -385,9 +385,9 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                new TreeIO(document, NativeAdapter.instance()),
+                JavaTree.of(document),
                 context != null
-                        ? new TreeIO(context, NativeAdapter.instance())
+                        ? JavaTree.of(context)
                         : null,
                 options);
     }
@@ -406,7 +406,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                new TreeIO(document, NativeAdapter.instance()),
+                JavaTree.of(document),
                 null,
                 options);
     }
@@ -428,24 +428,24 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                new TreeIO(document, NativeAdapter.instance()),
+                JavaTree.of(document),
                 context != null
-                        ? new TreeIO(context, NativeAdapter.instance())
+                        ? JavaTree.of(context)
                         : null,
                 options);
     }
 
     /**
-     * Flattens a JSON-LD document represented as a {@link TreeIO} node.
+     * Flattens a JSON-LD document represented as a {@link Tree} node.
      *
-     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     * @param document a {@link Tree} representation of the JSON-LD document to
      *                 flatten
      * @param options  options to configure flattening
      * @return the flattened JSON-LD document
      * @throws JsonLdException if flattening fails
      */
     public static final Object flatten(
-            final TreeIO document,
+            final Tree document,
             final Options options) throws JsonLdException {
 
         return Flattener.flatten(
@@ -456,19 +456,19 @@ public final class JsonLd {
     }
 
     /**
-     * Flattens a JSON-LD document represented as a {@link TreeIO} node.
+     * Flattens a JSON-LD document represented as a {@link Tree} node.
      *
-     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     * @param document a {@link Tree} representation of the JSON-LD document to
      *                 flatten
-     * @param context  a {@link TreeIO} representation of the context to apply
+     * @param context  a {@link Tree} representation of the context to apply
      *                 during flattening
      * @param options  options to configure flattening
      * @return the flattened JSON-LD document
      * @throws JsonLdException if flattening fails
      */
     public static final Object flatten(
-            final TreeIO document,
-            final TreeIO context,
+            final Tree document,
+            final Tree context,
             final Options options) throws JsonLdException {
 
         return Flattener.flatten(
@@ -576,24 +576,24 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return frame(
-                new TreeIO(document, NativeAdapter.instance()),
-                new TreeIO(frame, NativeAdapter.instance()),
+                JavaTree.of(document),
+                JavaTree.of(frame),
                 options);
     }
 
     /**
-     * Frames a JSON-LD document and frame provided as {@link TreeIO} node.
+     * Frames a JSON-LD document and frame provided as {@link Tree} node.
      *
-     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     * @param document a {@link Tree} representation of the JSON-LD document to
      *                 frame
-     * @param frame    a {@link TreeIO} representation of the JSON-LD frame to apply
+     * @param frame    a {@link Tree} representation of the JSON-LD frame to apply
      * @param options  options to configure framing
      * @return the framed JSON-LD document
      * @throws JsonLdException if framing fails
      */
     public static final Map<String, ?> frame(
-            final TreeIO document,
-            final TreeIO frame,
+            final Tree document,
+            final Tree frame,
             final Options options) throws JsonLdException {
 
         final Execution runtime = Execution.of(options);
@@ -659,17 +659,17 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms a JSON-LD document represented as {@link TreeIO} node into RDF
+     * Transforms a JSON-LD document represented as {@link Tree} node into RDF
      * quads.
      *
-     * @param document a {@link TreeIO} representation of the JSON-LD document to
+     * @param document a {@link Tree} representation of the JSON-LD document to
      *                 transform
      * @param consumer an {@link RdfQuadConsumer} receiving emitted RDF quads
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      */
     public static final void toRdf(
-            final TreeIO document,
+            final Tree document,
             final RdfQuadConsumer consumer,
             final Options options) throws JsonLdException {
 
@@ -695,7 +695,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         RdfEmitter.toRdf(
-                new TreeIO(document, NativeAdapter.instance()),
+                JavaTree.of(document),
                 consumer,
                 options,
                 Execution.of(options));

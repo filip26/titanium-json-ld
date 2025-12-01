@@ -44,10 +44,10 @@ import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.test.JunitRunner;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonWriter;
@@ -113,13 +113,15 @@ class ExecutionTest {
 
         var expected = read(output);
 
-        var match = TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(), expected.node(), expected.adapter());
+        var match = expected.isIsomorphicTo(Map.of("contextKeys", keys), JavaAdapter.instance());
+                
+                //TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(), expected.node(), expected.adapter());
 
         if (!match) {
             var out = new StringWriter();
 
             try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
-                jsonWriter.write(new JakartaMaterializer().node(keys, NativeAdapter.instance()));
+                jsonWriter.write(JakartaMaterializer.node(keys, JavaAdapter.instance()));
             }
             System.out.println(out);
         }
@@ -127,7 +129,7 @@ class ExecutionTest {
         assertTrue(match);
     }
 
-    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
+    private final Tree read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);
         }

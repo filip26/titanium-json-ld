@@ -43,9 +43,9 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 class RemoteContextTest {
 
@@ -181,14 +181,14 @@ class RemoteContextTest {
             assertNotNull(result);
 
             boolean match = Comparison.equals(
-                    result, NativeAdapter.instance(),
+                    result, JavaAdapter.instance(),
                     expected.node(), expected.adapter());
 
             assertTrue(match);
         });
     }
 
-    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
+    private final Tree read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);
         }

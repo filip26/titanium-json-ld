@@ -38,7 +38,7 @@ import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.media.MediaType;
 
 class TypeMapTest {
@@ -81,7 +81,7 @@ class TypeMapTest {
                     testCase,
                     options,
                     typeMap,
-                    NativeAdapter.instance());
+                    JavaAdapter.instance());
 
         } catch (JsonLdException e) {
 

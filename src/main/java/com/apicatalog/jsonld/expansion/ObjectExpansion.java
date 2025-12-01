@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.uri.UriUtils;
 
 /**
@@ -44,14 +44,14 @@ public final class ObjectExpansion {
 
     private final Object element;
     private final TreeAdapter adapter;
-    private final TreeIO propertyContext;
+    private final Tree propertyContext;
     private final Params params;
 
     private Context activeContext;
     private String term;
 
     public ObjectExpansion(
-            final TreeIO propertyContext,
+            final Tree propertyContext,
             final Object element,
             final TreeAdapter adapter,
             final Params params) {
@@ -276,7 +276,7 @@ public final class ObjectExpansion {
 
             final var type = adapter.property(typeKey, element);
 
-            if (adapter.isCollection(type)) {
+            if (adapter.isSequence(type)) {
 
                 final var lastValue = adapter.elementStream(type)
                         .filter(adapter::isString)

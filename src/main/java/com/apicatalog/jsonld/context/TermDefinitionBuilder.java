@@ -34,8 +34,8 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.Tree.NodeType;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -157,7 +157,7 @@ public final class TermDefinitionBuilder {
                         && adapter.keys(value).size() == 2) {
 
                     if (adapter.isString(container) && !Keywords.SET.equals(adapter.stringValue(container))
-                            || adapter.isCollection(container) && adapter.elementStream(container)
+                            || adapter.isSequence(container) && adapter.elementStream(container)
                                     .map(adapter::asString)
                                     .noneMatch(Keywords.SET::equals)
                             || adapter.isMap(container) && adapter.keyStream(container)
@@ -725,7 +725,7 @@ public final class TermDefinitionBuilder {
             return CONTAINER_KEYWORDS.contains(adapter.stringValue(container));
         }
 
-        return adapter.isCollection(container)
+        return adapter.isSequence(container)
                 && validateContainerArray(adapter.elementStream(container)
                         .filter(adapter::isString)
                         .map(adapter::stringValue)

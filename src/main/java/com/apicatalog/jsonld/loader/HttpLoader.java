@@ -355,7 +355,9 @@ public class HttpLoader implements DocumentLoader {
             final URI contextUrl,
             final Response response) throws JsonLdException {
 
-        final var parser = parsers.getOrDefault(contentType, defaultParser);
+        final var parser = contentType == null
+                ? defaultParser
+                : parsers.getOrDefault(contentType, defaultParser);
 
         if (parser == null) {
             throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,

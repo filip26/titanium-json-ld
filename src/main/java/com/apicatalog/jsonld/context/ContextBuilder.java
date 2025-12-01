@@ -39,10 +39,10 @@ import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.runtime.Execution.TermsConsumer;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer;
+import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.tree.io.java.JavaTree;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
@@ -106,7 +106,7 @@ public final class ContextBuilder {
     }
 
     public ActiveContext build(
-            final TreeIO context,
+            final Tree context,
             final URI baseUrl) throws JsonLdException {
         return build(context.node(), context.adapter(), baseUrl);
     }
@@ -264,7 +264,7 @@ public final class ContextBuilder {
                         Terms.PROFILE_CONTEXT,
                         List.of(Terms.PROFILE_CONTEXT));
 
-                TreeIO importedContent = null;
+                Tree importedContent = null;
 
                 try {
 
@@ -314,27 +314,27 @@ public final class ContextBuilder {
 
                 try {
 
-                    if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                    if (importAdapter.isEqualTo(JavaAdapter.instance())
                             && importedContext instanceof Map<?, ?> map) {
                         merged = new LinkedHashMap<>(map);
 
                     } else {
-                        merged = new LinkedHashMap<>((Map<?, ?>) NativeMaterializer.node(importedContext, importAdapter));
+                        merged = new LinkedHashMap<>((Map<?, ?>) JavaTree.adapt(importedContext, importAdapter));
                     }
 
-                    if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                    if (importAdapter.isEqualTo(JavaAdapter.instance())
                             && contextDefinition instanceof Map<?, ?> map) {
                         merged.putAll(map);
 
                     } else {
-                        merged.putAll((Map<?, ?>) NativeMaterializer.node(contextDefinition, adapter));
+                        merged.putAll((Map<?, ?>) JavaTree.adapt(contextDefinition, adapter));
                     }
 
                 } catch (TreeIOException e) {
                     throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
                 }
 
-                contextAdapter = NativeAdapter.instance();
+                contextAdapter = JavaAdapter.instance();
                 contextDefinition = merged;
             }
 
@@ -643,18 +643,15 @@ public final class ContextBuilder {
             }
         }
 
-        final TreeIO importedContent = remoteDocument.content();
-
-//        if (remoteImport.content() instanceof PolyNode adaptedNode) {
-//            importedNode = adaptedNode;
-//
-////        } else {
-//        if (importedNode ==)
-//            throw new JsonLdError(JsonLdErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null.");
-//        }
+        final var importedContent = remoteDocument.content();
+        
+        if (importedContent == null) {
+            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
+                    "Remote context cannot be retrieved, uri=" + contextUri);
+        }
 
         // 5.2.5.2.
-        if (!TreeIO.isMap(importedContent)) {
+        if (!importedContent.isMap()) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
                     "An invalid imported JSON-LD, uri=" + contextUri + ", @context=" + importedContent.node());
         }
@@ -674,8 +671,8 @@ public final class ContextBuilder {
                 && newContextAdapter.keys(newContext).contains(Keywords.BASE)) {
 
             try {
-                newContext = NativeMaterializer.node(importedContext, importedContent.adapter());
-                newContextAdapter = NativeAdapter.instance();
+                newContext = JavaTree.adapt(importedContext, importedContent.adapter());
+                newContextAdapter = JavaAdapter.instance();
 
                 // remove @base from a remote context
                 if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
@@ -689,15 +686,6 @@ public final class ContextBuilder {
             }
         }
 
-        // FIXME
-//        if (activeContext.runtime().getDocumentCache() != null) {
-//            activeContext.runtime().getDocumentCache().put(contextKey, remoteImport);
-//        }
-
-//        if (collectKey != null) {
-//            collectKey.accept(newContextAdapter.keyStream(newContext).map(newContextAdapter::asString).toList());
-//        }
-
         // 5.2.6
         try {
             result = result
@@ -706,11 +694,6 @@ public final class ContextBuilder {
                     .validateScopedContext(validateScopedContext)
                     .collectTerms(collectTerms)
                     .build(newContext, newContextAdapter, remoteDocument.url());
-
-//FIXME
-//            if (result.runtime().getContextCache() != null && !validateScopedContext) {
-//                result.runtime().getContextCache().put(contextKey, importedContext);
-//            }
 
         } catch (JsonLdException e) {
             throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);

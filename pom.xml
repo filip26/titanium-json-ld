@@ -52,8 +52,8 @@
         <maven.compiler.release>21</maven.compiler.release>
         
         <rdf-api.version>1.0.0</rdf-api.version>
-        <jcs.version>3.0.0-M1</jcs.version>
-        <tree-io.version>0.11.0</tree-io.version>
+        <jcs.version>3.0.0-M2-SNAPSHOT</jcs.version>
+        <tree-io.version>0.14.0-SNAPSHOT</tree-io.version>
 
         <!-- test resources -->
         <junit.version>6.0.1</junit.version>

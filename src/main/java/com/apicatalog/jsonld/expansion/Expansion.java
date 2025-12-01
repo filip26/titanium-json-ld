@@ -26,13 +26,13 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.tree.io.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.Tree.NodeType;
 
 /**
  *
@@ -90,7 +90,7 @@ public final class Expansion {
         var nodeType = nodeAdapter.type(node);
 
         // 5. If element is an array,
-        if (nodeType == NodeType.COLLECTION) {
+        if (nodeType == NodeType.SEQUENCE) {
             return array(activeContext, node, nodeAdapter, activeProperty, term, expandedTerm, params);
         }
 
@@ -176,7 +176,7 @@ public final class Expansion {
     static final Map<String, ?> scalar(
             final Context context,
             final String property,
-            final TreeIO propertyContext,
+            final Tree propertyContext,
             final Object node,
             final TreeAdapter nodeAdapter,
             final Params params) throws JsonLdException {
@@ -256,12 +256,12 @@ public final class Expansion {
             final String expandedTerm,
             final Params params) throws JsonLdException {
 
-        if (nodeAdapter.isEmptyCollection(node)) {
+        if (nodeAdapter.isEmptySequence(node)) {
             return List.of();
         }
 
         final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
-                && (nodeAdapter.type(node) != NodeType.COLLECTION
+                && (nodeAdapter.type(node) != NodeType.SEQUENCE
                         || nodeAdapter.isSingleElement(node));
 
         if (!indexedSingleton) {

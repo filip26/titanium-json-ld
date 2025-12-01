@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 public final class FrameMatcher {
 
@@ -192,7 +192,7 @@ public final class FrameMatcher {
                             final Frame frame = Frame.of(listValue);
                             boolean match = false;
 
-                            for (final var value : NativeAdapter.asCollection(nodeListValue)) {
+                            for (final var value : JavaAdapter.asCollection(nodeListValue)) {
 
                                 match = frame.matchValue(value);
                                 if (match) {
@@ -211,10 +211,10 @@ public final class FrameMatcher {
                         } else if (JsonLdAdapter.isNode(((Collection<?>) listValue).iterator().next())
                                 || JsonLdAdapter.isReference(((Collection<?>) listValue).iterator().next())) {
 
-                            final Frame frame = Frame.of(listValue);
+                            final var frame = Frame.of(listValue);
                             boolean match = false;
 
-                            for (final var value : NativeAdapter.asCollection(nodeListValue)) {
+                            for (final var value : JavaAdapter.asCollection(nodeListValue)) {
 
                                 match = frame.matchNode(state, value, requireAll);
 

@@ -24,8 +24,8 @@ import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads.RdfJsonLiteralWriter;
-import com.apicatalog.tree.io.TreeIO;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.java.JavaTree;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
@@ -119,7 +119,7 @@ public final class Options {
      * A context that is used to initialize the active context when expanding a
      * document.
      */
-    private TreeIO expandContext;
+    private Tree expandContext;
 
     private boolean extractAllScripts;
 
@@ -407,7 +407,7 @@ public final class Options {
      *
      * @return the expand context, or {@code null} if none is set.
      */
-    public TreeIO expandContext() {
+    public Tree expandContext() {
         return expandContext;
     }
 
@@ -607,7 +607,7 @@ public final class Options {
             this.expandContext = null;
             return this;
         }
-        this.expandContext = new TreeIO(Set.of(uri), NativeAdapter.instance());
+        this.expandContext = JavaTree.of(Set.of(uri));
         return this;
     }
 
@@ -632,7 +632,7 @@ public final class Options {
     }
 
     /**
-     * Sets the expand context using a {@link TreeIO} node.
+     * Sets the expand context using a {@link Tree} node.
      *
      * <p>
      * If {@code null} is provided, the expand context is cleared.
@@ -642,7 +642,7 @@ public final class Options {
      *             it
      * @return this {@link Options} instance, for method chaining
      */
-    public Options expandContext(TreeIO node) {
+    public Options expandContext(Tree node) {
 
         if (node == null) {
             this.expandContext = null;
