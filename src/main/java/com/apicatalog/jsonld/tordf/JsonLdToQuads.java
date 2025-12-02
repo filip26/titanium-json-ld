@@ -138,7 +138,7 @@ public final class JsonLdToQuads {
                 consumer.namedGraph(graphName);
 
             } else {
-                // TODO log skipped graph
+                LOGGER.log(Level.WARNING, "Graph has been skipped because of non well-formed graph name [{0}]", graphName);
                 continue;
             }
 
@@ -345,12 +345,13 @@ public final class JsonLdToQuads {
         // 13.
         if (item.containsKey(Keywords.DIRECTION) && rdfDirection != null) {
 
-            // 13.1.
-            final var language = item.get(Keywords.LANGUAGE) instanceof String langString
-                    ? langString.toLowerCase()
-                    : "";
             // 13.2.
             if (RdfDirection.I18N_DATATYPE == rdfDirection) {
+                
+                final var language = item.get(Keywords.LANGUAGE) instanceof String langString
+                        ? langString.toLowerCase()
+                        : "";
+
                 consumer.triple(
                         subject,
                         predicate,
