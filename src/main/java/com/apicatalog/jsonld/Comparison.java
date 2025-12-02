@@ -75,15 +75,19 @@ public final class Comparison {
      * @return {@code true} if both nodes are JSON-LD equivalent
      */
     public static final boolean equals(
-            final Object value1, final TreeAdapter adapter1,
-            final Object value2, final TreeAdapter adapter2) {
+            final Object value1,
+            final TreeAdapter adapter1,
+            final Object value2,
+            final TreeAdapter adapter2) {
 
         return equals(value1, adapter1, value2, adapter2, null);
     }
 
     private static final boolean equals(
-            final Object value1, final TreeAdapter adapter1,
-            final Object value2, final TreeAdapter adapter2,
+            final Object value1,
+            final TreeAdapter adapter1,
+            final Object value2,
+            final TreeAdapter adapter2,
             final String parentProperty) {
 
         final var type1 = adapter1.type(value1);
@@ -91,8 +95,10 @@ public final class Comparison {
         if (type1 == NodeType.TREE) {
 
             return equals(
-                    ((Tree) value1).node(), ((Tree) value1).adapter(),
-                    value2, adapter2,
+                    ((Tree) value1).node(),
+                    ((Tree) value1).adapter(),
+                    value2,
+                    adapter2,
                     parentProperty);
         }
 
@@ -100,8 +106,10 @@ public final class Comparison {
 
         if (type2 == NodeType.TREE) {
             return equals(
-                    value1, adapter1,
-                    ((Tree) value2).node(), ((Tree) value2).adapter(),
+                    value1,
+                    adapter1,
+                    ((Tree) value2).node(),
+                    ((Tree) value2).adapter(),
                     parentProperty);
         }
 
@@ -120,11 +128,16 @@ public final class Comparison {
                         adapter1.stringValue(value1),
                         adapter2.stringValue(value2));
 
-        case NUMBER -> nativeEquals
-                ? Objects.equals(value1, value2)
-                : Objects.equals(
-                        adapter1.numericValue(value1),
-                        adapter2.numericValue(value2));
+        case NUMBER -> adapter1.isIntegral(value1)
+                && adapter2.isIntegral(value2)
+                && Objects.equals(
+                        adapter1.integerValue(value1),
+                        adapter2.integerValue(value2))
+                || !adapter1.isIntegral(value1)
+                        && !adapter2.isIntegral(value2)
+                        && Objects.equals(
+                                adapter1.decimalValue(value1),
+                                adapter2.decimalValue(value2));
 
         case BINARY -> nativeEquals
                 ? Objects.equals(value1, value2)
@@ -144,8 +157,10 @@ public final class Comparison {
     }
 
     private static final boolean objectEquals(
-            final Object map1, final TreeAdapter adapter1,
-            final Object map2, final TreeAdapter adapter2) {
+            final Object map1,
+            final TreeAdapter adapter1,
+            final Object map2,
+            final TreeAdapter adapter2) {
 
         final var it1 = adapter1.entryStream(map1).toList();
 
@@ -157,8 +172,10 @@ public final class Comparison {
 
             final var prop2 = adapter2.property(entry1.getKey(), adapter1, map2);
             if (!equals(
-                    entry1.getValue(), adapter1,
-                    prop2, adapter2,
+                    entry1.getValue(),
+                    adapter1,
+                    prop2,
+                    adapter2,
                     adapter1.asString(entry1.getKey()))) {
                 return false;
             }
@@ -167,8 +184,10 @@ public final class Comparison {
     }
 
     private static final boolean arrayEquals(
-            final Object array1, final TreeAdapter adapter1,
-            final Object array2, final TreeAdapter adapter2,
+            final Object array1,
+            final TreeAdapter adapter1,
+            final Object array2,
+            final TreeAdapter adapter2,
             final String parentProperty) {
 
         // For values of @list, the order of these items is significant
@@ -191,8 +210,10 @@ public final class Comparison {
 
     // JSON arrays are generally compared with no regard to order
     private static final boolean arraysEqualsUnordered(
-            final Object array1, final TreeAdapter adapter1,
-            final Object array2, final TreeAdapter adapter2) {
+            final Object array1,
+            final TreeAdapter adapter1,
+            final Object array2,
+            final TreeAdapter adapter2) {
 
         var list1 = adapter1.elementStream(array1).toList();
         var list2 = adapter2.elementStream(array2).toList();

@@ -304,7 +304,9 @@ public final class JsonLdToQuads {
             if (Terms.XSD_DOUBLE.equals(datatype)
                     || Terms.XSD_FLOAT.equals(datatype)
                     || (!JavaAdapter.instance().isIntegral(number) && number.doubleValue() % -1 != 0)
-                    || (number instanceof BigDecimal decimal && decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)) {
+                    || (number instanceof BigDecimal decimal && decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)
+                    || (number instanceof Double decimal && decimal >= 1e21)
+                    || (number instanceof Float decimal && decimal >= 1e21f)) {
 
                 valueString = toXsdDouble(number.doubleValue());
 
@@ -394,13 +396,16 @@ public final class JsonLdToQuads {
                 consumer.triple(
                         subject,
                         predicate,
-                        valueString, langString, null);
+                        valueString,
+                        langString,
+                        null);
 
             } else {
                 consumer.triple(
                         subject,
                         predicate,
-                        valueString, datatype);
+                        valueString,
+                        datatype);
             }
         }
     }
