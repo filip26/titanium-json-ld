@@ -54,8 +54,7 @@ public class Document {
     }
 
     /**
-     * Create a new document from {@link Tree} node.
-     * as the content type.
+     * Create a new document from {@link Tree} node. as the content type.
      *
      * @param content representing a tree
      * @return {@link Document} representing a tree content
@@ -138,9 +137,10 @@ public class Document {
                                 extractAllScripts,
                                 null,
                                 null)))
-                .orElseThrow(() -> new JsonLdException(
-                        ErrorCode.LOADING_DOCUMENT_FAILED,
-                        "Returned document is null [" + url + "]."));
+                .orElseThrow(
+                        () -> new JsonLdException(
+                                ErrorCode.LOADING_DOCUMENT_FAILED,
+                                "Returned document is null [" + url + "]."));
     }
 
     /**
@@ -179,7 +179,7 @@ public class Document {
      * The value of any <code>profile</code> parameter retrieved as part of the
      * original {@link #contentType()}.
      *
-     * @return document profile or {@link Optional#empty()}
+     * @return document profile or <code>null</code> if not available
      */
     public String profile() {
         return profile;

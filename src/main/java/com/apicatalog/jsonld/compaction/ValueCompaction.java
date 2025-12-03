@@ -23,8 +23,8 @@ import java.util.Map;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
+import com.apicatalog.jsonld.context.Direction;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.JavaAdapter;
 

@@ -28,15 +28,14 @@ import java.util.logging.Logger;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
-import com.apicatalog.jsonld.lang.BlankNode;
-import com.apicatalog.jsonld.lang.CompactUri;
-import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.Tree.NodeType;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.uri.BlankNode;
+import com.apicatalog.web.uri.CompactUri;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 

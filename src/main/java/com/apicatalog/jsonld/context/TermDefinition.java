@@ -21,10 +21,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.apicatalog.jsonld.lang.Direction;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeComparison;
-import com.apicatalog.tree.io.Tree;
 
 public final class TermDefinition {
 

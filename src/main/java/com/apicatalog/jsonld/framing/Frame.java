@@ -25,9 +25,8 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.lang.Embed;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.Tree;
@@ -36,6 +35,34 @@ import com.apicatalog.web.uri.UriValidationPolicy;
 
 public final class Frame {
 
+    /**
+    *
+    * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldembed">JsonLdEmbed</a>
+    *
+    */
+   public enum Embed {
+
+       /**
+        * Always embed node objects as property values,
+        * unless this would cause a circular reference.
+        */
+       ALWAYS,
+
+       /**
+        * Always use a node reference when serializing matching values.
+        */
+       NEVER,
+
+       /**
+        * Only a single value within a given node object should be embedded,
+        * other values of other properties use a node reference.
+        * This is the default value if neither @embed nor object embed flag is specified.
+        */
+       ONCE
+
+   }
+
+    
     public static final Frame EMPTY = new Frame(Map.of(), Set.of());
 
     private final Map<String, ?> expanded;

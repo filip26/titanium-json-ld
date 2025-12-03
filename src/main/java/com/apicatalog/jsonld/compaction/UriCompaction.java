@@ -27,10 +27,10 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriRelativizer;
 
 /**

@@ -39,10 +39,10 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.Tree;
+import com.apicatalog.web.uri.BlankNode;
 
 /**
  *

@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.TreeAdapter;

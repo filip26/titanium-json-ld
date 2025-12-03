@@ -26,13 +26,12 @@ import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.tree.io.java.JavaTree;
 

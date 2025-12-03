@@ -17,10 +17,11 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLd.Version;
-import com.apicatalog.jsonld.lang.Embed;
+import com.apicatalog.jsonld.framing.Frame.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads.RdfJsonLiteralWriter;
@@ -580,13 +581,13 @@ public final class Options {
 
     /**
      * Sets the {@link RdfJsonLiteralWriter} used for serializing {@code @json} type
-     * when converting to {@code rdf:JSON}.
+     * when converting to {@code rdf:JSON}. {@link JsonLdToQuads#JCS} by default.
      *
-     * @param jsonWriter the JSON literal writer implementation
+     * @param jsonWriter the JSON literal writer implementation, never {@code null}.
      * @return this {@link Options} instance, for method chaining
      */
     public Options rdfJsonLiteralWriter(RdfJsonLiteralWriter jsonWriter) {
-        this.rdfJsonLiteralWriter = jsonWriter;
+        this.rdfJsonLiteralWriter = Objects.requireNonNull(jsonWriter);
         return this;
     }
 
@@ -871,6 +872,7 @@ public final class Options {
 
     /**
      * A processing policy on how proceed with an undefined term during expansion.
+     * {@link ProcessingPolicy#Ignore} by default.
      * 
      * @return the processing policy, never <code>null</code>
      */
@@ -880,7 +882,7 @@ public final class Options {
 
     /**
      * Set processing policy on how proceed with an undefined term during expansion.
-     * Ignore by default.
+     * {@link ProcessingPolicy#Ignore} by default.
      * 
      * @param undefinedTerms the processing policy, never <code>null</code>
      * 
@@ -892,6 +894,8 @@ public final class Options {
 
     /**
      * 
+     * <code>true</code> by default.
+     * 
      * @since 2.0.0
      * 
      */
@@ -900,6 +904,8 @@ public final class Options {
     }
 
     /**
+     * 
+     * <code>true</code> by default.
      * 
      * @since 2.0.0
      * 
@@ -911,7 +917,7 @@ public final class Options {
 
     /**
      * A processing policy on how proceed with dropped free floating nodes during
-     * expansion.
+     * expansion. {@link ProcessingPolicy#Ignore} by default.
      * 
      * @return the actual policy for dropped free floating nodes
      * 
@@ -922,6 +928,8 @@ public final class Options {
     }
 
     /**
+     * Set the processing policy on how proceed with dropped free floating nodes
+     * during expansion. {@link ProcessingPolicy#Ignore} by default.
      * 
      * @param the policy to apply when free floating nodes to drop appears
      * 

@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.flattening.NodeMap;
-import com.apicatalog.jsonld.lang.Embed;
+import com.apicatalog.jsonld.framing.Frame.Embed;
 
 public final class FramingState {
 

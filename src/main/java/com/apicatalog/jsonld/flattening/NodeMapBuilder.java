@@ -27,10 +27,10 @@ import java.util.function.Predicate;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.web.uri.BlankNode;
 
 public final class NodeMapBuilder {
 

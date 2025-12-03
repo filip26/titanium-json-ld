@@ -30,7 +30,6 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
@@ -41,6 +40,7 @@ import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 

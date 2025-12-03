@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.lang.Embed;
+import com.apicatalog.jsonld.framing.Frame.Embed;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.java.JavaAdapter;

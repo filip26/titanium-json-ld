@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 
 /**
@@ -146,11 +145,11 @@ public final class InverseContext {
            return;
        }
 
-       final Optional<String> languageMapping = activeContext
+       final var languageMapping = activeContext
                .findTerm(termName)
                .map(TermDefinition::getLanguageMapping);
 
-       final Optional<Direction> directionMapping = activeContext
+       final var directionMapping = activeContext
                .findTerm(termName)
                .map(TermDefinition::getDirectionMapping);
 

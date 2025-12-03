@@ -32,7 +32,6 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
-import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.rdf.api.RdfConsumerException;
@@ -40,6 +39,7 @@ import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 

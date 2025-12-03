@@ -181,14 +181,17 @@ public class JsonLdAdapter {
 
     /* --- */
 
-    public static void setOrAdd(Map<String, Object> result, String key, Object value) {
+    public static void setOrAdd(
+            Map<String, Object> result,
+            String key,
+            Object value) {
         setOrAdd(result, key, value, true);
     }
 
     public static void setOrAdd(
             final Map<String, Object> source,
             final String key,
-            Object value,
+            final Object value,
             final boolean asArray) {
 
         var previous = source.get(key);

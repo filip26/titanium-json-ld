@@ -16,7 +16,7 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  * @see <a href="https://www.w3.org/TR/json-ld11/#keywords">JSON-LD Keywords</a>
@@ -97,7 +97,7 @@ public final class Keywords {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String ANNOTATION = "@annotation";
 
-    private static final Collection<String> ALL_KEYWORDS = List.of(ANY, BASE, CONTAINER, CONTEXT,
+    private static final Collection<String> ALL_KEYWORDS = Set.of(ANY, BASE, CONTAINER, CONTEXT,
             DIRECTION, GRAPH, ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX,
             PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET, TYPE, VALUE, VERSION, VOCAB,
             // framing
