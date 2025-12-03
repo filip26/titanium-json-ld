@@ -122,11 +122,14 @@ public final class JsonLdToQuads {
 
     protected void provide(RdfTripleConsumer consumer) throws JsonLdException, RdfConsumerException {
 
-        final var graphNames = nodeMap.graphs().stream().sorted().iterator();
+        final var graphNames = nodeMap.graphs()
+                .stream()
+                .sorted()
+                .iterator();
 
         while (graphNames.hasNext()) {
 
-            final String graphName = graphNames.next();
+            final var graphName = graphNames.next();
 
             if (Keywords.DEFAULT.equals(graphName)) {
                 consumer.defaultGraph();
@@ -142,7 +145,10 @@ public final class JsonLdToQuads {
                 continue;
             }
 
-            final var subjects = nodeMap.subjects(graphName).stream().sorted().iterator();
+            final var subjects = nodeMap.subjects(graphName)
+                    .stream()
+                    .sorted()
+                    .iterator();
 
             while (subjects.hasNext()) {
 
@@ -168,7 +174,9 @@ public final class JsonLdToQuads {
 
                             if (type instanceof String typeString) {
 
-                                if (!BlankNode.isWellFormed(typeString) && UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
+                                if (!BlankNode.isWellFormed(typeString)
+                                        && UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
+                                    LOGGER.log(Level.WARNING, "Non well-formed type [{0}] has been skipped.", typeString);
                                     continue;
                                 }
 
@@ -178,6 +186,7 @@ public final class JsonLdToQuads {
                                         typeString);
 
                             } else {
+                                LOGGER.log(Level.WARNING, "Non well-formed type [{0}] has been skipped.", type);
                                 continue;
                             }
 
@@ -221,11 +230,11 @@ public final class JsonLdToQuads {
         // 1. - 2.
         if (JsonLdAdapter.isNode(item)) {
 
-            if (item.get(Keywords.ID) instanceof String idString
-                    && (BlankNode.isWellFormed(idString)
-                            || UriUtils.isAbsoluteUri(idString, uriValidation))) {
+            if (item.get(Keywords.ID) instanceof String nodeId
+                    && (BlankNode.isWellFormed(nodeId)
+                            || UriUtils.isAbsoluteUri(nodeId, uriValidation))) {
 
-                consumer.triple(subject, predicate, idString);
+                consumer.triple(subject, predicate, nodeId);
             }
             return;
         }
@@ -252,13 +261,17 @@ public final class JsonLdToQuads {
                 : null;
 
         // 6.
-        if (datatype != null && !Keywords.JSON.equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
+        if (datatype != null
+                && !Keywords.JSON.equals(datatype)
+                && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
             LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute URI nor @json and value is skipped.", datatype);
             return;
         }
 
         // 7.
-        if (item.containsKey(Keywords.LANGUAGE) && (!(item.get(Keywords.LANGUAGE) instanceof String langString) || !LanguageTag.isWellFormed(langString))) {
+        if (item.containsKey(Keywords.LANGUAGE)
+                && (!(item.get(Keywords.LANGUAGE) instanceof String langString)
+                        || !LanguageTag.isWellFormed(langString))) {
             LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
             return;
         }
@@ -347,7 +360,7 @@ public final class JsonLdToQuads {
 
             // 13.2.
             if (RdfDirection.I18N_DATATYPE == rdfDirection) {
-                
+
                 final var language = item.get(Keywords.LANGUAGE) instanceof String langString
                         ? langString.toLowerCase()
                         : "";

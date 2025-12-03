@@ -74,7 +74,7 @@ public final class Options {
      * undefined terms.
      */
     public enum ProcessingPolicy {
-        /** Ignore the condition (default behavior). */
+        /** Ignore the condition. */
         Ignore,
         /** Stop processing and throw an error. */
         Fail,

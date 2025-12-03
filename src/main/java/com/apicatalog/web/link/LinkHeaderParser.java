@@ -377,8 +377,8 @@ final class LinkHeaderParser {
             addParameter();
             state = State.PARAM_NAME;
             return;
-
-        } else if (ch == ',') {
+        }
+        if (ch == ',') {
             attributeValue = valueBuilder.toString();
             addParameter();
             addLink();

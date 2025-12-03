@@ -16,7 +16,6 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,7 @@ public class JsonLdAdapter {
             Keywords.INDEX,
             Keywords.CONTEXT);
 
-    private static final Collection<String> VALUE_KEYWORDS = Arrays.asList(
+    private static final Collection<String> VALUE_KEYWORDS = Set.of(
             Keywords.TYPE,
             Keywords.VALUE,
             Keywords.DIRECTION,
@@ -54,28 +53,27 @@ public class JsonLdAdapter {
      * @param node to check
      * @return <code>true</code> if the provided value is valid node object
      */
-    public static final boolean isNode(Object node) {
+    public static final boolean isNode(final Object node) {
         return node instanceof Map map
                 && ((!map.containsKey(Keywords.VALUE)
                         && !map.containsKey(Keywords.LIST)
                         && !map.containsKey(Keywords.SET))
-                        || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(map.keySet()));
+                        || Set.of(Keywords.CONTEXT, Keywords.GRAPH).containsAll(map.keySet()));
     }
 
     public static boolean isNode(Object value, TreeAdapter adapter) {
-        if (!adapter.isMap(value)) {
-            return false;
-        }
-        return adapter.keyStream(value).noneMatch(Set.of(
-                Keywords.VALUE,
-                Keywords.LIST,
-                Keywords.SET)::contains)
-                || Set.of(
-                        Keywords.CONTEXT,
-                        Keywords.GRAPH).containsAll(adapter.keys(value));
+        return adapter.isMap(value)
+                && (adapter.keyStream(value).noneMatch(
+                        Set.of(
+                                Keywords.VALUE,
+                                Keywords.LIST,
+                                Keywords.SET)::contains)
+                        || Set.of(
+                                Keywords.CONTEXT,
+                                Keywords.GRAPH).containsAll(adapter.keys(value)));
     }
 
-    public static final boolean isReference(Object node) {
+    public static final boolean isReference(final Object node) {
         return node instanceof Map map
                 && map.size() == 1
                 && map.containsKey(Keywords.ID);
@@ -121,7 +119,7 @@ public class JsonLdAdapter {
      * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
      *      Object</a>
      *
-     * @param node   to check
+     * @param node    to check
      * @param adapter
      * @return <code>true</code> if the provided value is valid default object
      */
@@ -189,7 +187,8 @@ public class JsonLdAdapter {
 
     public static void setOrAdd(
             final Map<String, Object> source,
-            final String key, Object value,
+            final String key,
+            Object value,
             final boolean asArray) {
 
         var previous = source.get(key);
