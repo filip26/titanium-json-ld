@@ -40,15 +40,15 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.java.JavaAdapter;
-import com.apicatalog.tree.io.java.JavaTree;
 
 class NativeInputTest {
 
     static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
             .document(
                     "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
-                    Document.of(JavaTree.of(Map.of(
+                    Document.of(Tree.of(Map.of(
                             "@context", Map.of(
                                     "name", "http://xmlns.com/foaf/0.1/name",
                                     "project", Map.of(

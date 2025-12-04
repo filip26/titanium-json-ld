@@ -108,7 +108,7 @@ public final class JsonLd {
             final Map<String, ?> document,
             final Options options) throws JsonLdException {
 
-        return expand(JavaTree.of(document), options);
+        return expand(Tree.of(document), options);
     }
 
     /**
@@ -254,8 +254,8 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return compact(
-                JavaTree.of(document),
-                JavaTree.of(context),
+                Tree.of(document),
+                Tree.of(context),
                 options);
     }
 
@@ -363,7 +363,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                JavaTree.of(document),
+                Tree.of(document),
                 null,
                 options);
     }
@@ -385,9 +385,9 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                JavaTree.of(document),
+                Tree.of(document),
                 context != null
-                        ? JavaTree.of(context)
+                        ? Tree.of(context)
                         : null,
                 options);
     }
@@ -430,7 +430,7 @@ public final class JsonLd {
         return flatten(
                 JavaTree.of(document),
                 context != null
-                        ? JavaTree.of(context)
+                        ? Tree.of(context)
                         : null,
                 options);
     }
@@ -576,8 +576,8 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return frame(
-                JavaTree.of(document),
-                JavaTree.of(frame),
+                Tree.of(document),
+                Tree.of(frame),
                 options);
     }
 
@@ -695,7 +695,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         RdfEmitter.toRdf(
-                JavaTree.of(document),
+                Tree.of(document),
                 consumer,
                 options,
                 Execution.of(options));

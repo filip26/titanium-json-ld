@@ -34,7 +34,6 @@ import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.java.JavaAdapter;
-import com.apicatalog.tree.io.java.JavaTree;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -121,7 +120,7 @@ public interface Context {
 //            return new PolyNode(context, adapter);
 //        }
 
-        return JavaTree.of(Map.of());
+        return Tree.of(Map.of());
 
     }
 
