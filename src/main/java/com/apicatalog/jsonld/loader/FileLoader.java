@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.media.MediaType;
 
@@ -91,13 +92,19 @@ public final class FileLoader implements DocumentLoader {
     public Document loadDocument(final URI uri, final Options options) throws LoaderException {
 
         if (!"file".equalsIgnoreCase(uri.getScheme())) {
-            throw new LoaderException(uri, "Unsupported URL scheme [" + uri.getScheme() + "]. FileLoader accepts only file scheme.");
+            throw new LoaderException(
+                    ErrorCode.UNSUPPORTED_SCHEME,
+                    uri, 
+                    "Unsupported URL scheme [" + uri.getScheme() + "]. FileLoader accepts only file scheme.");
         }
 
         final File file = new File(uri);
 
         if (!file.canRead()) {
-            throw new LoaderException(uri, "File [" + uri + "] is not accessible to read.");
+            throw new LoaderException(
+                    ErrorCode.CLIENT,
+                    uri, 
+                    "File [" + uri + "] is not accessible to read.");
         }
 
         final var contentType = fromFileExtension(file.getName());
@@ -111,7 +118,8 @@ public final class FileLoader implements DocumentLoader {
 
         } catch (FileNotFoundException e) {
 
-            throw new LoaderException(uri, "File not found [" + uri + "].");
+            return null;
+//FIXME?            throw new LoaderException(uri, "File not found [" + uri + "].");
 
         } catch (Exception e) {
             throw new LoaderException(uri, e);

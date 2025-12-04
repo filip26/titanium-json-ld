@@ -4,8 +4,7 @@ import java.net.URI;
 import java.util.Set;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
+import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 
 public final class UriBlocker implements DocumentLoader {
 
@@ -59,7 +58,9 @@ public final class UriBlocker implements DocumentLoader {
 
         if (blacklist == match) {
             // TODO add specialized code??
-            throw new LoaderException(uri,
+            throw new LoaderException(
+                    ErrorCode.BLOCKED_URI,
+                    uri,
                     blacklist
                             ? "The URI [" + uri + "] is blaclisted"
                             : "The URI [" + uri + "] is not whitelisted, allowed");

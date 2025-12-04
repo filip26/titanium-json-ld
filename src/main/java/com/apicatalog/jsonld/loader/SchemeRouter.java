@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 
 /**
  * A {@link DocumentLoader} that delegates document loading to other loaders
@@ -99,7 +100,7 @@ public final class SchemeRouter implements DocumentLoader {
             return fallback.loadDocument(uri, options);
         }
 
-        throw new LoaderException(uri, "The scheme [" + uri.getScheme() + "] is not supported.");
+        throw new LoaderException(ErrorCode.UNSUPPORTED_SCHEME, uri, "The scheme [" + uri.getScheme() + "] is not supported.");
 
     }
 

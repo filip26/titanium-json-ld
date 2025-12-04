@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
 
@@ -40,13 +41,13 @@ public class ZipResourceLoader implements DocumentLoader {
     public Document loadDocument(URI uri, Options options) throws LoaderException {
 
         if (!"zip".equals(uri.getScheme())) {
-            throw new LoaderException(uri, ""); //TODO message
+            throw new LoaderException(ErrorCode.UNSUPPORTED_SCHEME, uri);
         }
 
         URL zipFileUrl = getClass().getResource("/" + uri.getAuthority());
 
         if (zipFileUrl == null) {
-            throw new LoaderException(uri, ""); //TODO message
+            return null;
         }
 
         File zipFile = null;
@@ -55,7 +56,7 @@ public class ZipResourceLoader implements DocumentLoader {
             zipFile = new File(zipFileUrl.toURI());
 
         } catch (URISyntaxException e) {
-            throw new LoaderException(uri, e);
+            throw new LoaderException(ErrorCode.INVALID_URI, uri, e);
         }
 
         try (ZipFile zip = new ZipFile(zipFile)) {
@@ -81,13 +82,13 @@ public class ZipResourceLoader implements DocumentLoader {
     public static byte[] fetchBytes(URI uri) throws LoaderException {
 
         if (!"zip".equals(uri.getScheme())) {
-            throw new LoaderException(uri, "url = %s".formatted(uri));
+            throw new LoaderException(ErrorCode.UNSUPPORTED_SCHEME, uri, "url = %s".formatted(uri));
         }
 
         URL zipFileUrl = ZipResourceLoader.class.getResource("/" + uri.getAuthority());
 
         if (zipFileUrl == null) {
-            throw new LoaderException(uri, "is null");
+            return null;
         }
 
         File zipFile = null;

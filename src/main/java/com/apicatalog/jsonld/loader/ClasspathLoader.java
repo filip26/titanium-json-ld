@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.media.MediaType;
@@ -89,6 +90,7 @@ public final class ClasspathLoader implements DocumentLoader {
 
         if (!"classpath".equalsIgnoreCase(uri.getScheme())) {
             throw new LoaderException(
+                    ErrorCode.UNSUPPORTED_SCHEME,
                     uri,
                     "Unsupported URL scheme [" + uri.getScheme() + "]. Only classpath: scheme is accepted, url=" + uri);
         }
@@ -103,6 +105,7 @@ public final class ClasspathLoader implements DocumentLoader {
         
         if (parser == null) {
             throw new LoaderException(
+                    ErrorCode.UNSUPPORTED_CONTENT_TYPE,
                     uri,
                     "Cannot parse content-type=" + contentType + ", uri=" + uri + ", base=" + baseClass.getPackageName());            
         }

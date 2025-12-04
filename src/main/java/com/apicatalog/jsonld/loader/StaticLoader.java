@@ -107,7 +107,8 @@ public final class StaticLoader implements DocumentLoader {
             return loader.loadDocument(url, options);
         }
 
-        throw new LoaderException(url, "URL [" + url + "] is not recogized and fallback loader is not set.");
+//TODO?        throw new LoaderException(url, "URL [" + url + "] is not recogized and fallback loader is not set.");
+        return null;
     }
 
     /**

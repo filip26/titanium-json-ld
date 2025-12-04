@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.lang.Terms;
+import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
@@ -256,14 +257,20 @@ public class HttpLoader implements DocumentLoader {
                             continue;
                         }
 
-                        throw new LoaderException(targetUri,
+                        throw new LoaderException(
+                                ErrorCode.MISSING_LOCATION_HEADER,
+                                targetUri,
                                 """
                                         HTTP Location header is required for status code=%d but is not present, url=%s
                                         """.formatted(response.statusCode(), uri));
                     }
 
                     if (response.statusCode() != 200) {
-                        throw new LoaderException(targetUri,
+                        throw new LoaderException(
+                                response.statusCode() >= 500 
+                                    ? ErrorCode.REMOTE
+                                    : ErrorCode.CLIENT,
+                                targetUri,
                                 """
                                         Unexpected HTTP response status code=%d, url=%s
                                         """.formatted(response.statusCode(), uri));
@@ -311,8 +318,8 @@ public class HttpLoader implements DocumentLoader {
 
                             if (contextUris.size() > 1) {
                                 throw new LoaderException(
+                                        ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS,
                                         targetUri,
-                                        //FIXME ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS,
                                         """
                                                 Only one context link header is allowed but got %s, url=%s
                                                 """.formatted(contextUris, uri));
@@ -329,7 +336,9 @@ public class HttpLoader implements DocumentLoader {
                                 uri);
 
                     } else if (!acceptContent.test(contentType)) {
-                        throw new LoaderException(targetUri,
+                        throw new LoaderException(
+                                ErrorCode.UNSUPPORTED_CONTENT_TYPE,
+                                targetUri,
                                 """
                                         Unsupported content-type=%s, url=%s
                                         """.formatted(contentType, uri));
@@ -339,7 +348,9 @@ public class HttpLoader implements DocumentLoader {
                 }
             }
 
-            throw new LoaderException(targetUri,
+            throw new LoaderException(
+                    ErrorCode.TOO_MANY_REDIRECTIONS,
+                    targetUri,
                     """
                             Too many redirections detected, maximum=%d, url=%s
                             """.formatted(maxRedirections, uri));
@@ -360,7 +371,9 @@ public class HttpLoader implements DocumentLoader {
                 : parsers.getOrDefault(contentType, defaultParser);
 
         if (parser == null) {
-            throw new LoaderException(targetUri,
+            throw new LoaderException(
+                    ErrorCode.UNSUPPORTED_CONTENT_TYPE,
+                    targetUri,
                     """
                             Response content-type=%s cannot be parsed, parser is not defined, url=%s
                             """.formatted(contentType, targetUri));
