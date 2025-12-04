@@ -35,7 +35,7 @@ public final class UriRewriter implements DocumentLoader {
     private UriRewriter(
             Map<URI, URI> rewrite,
             Map<String, String> rebase,
-            final DocumentLoader loader) {
+            DocumentLoader loader) {
         this.rewrite = rewrite;
         this.rebase = rebase;
         this.loader = loader;

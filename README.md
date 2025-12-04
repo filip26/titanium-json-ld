@@ -12,7 +12,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 ### 🚀 Coming in v2.0
 
 - Processing policies for undefined terms, dropped values, time/space constraints, disallowed keywords, and more
-- Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, LRU cache, in-memory  
+- Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, URI blocker, LRU cache, in-memory
 - Generalized processing via [tree-io](https://github.com/filip26/tree-io)  
   (Native Java Map/List, Jakarta JSON, Jackson, and others)
 - JSON-LD-Star expansion (experimental)  
