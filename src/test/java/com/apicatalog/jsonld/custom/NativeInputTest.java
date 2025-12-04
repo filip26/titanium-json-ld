@@ -45,7 +45,7 @@ import com.apicatalog.tree.io.java.JavaAdapter;
 
 class NativeInputTest {
 
-    static DocumentLoader URN_LOADER = StaticLoader.newBuilder()
+    static DocumentLoader UUID_LOADER = StaticLoader.newBuilder()
             .document(
                     "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
                     Document.of(Tree.of(Map.of(
@@ -68,11 +68,11 @@ class NativeInputTest {
             "modified", "2025-11-25T01:02:03Z");
 
     @Test
-    void testURNContextToRdf() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
+    void testUUIDContextToRdf() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
 
         final var set = new OrderedQuadSet();
 
-        JsonLd.toRdf(JSON_LD, new QuadAcceptor(set), Options.with(URN_LOADER));
+        JsonLd.toRdf(JSON_LD, new QuadAcceptor(set), Options.with(UUID_LOADER));
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-0-quads.nq");
         assertNotNull(expected);

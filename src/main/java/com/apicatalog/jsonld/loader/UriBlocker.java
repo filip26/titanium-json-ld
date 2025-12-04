@@ -1,6 +1,7 @@
 package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.apicatalog.jsonld.Document;
@@ -29,13 +30,11 @@ public final class UriBlocker implements DocumentLoader {
     }
 
     public static Builder newWhitelist(DocumentLoader loader) {
-        // TODO
-        return null;
+        return new Builder(loader, false);
     }
 
-    public static Builder newBlaclist(DocumentLoader loader) {
-        // TODO
-        return null;
+    public static Builder newBlacklist(DocumentLoader loader) {
+        return new Builder(loader, true);
     }
 
     @Override
@@ -57,19 +56,48 @@ public final class UriBlocker implements DocumentLoader {
         }
 
         if (blacklist == match) {
-            // TODO add specialized code??
             throw new LoaderException(
                     ErrorCode.BLOCKED_URI,
                     uri,
                     blacklist
-                            ? "The URI [" + uri + "] is blaclisted"
-                            : "The URI [" + uri + "] is not whitelisted, allowed");
+                            ? "The URI [" + uri + "] is black-listed"
+                            : "The URI [" + uri + "] is not white-listed");
         }
 
         return loader.loadDocument(uri, options);
     }
 
     public static class Builder {
+
+        private final DocumentLoader loader;
+        private final boolean blacklist;
+        private final Set<URI> uris;
+        private final Set<String> bases;
+
+        private Builder(DocumentLoader loader, boolean blacklist) {
+            this.loader = loader;
+            this.blacklist = blacklist;
+            this.uris = new HashSet<URI>();
+            this.bases = new HashSet<String>();
+        }
+
+        public Builder uri(URI uri) {
+            uris.add(uri);
+            return this;
+        }
+
+        public Builder base(String base) {
+            bases.add(base);
+            return this;
+        }
+
+        public UriBlocker build() {
+            return new UriBlocker(
+                    blacklist,
+                    Set.copyOf(uris),
+                    Set.copyOf(bases),
+                    loader);
+        }
 
     }
 
