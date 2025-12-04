@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.media.MediaType;
@@ -77,21 +75,21 @@ public final class ClasspathLoader implements DocumentLoader {
      * <p>
      * The supplied URI must use the {@code classpath:} scheme and refer to a
      * readable resource. If the resource cannot be found or read, a
-     * {@link JsonLdException} is thrown.
+     * {@link LoaderException} is thrown.
      * </p>
      *
      * @param uri     the {@code classpath:} URI of the resource to load
      * @param options ignored in this implementation
      * @return a {@link Document} representing the loaded resource
-     * @throws JsonLdException if the scheme is unsupported or the resource cannot
+     * @throws LoaderException if the scheme is unsupported or the resource cannot
      *                         be loaded
      */
     @Override
-    public Document loadDocument(URI uri, Options options) throws JsonLdException {
+    public Document loadDocument(URI uri, Options options) throws LoaderException {
 
         if (!"classpath".equalsIgnoreCase(uri.getScheme())) {
-            throw new JsonLdException(
-                    ErrorCode.LOADING_DOCUMENT_FAILED,
+            throw new LoaderException(
+                    uri,
                     "Unsupported URL scheme [" + uri.getScheme() + "]. Only classpath: scheme is accepted, url=" + uri);
         }
 
@@ -104,8 +102,8 @@ public final class ClasspathLoader implements DocumentLoader {
         final var parser = parsers.getOrDefault(contentType, defaultParser);
         
         if (parser == null) {
-            throw new JsonLdException(
-                    ErrorCode.LOADING_DOCUMENT_FAILED,
+            throw new LoaderException(
+                    uri,
                     "Cannot parse content-type=" + contentType + ", uri=" + uri + ", base=" + baseClass.getPackageName());            
         }
 
@@ -119,8 +117,8 @@ public final class ClasspathLoader implements DocumentLoader {
                     uri);
 
         } catch (TreeIOException | IOException e) {
-            throw new JsonLdException(
-                    ErrorCode.LOADING_DOCUMENT_FAILED,
+            throw new LoaderException(
+                    uri,
                     "Document loader failed for uri=" + uri + ", base=" + baseClass.getPackageName(),
                     e);
         }

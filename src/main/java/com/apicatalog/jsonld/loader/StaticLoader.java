@@ -24,8 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
@@ -90,12 +88,12 @@ public final class StaticLoader implements DocumentLoader {
      * @param url     the document URI
      * @param options loading options
      * @return the matching {@link Document}
-     * @throws JsonLdException      if no resource is registered for the URI and no
+     * @throws LoaderException      if no resource is registered for the URI and no
      *                              fallback loader is configured
      * @throws NullPointerException if {@code url} is {@code null}
      */
     @Override
-    public Document loadDocument(URI url, Options options) throws JsonLdException {
+    public Document loadDocument(URI url, Options options) throws LoaderException {
 
         var document = resources.getOrDefault(
                 Objects.requireNonNull(url, "The url must not be null."),
@@ -109,9 +107,7 @@ public final class StaticLoader implements DocumentLoader {
             return loader.loadDocument(url, options);
         }
 
-        throw new JsonLdException(
-                ErrorCode.LOADING_DOCUMENT_FAILED,
-                "URL [" + url + "] is not recogized and fallback loader is not set.");
+        throw new LoaderException(url, "URL [" + url + "] is not recogized and fallback loader is not set.");
     }
 
     /**

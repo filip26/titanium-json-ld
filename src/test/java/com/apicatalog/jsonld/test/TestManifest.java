@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.util.stream.Stream;
 
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 
 public final class TestManifest {
 
@@ -76,7 +76,7 @@ public final class TestManifest {
                             baseUri,
                             loader));
 
-        } catch (JsonLdException e) {
+        } catch (LoaderException e) {
             e.printStackTrace();
             fail(e);
         }

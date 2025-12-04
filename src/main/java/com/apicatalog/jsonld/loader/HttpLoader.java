@@ -34,8 +34,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.link.Link;
@@ -224,17 +222,17 @@ public class HttpLoader implements DocumentLoader {
      * <li>Processing of HTTP Link headers for alternate or context URLs</li>
      * </ul>
      *
-     * @param url     the URI of the document to load
+     * @param uri     the URI of the document to load
      * @param options loader options such as requested profiles
      * @return the loaded {@link Document}
-     * @throws JsonLdException if the document cannot be loaded, parsed, or
+     * @throws LoaderException if the document cannot be loaded, parsed, or
      *                         validated
      */
     @Override
-    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
+    public Document loadDocument(final URI uri, final Options options) throws LoaderException {
 
         try {
-            URI targetUri = url;
+            URI targetUri = uri;
 
             MediaType contentType = null;
 
@@ -258,17 +256,17 @@ public class HttpLoader implements DocumentLoader {
                             continue;
                         }
 
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                        throw new LoaderException(targetUri,
                                 """
                                         HTTP Location header is required for status code=%d but is not present, url=%s
-                                        """.formatted(response.statusCode(), url));
+                                        """.formatted(response.statusCode(), uri));
                     }
 
                     if (response.statusCode() != 200) {
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                        throw new LoaderException(targetUri,
                                 """
                                         Unexpected HTTP response status code=%d, url=%s
-                                        """.formatted(response.statusCode(), url));
+                                        """.formatted(response.statusCode(), uri));
                     }
 
                     contentType = response.contentType()
@@ -312,10 +310,12 @@ public class HttpLoader implements DocumentLoader {
                                     .collect(Collectors.toList());
 
                             if (contextUris.size() > 1) {
-                                throw new JsonLdException(ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS,
+                                throw new LoaderException(
+                                        targetUri,
+                                        //FIXME ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS,
                                         """
                                                 Only one context link header is allowed but got %s, url=%s
-                                                """.formatted(contextUris, url));
+                                                """.formatted(contextUris, uri));
 
                             } else if (contextUris.size() == 1) {
                                 contextUri = contextUris.get(0).target();
@@ -326,26 +326,26 @@ public class HttpLoader implements DocumentLoader {
                     if (contentType == null) {
                         LOGGER.log(Level.WARNING,
                                 "HTTP GET on URL [{0}] does not return content-type header.",
-                                url);
+                                uri);
 
                     } else if (!acceptContent.test(contentType)) {
-                        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+                        throw new LoaderException(targetUri,
                                 """
                                         Unsupported content-type=%s, url=%s
-                                        """.formatted(contentType, url));
+                                        """.formatted(contentType, uri));
                     }
 
                     return read(contentType, targetUri, contextUri, response);
                 }
             }
 
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+            throw new LoaderException(targetUri,
                     """
                             Too many redirections detected, maximum=%d, url=%s
-                            """.formatted(maxRedirections, url));
+                            """.formatted(maxRedirections, uri));
 
         } catch (IOException e) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new LoaderException(uri, e);
         }
     }
 
@@ -353,14 +353,14 @@ public class HttpLoader implements DocumentLoader {
             final MediaType contentType,
             final URI targetUri,
             final URI contextUrl,
-            final Response response) throws JsonLdException {
+            final Response response) throws LoaderException {
 
         final var parser = contentType == null
                 ? defaultParser
                 : parsers.getOrDefault(contentType, defaultParser);
 
         if (parser == null) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED,
+            throw new LoaderException(targetUri,
                     """
                             Response content-type=%s cannot be parsed, parser is not defined, url=%s
                             """.formatted(contentType, targetUri));
@@ -373,13 +373,13 @@ public class HttpLoader implements DocumentLoader {
             return Document.of(content, contentType, targetUri, contextUrl);
 
         } catch (Exception e) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new LoaderException(targetUri, e);
         }
     }
 
     /**
      * Sets a timeout for HTTP requests. If the response is not received within the
-     * specified duration, a {@link JsonLdException} with code
+     * specified duration, a {@link LoaderException} with code
      * {@code LOADING_DOCUMENT_TIMEOUT} is thrown.
      *
      * @param timeout the timeout duration, or {@code null} for no timeout
@@ -514,15 +514,15 @@ public class HttpLoader implements DocumentLoader {
          *                        header, may be empty
          * @return a {@link Response} representing the HTTP response, including headers
          *         and body stream
-         * @throws JsonLdException if the request fails or cannot be processed
+         * @throws LoaderException if the request fails or cannot be processed
          */
-        Response send(URI url, Collection<String> requestProfiles) throws JsonLdException;
+        Response send(URI url, Collection<String> requestProfiles) throws LoaderException;
 
         /**
          * Configures the read timeout for HTTP requests made by this client.
          * <p>
          * If a server does not respond within the specified duration, a
-         * {@link JsonLdException} with code
+         * {@link LoaderException} with code
          * {@link com.apicatalog.jsonld.JsonLdException.ErrorCode#LOADING_DOCUMENT_TIMEOUT}
          * may be thrown by the loader.
          * </p>

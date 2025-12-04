@@ -25,7 +25,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLd.Version;
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -246,11 +245,11 @@ public final class TestCase {
         return id + ": " + name;
     }
 
-    public RdfQuadSet readQuads(byte[] bytes) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
+    public RdfQuadSet readQuads(byte[] bytes) throws NQuadsReaderException, RdfConsumerException {
         return readQuads(new ByteArrayInputStream(bytes));
     }
 
-    public RdfQuadSet readQuads(InputStream is) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
+    public RdfQuadSet readQuads(InputStream is) throws NQuadsReaderException, RdfConsumerException {
 
         var content = new OrderedQuadSet();
 
@@ -260,7 +259,7 @@ public final class TestCase {
         return content;
     }
 
-    public URI rebase(URI url) throws NQuadsReaderException, RdfConsumerException, JsonLdException {
+    public URI rebase(URI url) {
 
         final var target = url.toString();
 

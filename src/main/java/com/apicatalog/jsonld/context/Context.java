@@ -29,6 +29,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeAdapter;
@@ -186,7 +187,7 @@ public interface Context {
                 document = loader.loadDocument(uri, loaderOptions);
 
                 // 5.2.5.1.
-            } catch (JsonLdException e) {
+            } catch (LoaderException e) {
                 throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + uri + "]", e);
             }
 

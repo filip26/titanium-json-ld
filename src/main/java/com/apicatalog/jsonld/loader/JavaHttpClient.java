@@ -28,8 +28,6 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.HttpLoader.Client;
 
 final class JavaHttpClient implements HttpLoader.Client {
@@ -45,7 +43,7 @@ final class JavaHttpClient implements HttpLoader.Client {
         this.headers = null;
     }
 
-    public HttpLoader.Response send(URI targetUri, Collection<String> requestProfiles) throws JsonLdException {
+    public HttpLoader.Response send(URI targetUri, Collection<String> requestProfiles) throws LoaderException {
 
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .GET()
@@ -65,13 +63,13 @@ final class JavaHttpClient implements HttpLoader.Client {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new LoaderException(targetUri, e);
 
         } catch (HttpTimeoutException e) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_TIMEOUT, e);
+            throw new LoaderException(targetUri, e);
 
         } catch (IOException e) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new LoaderException(targetUri, e);
         }
     }
 

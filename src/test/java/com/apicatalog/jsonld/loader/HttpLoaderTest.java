@@ -57,7 +57,7 @@ class HttpLoaderTest {
     }
 
     @Test
-    void testMissingContentType() throws URISyntaxException, JsonLdException, IOException {
+    void testMissingContentType() throws URISyntaxException, LoaderException, IOException {
 
         server.when("/no-ct", 200, List.of(), readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
@@ -87,7 +87,7 @@ class HttpLoaderTest {
     }
 
     @Test
-    void testAcceptAnyContentType() throws URISyntaxException, IOException, JsonLdException {
+    void testAcceptAnyContentType() throws URISyntaxException, IOException, LoaderException {
 
         server.when(
                 "/text.plain",

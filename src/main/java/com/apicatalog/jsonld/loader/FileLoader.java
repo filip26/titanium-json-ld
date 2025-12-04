@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.media.MediaType;
 
@@ -81,25 +79,25 @@ public final class FileLoader implements DocumentLoader {
      *
      * <p>
      * Only {@code file:} URIs are supported. Other schemes will cause a
-     * {@link JsonLdException} to be thrown.
+     * {@link LoaderException} to be thrown.
      * </p>
      *
-     * @param url     the {@code file:} URI of the document
+     * @param uri     the {@code file:} URI of the document
      * @param options loading options (ignored for file resources)
      * @return the loaded {@link Document}
-     * @throws JsonLdException if the file cannot be accessed or parsed
+     * @throws LoaderException if the file cannot be accessed or parsed
      */
     @Override
-    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
+    public Document loadDocument(final URI uri, final Options options) throws LoaderException {
 
-        if (!"file".equalsIgnoreCase(url.getScheme())) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "Unsupported URL scheme [" + url.getScheme() + "]. FileLoader accepts only file scheme.");
+        if (!"file".equalsIgnoreCase(uri.getScheme())) {
+            throw new LoaderException(uri, "Unsupported URL scheme [" + uri.getScheme() + "]. FileLoader accepts only file scheme.");
         }
 
-        final File file = new File(url);
+        final File file = new File(uri);
 
         if (!file.canRead()) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "File [" + url + "] is not accessible to read.");
+            throw new LoaderException(uri, "File [" + uri + "] is not accessible to read.");
         }
 
         final var contentType = fromFileExtension(file.getName());
@@ -109,14 +107,14 @@ public final class FileLoader implements DocumentLoader {
         try (final var is = new FileInputStream(file)) {
             var node = parser.parse(is);
 
-            return Document.of(node, contentType, url);
+            return Document.of(node, contentType, uri);
 
         } catch (FileNotFoundException e) {
 
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "File not found [" + url + "].");
+            throw new LoaderException(uri, "File not found [" + uri + "].");
 
         } catch (Exception e) {
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, e);
+            throw new LoaderException(uri, e);
         }
     }
 

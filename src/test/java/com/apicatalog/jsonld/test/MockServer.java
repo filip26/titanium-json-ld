@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.HttpLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
@@ -208,7 +209,7 @@ public class MockServer implements AutoCloseable {
                 server.getLocalPort());
     }
 
-    public void setup(TestCase testCase) throws JsonLdException {
+    public void setup(TestCase testCase) throws LoaderException {
 
         stubs.clear();
 

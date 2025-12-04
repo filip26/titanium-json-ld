@@ -40,11 +40,11 @@ public final class UriBlocker implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(URI uri, Options options) throws JsonLdException {
+    public Document loadDocument(URI uri, Options options) throws LoaderException {
 
         var match = uris.contains(uri);
 
-        if (!match) {
+        if (!match && !bases.isEmpty()) {
 
             final var uriString = uri.toString();
 
@@ -56,10 +56,13 @@ public final class UriBlocker implements DocumentLoader {
                 }
             }
         }
-        
+
         if (blacklist == match) {
-            //TODO add specialized code??
-            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED); 
+            // TODO add specialized code??
+            throw new LoaderException(uri,
+                    blacklist
+                            ? "The URI [" + uri + "] is blaclisted"
+                            : "The URI [" + uri + "] is not whitelisted, allowed");
         }
 
         return loader.loadDocument(uri, options);

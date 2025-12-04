@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.SuiteEvironment;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.MockServer;
@@ -80,7 +81,7 @@ public class RemoteTest {
                 return JsonLd.expand(testCase.input, expandOptions);
             });
 
-        } catch (JsonLdException e) {
+        } catch (LoaderException e) {
             fail(e.getMessage());
         }
     }

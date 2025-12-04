@@ -32,6 +32,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.TestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
@@ -42,8 +43,8 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
@@ -111,7 +112,7 @@ public class JunitRunner {
 
                     QuadEmitter.create(toLd).emit(readQuads(testCase, testCase.input));
 
-                } catch (NQuadsReaderException e) {
+                } catch (NQuadsReaderException | LoaderException e) {
                     fail(e);
                 }
 
@@ -233,7 +234,7 @@ public class JunitRunner {
             // compare expected with the result
             return compareJson(testCase, result, resultAdapter, expectedDocument.content(), fail);
 
-        } catch (JsonLdException | TreeIOException e) {
+        } catch (LoaderException | TreeIOException e) {
             if (fail) {
                 fail(e.getMessage());
             }
@@ -261,7 +262,7 @@ public class JunitRunner {
                     readQuads(testCase, testCase.expect),
                     fail);
 
-        } catch (JsonLdException | IOException e) {
+        } catch (LoaderException | IOException e) {
             if (fail) {
                 fail(e.getMessage());
             }
@@ -376,7 +377,7 @@ public class JunitRunner {
         return false;
     }
 
-    static RdfQuadSet readQuads(TestCase testCase, URI uri) throws NQuadsReaderException, RdfConsumerException, JsonLdException, IOException {
+    static RdfQuadSet readQuads(TestCase testCase, URI uri) throws NQuadsReaderException, RdfConsumerException, LoaderException, IOException {
         RdfQuadSet set = null;
 
         final var rebased = testCase.rebase(uri);

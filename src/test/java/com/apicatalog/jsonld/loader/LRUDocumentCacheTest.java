@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader.Options;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
@@ -58,7 +57,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testLoadDocument() throws JsonLdException {
+    void testLoadDocument() throws LoaderException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = CacheLoader.of(loader, 2);
 
@@ -77,7 +76,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testCacheSize() throws JsonLdException {
+    void testCacheSize() throws LoaderException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = CacheLoader.of(loader, 2);
 
@@ -101,7 +100,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testLoadDocumentsWithDifferentOptions() throws JsonLdException {
+    void testLoadDocumentsWithDifferentOptions() throws LoaderException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = CacheLoader.of(loader, 2);
 
@@ -119,7 +118,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testCachingEqualOptions() throws JsonLdException {
+    void testCachingEqualOptions() throws LoaderException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = CacheLoader.of(loader, 2);
         
@@ -136,7 +135,7 @@ public class LRUDocumentCacheTest {
     }
 
     @Test
-    void testCachingProfilesOrderMatter() throws JsonLdException {
+    void testCachingProfilesOrderMatter() throws LoaderException {
         RecordRequestLoader loader = new RecordRequestLoader();
         CacheLoader cachedLoader = CacheLoader.of(loader, 2);
         Options options = null;

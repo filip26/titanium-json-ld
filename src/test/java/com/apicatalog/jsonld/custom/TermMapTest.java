@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
@@ -38,8 +39,8 @@ import com.apicatalog.jsonld.runtime.TermMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.JavaAdapter;
@@ -124,7 +125,7 @@ class TermMapTest {
             // compare expected with the result
             return compareJson(testCase, result, resultAdapter, expectedDocument.content());
 
-        } catch (JsonLdException | TreeIOException e) {
+        } catch (LoaderException | TreeIOException e) {
             fail(e.getMessage());
         }
         return false;

@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
 
 /**
  * A {@link DocumentLoader} that caches previously loaded JSON-LD documents.
@@ -86,11 +85,11 @@ public final class CacheLoader implements DocumentLoader {
      * @param uri     the URI of the document to load
      * @param options loader configuration options
      * @return the loaded or cached {@link Document}
-     * @throws JsonLdException if the underlying loader fails to retrieve the
+     * @throws LoaderException if the underlying loader fails to retrieve the
      *                         document
      */
     @Override
-    public Document loadDocument(final URI uri, final Options options) throws JsonLdException {
+    public Document loadDocument(final URI uri, final Options options) throws LoaderException {
 
         final var key = new Key(uri, options);
 

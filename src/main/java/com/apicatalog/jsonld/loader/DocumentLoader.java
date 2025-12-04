@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
 
 /**
  * Loads JSON-LD documents identified by a URI.
@@ -64,10 +63,10 @@ public interface DocumentLoader {
      *                {@code null})
      * @param options loader configuration options controlling retrieval behavior
      * @return the loaded {@link Document} representation
-     * @throws JsonLdException if the document cannot be retrieved, parsed, or
+     * @throws LoaderException if the document cannot be retrieved, parsed, or
      *                         resolved
      */
-    Document loadDocument(URI uri, Options options) throws JsonLdException;
+    Document loadDocument(URI uri, Options options) throws LoaderException;
 
     /**
      * Returns the default {@link Options} instance used by loaders that do not

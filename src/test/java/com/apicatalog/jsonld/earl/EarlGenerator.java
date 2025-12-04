@@ -28,6 +28,7 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.SuiteEvironment;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.EarlRunner;
@@ -127,7 +128,7 @@ public class EarlGenerator {
                         })));
     }
 
-    public void testFromRdf(PrintWriter writer) throws JsonLdException {
+    public void testFromRdf(PrintWriter writer) {
 
         TestManifest
                 .load(
@@ -150,7 +151,7 @@ public class EarlGenerator {
                                                         .fetchBytes(testCase.rebase(testCase.input))));
                                 return toLd.toJsonLd();
 
-                            } catch (NQuadsReaderException e) {
+                            } catch (NQuadsReaderException | LoaderException e) {
                                 throw new IllegalStateException(e);
                             }
                         })));
@@ -201,7 +202,7 @@ public class EarlGenerator {
                                 return JsonLd.expand(testCase.input, expandOptions);
                             });
 
-                        } catch (JsonLdException e) {
+                        } catch (LoaderException e) {
                             e.printStackTrace();
                             result = false;
                         }

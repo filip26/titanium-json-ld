@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 
 /**
  * A {@link DocumentLoader} that delegates document loading to other loaders
@@ -38,7 +36,7 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
  * <p>
  * If no loader is registered for a given scheme, an optional fallback loader
  * can be used. If neither a route nor a fallback is available, the router
- * throws a {@link JsonLdException}.
+ * throws a {@link LoaderException}.
  * </p>
  *
  * <p>
@@ -78,30 +76,30 @@ public final class SchemeRouter implements DocumentLoader {
     /**
      * Delegates the request to the loader registered for the given URI scheme.
      *
-     * @param url     the target URI to load
+     * @param uri     the target URI to load
      * @param options document loading options
      * @return the loaded {@link Document}
-     * @throws JsonLdException      if no loader is registered for the URI scheme
+     * @throws LoaderException      if no loader is registered for the URI scheme
      *                              and no fallback is configured
      * @throws NullPointerException if {@code url} is {@code null}
      */
     @Override
-    public Document loadDocument(URI url, Options options) throws JsonLdException {
+    public Document loadDocument(URI uri, Options options) throws LoaderException {
 
         final DocumentLoader loader = loaders.getOrDefault(
-                Objects.requireNonNull(url, "The url must not be null.")
+                Objects.requireNonNull(uri, "The url must not be null.")
                         .getScheme().toLowerCase(),
                 null);
 
         if (loader != null) {
-            return loader.loadDocument(url, options);
+            return loader.loadDocument(uri, options);
         }
 
         if (fallback != null) {
-            return fallback.loadDocument(url, options);
+            return fallback.loadDocument(uri, options);
         }
 
-        throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED, "URL scheme [" + url.getScheme() + "] is not supported.");
+        throw new LoaderException(uri, "The scheme [" + uri.getScheme() + "] is not supported.");
 
     }
 

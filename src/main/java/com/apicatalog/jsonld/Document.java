@@ -17,10 +17,10 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.media.MediaType;
 
@@ -130,17 +130,26 @@ public class Document {
                     "Document loader is null. Cannot fetch [" + url + "].");
         }
 
-        return Optional.ofNullable(
-                loader.loadDocument(
-                        url,
-                        new DocumentLoader.Options(
-                                extractAllScripts,
-                                null,
-                                null)))
-                .orElseThrow(
-                        () -> new JsonLdException(
-                                ErrorCode.LOADING_DOCUMENT_FAILED,
-                                "Returned document is null [" + url + "]."));
+        try {
+            final var document = loader.loadDocument(
+                    url,
+                    new DocumentLoader.Options(
+                            extractAllScripts,
+                            null,
+                            null));
+            if (document == null) {
+                throw new JsonLdException(
+                        ErrorCode.LOADING_DOCUMENT_FAILED,
+                        "Returned document is null [" + url + "].");
+            }
+
+            return document;
+
+        } catch (LoaderException e) {
+            throw new JsonLdException(
+                    ErrorCode.LOADING_DOCUMENT_FAILED,
+                    e);
+        }
     }
 
     /**

@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JsonLdException;
 
 public final class UriRewriter implements DocumentLoader {
 
@@ -51,7 +50,7 @@ public final class UriRewriter implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
+    public Document loadDocument(final URI url, final Options options) throws LoaderException {
 
         final var target = rewrite.get(url);
 

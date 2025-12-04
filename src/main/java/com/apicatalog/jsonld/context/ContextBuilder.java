@@ -33,6 +33,7 @@ import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.runtime.Execution.TermsConsumer;
@@ -284,7 +285,7 @@ public final class ContextBuilder {
 //                            .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.INVALID_KEYWORD_IMPORT_VALUE));
 
                     // 5.6.5
-                } catch (JsonLdException e) {
+                } catch (LoaderException e) {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
 
@@ -631,7 +632,7 @@ public final class ContextBuilder {
                 remoteDocument = loader.loadDocument(contextUri, loaderOptions);
 
                 // 5.2.5.1.
-            } catch (JsonLdException e) {
+            } catch (LoaderException e) {
                 throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED,
                         "There was a problem encountered loading a remote context, uri=" + contextUri, e);
             }

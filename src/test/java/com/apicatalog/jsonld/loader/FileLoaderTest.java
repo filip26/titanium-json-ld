@@ -35,7 +35,7 @@ class FileLoaderTest {
     public static FileLoader FILE_LOADER = FileLoader.of(JakartaTestSuite.PARSER);
 
     @Test
-    void testLoadJson() throws URISyntaxException, JsonLdException {
+    void testLoadJson() throws URISyntaxException, LoaderException {
 
         URL fileUrl = getClass().getResource("document.json");
 
@@ -49,7 +49,7 @@ class FileLoaderTest {
     }
 
     @Test
-    void testLoadJsonLd() throws URISyntaxException, JsonLdException {
+    void testLoadJsonLd() throws URISyntaxException, LoaderException {
 
         URL fileUrl = getClass().getResource("document.jsonld");
 
