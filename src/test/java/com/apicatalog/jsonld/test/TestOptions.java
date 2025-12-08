@@ -186,41 +186,38 @@ public class TestOptions {
 
     public Options setup(Options options) {
 
-        if (processingMode != null) {
-            options.mode(Version.of(processingMode));
-        }
+        Optional.ofNullable(processingMode)
+                .map(Version::of)
+                .ifPresent(options::mode);
 
-        if (base != null) {
-            options.base(URI.create(base));
-        }
+        Optional.ofNullable(base)
+                .map(URI::create)
+                .ifPresent(options::base);
 
-        if (expandContext != null) {
-            options.expandContext(URI.create(expandContext));
-        }
+        Optional.ofNullable(expandContext)
+                .map(URI::create)
+                .ifPresent(options::expandContext);
 
-        if (compactArrays != null) {
-            options.compactArrays(compactArrays);
-        }
+        Optional.ofNullable(compactArrays)
+                .ifPresent(options::compactArrays);
 
-        if (compactToRelative != null) {
-            options.compactToRelative(compactToRelative);
-        }
+        Optional.ofNullable(compactToRelative)
+                .ifPresent(options::compactToRelative);
 
-        if (rdfDirection != null) {
-            options.rdfDirection(RdfDirection.valueOf(rdfDirection.toUpperCase().replace("-", "_")));
-        }
+        Optional.ofNullable(rdfDirection)
+                .map(String::toUpperCase)
+                .map(s -> s.replace("-", "_"))
+                .map(RdfDirection::valueOf)
+                .ifPresent(options::rdfDirection);
 
-        if (produceGeneralizedRdf != null) {
-            options.generalizedRdf(produceGeneralizedRdf);
-        }
+        Optional.ofNullable(produceGeneralizedRdf)
+                .ifPresent(options::generalizedRdf);
 
-        if (useNativeTypes != null) {
-            options.useNativeTypes(useNativeTypes);
-        }
+        Optional.ofNullable(useNativeTypes)
+                .ifPresent(options::useNativeTypes);
 
-        if (useRdfType != null) {
-            options.useRdfType(useRdfType);
-        }
+        Optional.ofNullable(useRdfType)
+                .ifPresent(options::useRdfType);
 
         if (useJcs != null) {
             options.rdfJsonLiteralWriter(

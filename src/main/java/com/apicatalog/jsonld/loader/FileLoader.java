@@ -95,7 +95,7 @@ public final class FileLoader implements DocumentLoader {
             throw new LoaderException(
                     ErrorCode.UNSUPPORTED_SCHEME,
                     uri, 
-                    "Unsupported URL scheme [" + uri.getScheme() + "]. FileLoader accepts only file scheme.");
+                    "Unsupported URI scheme [" + uri.getScheme() + "]. FileLoader accepts only file scheme.");
         }
 
         final File file = new File(uri);
@@ -122,7 +122,7 @@ public final class FileLoader implements DocumentLoader {
 //FIXME?            throw new LoaderException(uri, "File not found [" + uri + "].");
 
         } catch (Exception e) {
-            throw new LoaderException(uri, e);
+            throw new LoaderException(ErrorCode.UNSUPPORTED_CONTENT_TYPE, uri, e);
         }
     }
 

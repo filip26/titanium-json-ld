@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.apicatalog.jsonld.loader.HttpLoader.Client;
+import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 
 final class JavaHttpClient implements HttpLoader.Client {
 
@@ -66,7 +67,7 @@ final class JavaHttpClient implements HttpLoader.Client {
             throw new LoaderException(targetUri, e);
 
         } catch (HttpTimeoutException e) {
-            throw new LoaderException(targetUri, e);
+            throw new LoaderException(ErrorCode.TIMEOUT, targetUri, e);
 
         } catch (IOException e) {
             throw new LoaderException(targetUri, e);

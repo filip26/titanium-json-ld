@@ -60,9 +60,7 @@ import jakarta.json.stream.JsonGenerator;
 public class JunitRunner {
 
     public static final JsonWriterFactory JSON_WRITER_FACTORY = Json.createWriterFactory(
-            Map.of(
-                    JsonGenerator.PRETTY_PRINTING,
-                    true));
+            Map.of(JsonGenerator.PRETTY_PRINTING, true));
 
     private final TestCase testCase;
 
@@ -73,23 +71,26 @@ public class JunitRunner {
     public boolean execute() {
 
         if (testCase.type.contains(Type.COMPACT_TEST)) {
-            return execute(options -> JsonLd.compact(
-                    testCase.input,
-                    testCase.context,
-                    options));
+            return execute(
+                    options -> JsonLd.compact(
+                            testCase.input,
+                            testCase.context,
+                            options));
         }
 
         if (testCase.type.contains(Type.EXPAND_TEST)) {
-            return execute(options -> JsonLd.expand(
-                    testCase.input,
-                    options));
+            return execute(
+                    options -> JsonLd.expand(
+                            testCase.input,
+                            options));
         }
 
         if (testCase.type.contains(Type.FLATTEN_TEST)) {
-            return execute(options -> JsonLd.flatten(
-                    testCase.input,
-                    testCase.context,
-                    options));
+            return execute(
+                    options -> JsonLd.flatten(
+                            testCase.input,
+                            testCase.context,
+                            options));
         }
 
         if (testCase.type.contains(Type.TO_RDF_TEST)) {
@@ -132,7 +133,7 @@ public class JunitRunner {
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);
 
-        final Options options = testCase.getOptions();
+        final var options = testCase.getOptions();
 
         assertNotNull(options);
         assertNotNull(options.loader());
@@ -161,12 +162,7 @@ public class JunitRunner {
             if (result instanceof JsonStructure json) {
                 return validateJsonLd(testCase, options, json, JakartaAdapter.instance(), true);
             }
-//            if (result instanceof JsonNode json) {
-//                return validateJsonLd(testCase, options, json, Jackson2Adapter.instance());
-//            }
 
-            // System.out.println(" >>>> " + result);
-//            if (result instanceof Collection<?> collection) {
             return validateJsonLd(
                     testCase,
                     options,
@@ -185,7 +181,11 @@ public class JunitRunner {
 
         } catch (JsonLdException e) {
 
-            if (Objects.equals(e.code(), testCase.expectErrorCode)) {
+            if (testCase.expectErrorCode == e.code()
+                    || (JsonLdException.ErrorCode.LOADING_DOCUMENT_FAILED == e.code()
+                            && testCase.expectErrorCode != null
+                            && e.getCause() instanceof LoaderException le
+                            && testCase.expectErrorCode.name() == le.code().name())) {
                 return true;
             }
 
@@ -193,6 +193,7 @@ public class JunitRunner {
 
             if (testCase.expectErrorCode != null) {
                 fail("Unexpected error " + e.code() + ", exptected " + testCase.expectErrorCode + ".");
+
             } else {
                 fail("Unexpected error " + e + ".");
             }
@@ -218,9 +219,9 @@ public class JunitRunner {
     }
 
     public static boolean validateJsonLd(
-            final TestCase testCase, 
-            final Options options, 
-            final Object result, 
+            final TestCase testCase,
+            final Options options,
+            final Object result,
             final TreeAdapter resultAdapter,
             final boolean fail) {
 
@@ -257,7 +258,8 @@ public class JunitRunner {
 
         try {
             // compare expected with the result
-            return compareRdf(testCase,
+            return compareRdf(
+                    testCase,
                     result,
                     readQuads(testCase, testCase.expect),
                     fail);
@@ -271,9 +273,9 @@ public class JunitRunner {
     }
 
     public static final boolean compareJson(
-            final TestCase testCase, 
-            final Object result, 
-            final TreeAdapter resultAdapter, 
+            final TestCase testCase,
+            final Object result,
+            final TreeAdapter resultAdapter,
             final Tree expected,
             final boolean fail) throws TreeIOException {
 
@@ -281,7 +283,8 @@ public class JunitRunner {
             return true;
         }
 
-        write(testCase,
+        write(
+                testCase,
                 JakartaMaterializer.node(result, resultAdapter),
                 JakartaMaterializer.node(expected),
                 null);
@@ -334,8 +337,8 @@ public class JunitRunner {
     }
 
     public static final boolean compareRdf(
-            final TestCase testCase, 
-            final RdfQuadSet result, 
+            final TestCase testCase,
+            final RdfQuadSet result,
             final RdfQuadSet expected,
             final boolean fail) {
 

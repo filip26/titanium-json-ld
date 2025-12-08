@@ -1,7 +1,22 @@
+/*
+ * Copyright 2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.apicatalog.jsonld.loader;
 
 import java.net.URI;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.apicatalog.jsonld.Document;
@@ -26,7 +41,6 @@ public final class UriBlocker implements DocumentLoader {
         this.uris = uris;
         this.bases = bases;
         this.loader = loader;
-
     }
 
     public static Builder newWhitelist(DocumentLoader loader) {
@@ -46,9 +60,10 @@ public final class UriBlocker implements DocumentLoader {
 
             final var uriString = uri.toString();
 
-            for (var base : bases) {
+            for (final var base : bases) {
 
                 match = uriString.startsWith(base);
+
                 if (match) {
                     break;
                 }
@@ -77,8 +92,8 @@ public final class UriBlocker implements DocumentLoader {
         private Builder(DocumentLoader loader, boolean blacklist) {
             this.loader = loader;
             this.blacklist = blacklist;
-            this.uris = new HashSet<URI>();
-            this.bases = new HashSet<String>();
+            this.uris = new LinkedHashSet<URI>();
+            this.bases = new LinkedHashSet<String>();
         }
 
         public Builder uri(URI uri) {
@@ -98,7 +113,5 @@ public final class UriBlocker implements DocumentLoader {
                     Set.copyOf(bases),
                     loader);
         }
-
     }
-
 }

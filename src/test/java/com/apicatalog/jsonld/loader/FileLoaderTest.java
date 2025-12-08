@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.loader;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,7 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JakartaTestSuite;
-import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.web.media.MediaType;
 
 class FileLoaderTest {
@@ -64,16 +64,18 @@ class FileLoaderTest {
     @Test
     void testLoadHtml() throws URISyntaxException {
 
-        URL fileUrl = getClass().getResource("document.html");
+        var fileUrl = getClass().getResource("document.html");
 
         assertNotNull(fileUrl);
 
-        assertThrows(JsonLdException.class, () -> FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions()));
+        var ex = assertThrows(LoaderException.class, () -> FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions()));
+        assertEquals(LoaderException.ErrorCode.UNSUPPORTED_CONTENT_TYPE, ex.code());
     }
 
     @Test
     void testUnsupportedScheme() throws URISyntaxException {
-        assertThrows(JsonLdException.class, () -> FILE_LOADER.loadDocument(URI.create("https://github.com/"), DocumentLoader.defaultOptions()));
+        var ex = assertThrows(LoaderException.class, () -> FILE_LOADER.loadDocument(URI.create("https://github.com/"), DocumentLoader.defaultOptions()));
+        assertEquals(LoaderException.ErrorCode.UNSUPPORTED_SCHEME, ex.code());
     }
 
 }

@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestManifest;
 
@@ -77,13 +76,13 @@ class HttpLoaderTest {
                 List.of(Map.entry("Content-Type", "text/plain")),
                 readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
-        var ex = assertThrowsExactly(JsonLdException.class,
+        var ex = assertThrowsExactly(LoaderException.class,
                 () -> JakartaTestSuite.HTTP_LOADER
                         .loadDocument(
                                 URI.create(server.baseUrl() + "/text.plain"),
                                 DocumentLoader.defaultOptions()));
 
-        assertEquals(ErrorCode.LOADING_DOCUMENT_FAILED, ex.code());
+        assertEquals(LoaderException.ErrorCode.UNSUPPORTED_CONTENT_TYPE, ex.code());
     }
 
     @Test
@@ -112,7 +111,7 @@ class HttpLoaderTest {
 
         server.listen(Duration.ofSeconds(5));
 
-        var ex = assertThrowsExactly(JsonLdException.class,
+        var ex = assertThrowsExactly(LoaderException.class,
                 () -> JakartaTestSuite.HTTP_LOADER
                         .timeout(Duration.ofMillis(200))
                         .loadDocument(
@@ -124,7 +123,7 @@ class HttpLoaderTest {
         // reset shared instance state
         JakartaTestSuite.HTTP_LOADER.timeout(Duration.ofSeconds(5));
 
-        assertEquals(ErrorCode.LOADING_DOCUMENT_TIMEOUT, ex.code());
+        assertEquals(LoaderException.ErrorCode.TIMEOUT, ex.code());
     }
 
     private final byte[] readBytes(final String name) throws IOException {
