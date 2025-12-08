@@ -102,7 +102,7 @@ public final class FileLoader implements DocumentLoader {
 
         if (!file.canRead()) {
             throw new LoaderException(
-                    ErrorCode.CLIENT,
+                    ErrorCode.FORBIDDEN,
                     uri, 
                     "File [" + uri + "] is not accessible to read.");
         }
@@ -117,9 +117,7 @@ public final class FileLoader implements DocumentLoader {
             return Document.of(node, contentType, uri);
 
         } catch (FileNotFoundException e) {
-
-            return null;
-//FIXME?            throw new LoaderException(uri, "File not found [" + uri + "].");
+            throw new LoaderException(ErrorCode.NOT_FOUND, uri, "File not found [" + uri + "].");
 
         } catch (Exception e) {
             throw new LoaderException(ErrorCode.UNSUPPORTED_CONTENT_TYPE, uri, e);

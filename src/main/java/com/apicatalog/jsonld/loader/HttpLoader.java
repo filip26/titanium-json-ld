@@ -261,19 +261,25 @@ public class HttpLoader implements DocumentLoader {
                                 ErrorCode.MISSING_LOCATION_HEADER,
                                 targetUri,
                                 """
-                                        HTTP Location header is required for status code=%d but is not present, url=%s
-                                        """.formatted(response.statusCode(), uri));
+                                HTTP Location header is required for status code=%d but is not present, url=%s
+                                """.formatted(response.statusCode(), uri));
                     }
 
                     if (response.statusCode() != 200) {
+                        if (response.statusCode() == 404) {
+                            throw new LoaderException(
+                                    ErrorCode.NOT_FOUND,
+                                    targetUri,
+                                    """
+                                     The requested URL could not be found, code=%d, url=%s
+                                    """.formatted(response.statusCode(), uri));
+                        }
                         throw new LoaderException(
-                                response.statusCode() >= 500 
-                                    ? ErrorCode.REMOTE
-                                    : ErrorCode.CLIENT,
+                                ErrorCode.REMOTE,
                                 targetUri,
                                 """
-                                        Unexpected HTTP response status code=%d, url=%s
-                                        """.formatted(response.statusCode(), uri));
+                                Unexpected HTTP response status code=%d, url=%s
+                                """.formatted(response.statusCode(), uri));
                     }
 
                     contentType = response.contentType()
@@ -293,8 +299,9 @@ public class HttpLoader implements DocumentLoader {
 
                             final var alternate = linkValues.stream()
                                     .flatMap(l -> Link.of(l, baseUri).stream())
-                                    .filter(l -> l.relations().contains("alternate")
-                                            && MediaType.JSON_LD.match(l.type()))
+                                    .filter(
+                                            l -> l.relations().contains("alternate")
+                                                    && MediaType.JSON_LD.match(l.type()))
                                     .findFirst();
 
                             if (alternate.isPresent()) {
@@ -321,8 +328,8 @@ public class HttpLoader implements DocumentLoader {
                                         ErrorCode.MULTIPLE_CONTEXT_LINK_HEADERS,
                                         targetUri,
                                         """
-                                                Only one context link header is allowed but got %s, url=%s
-                                                """.formatted(contextUris, uri));
+                                        Only one context link header is allowed but got %s, url=%s
+                                        """.formatted(contextUris, uri));
 
                             } else if (contextUris.size() == 1) {
                                 contextUri = contextUris.get(0).target();
@@ -331,7 +338,8 @@ public class HttpLoader implements DocumentLoader {
                     }
 
                     if (contentType == null) {
-                        LOGGER.log(Level.WARNING,
+                        LOGGER.log(
+                                Level.WARNING,
                                 "HTTP GET on URL [{0}] does not return content-type header.",
                                 uri);
 
@@ -340,8 +348,8 @@ public class HttpLoader implements DocumentLoader {
                                 ErrorCode.UNSUPPORTED_CONTENT_TYPE,
                                 targetUri,
                                 """
-                                        Unsupported content-type=%s, url=%s
-                                        """.formatted(contentType, uri));
+                                Unsupported content-type=%s, url=%s
+                                """.formatted(contentType, uri));
                     }
 
                     return read(contentType, targetUri, contextUri, response);
@@ -352,8 +360,8 @@ public class HttpLoader implements DocumentLoader {
                     ErrorCode.TOO_MANY_REDIRECTIONS,
                     targetUri,
                     """
-                            Too many redirections detected, maximum=%d, url=%s
-                            """.formatted(maxRedirections, uri));
+                    Too many redirections detected, maximum=%d, url=%s
+                    """.formatted(maxRedirections, uri));
 
         } catch (IOException e) {
             throw new LoaderException(uri, e);
@@ -375,8 +383,8 @@ public class HttpLoader implements DocumentLoader {
                     ErrorCode.UNSUPPORTED_CONTENT_TYPE,
                     targetUri,
                     """
-                            Response content-type=%s cannot be parsed, parser is not defined, url=%s
-                            """.formatted(contentType, targetUri));
+                    Response content-type=%s cannot be parsed, parser is not defined, url=%s
+                    """.formatted(contentType, targetUri));
         }
 
         try (final var is = response.body()) {

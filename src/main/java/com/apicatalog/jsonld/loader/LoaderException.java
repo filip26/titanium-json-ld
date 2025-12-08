@@ -28,18 +28,17 @@ public class LoaderException extends Exception {
         BLOCKED_URI,
 
         NOT_FOUND,
-        
-        TIMEOUT,
+        FORBIDDEN,        
 
         // HTTP
         MULTIPLE_CONTEXT_LINK_HEADERS,
         MISSING_LOCATION_HEADER,
         TOO_MANY_REDIRECTIONS,
-        // TODO ?!?
         REMOTE,
-        CLIENT,
+        TIMEOUT,
 
-        LOADER,
+
+        UNSPECIFIED,
     }
 
     private static final long serialVersionUID = -4582534653970001228L;
@@ -67,7 +66,7 @@ public class LoaderException extends Exception {
 
     public LoaderException(URI uri, Throwable cause) {
         super(cause);
-        this.code = ErrorCode.LOADER;
+        this.code = ErrorCode.UNSPECIFIED;
         this.uri = uri;
     }
 
@@ -79,7 +78,7 @@ public class LoaderException extends Exception {
 
     public LoaderException(URI uri, String message, Throwable cause) {
         super(message, cause);
-        this.code = ErrorCode.LOADER;
+        this.code = ErrorCode.UNSPECIFIED;
         this.uri = uri;
     }
 
