@@ -46,9 +46,8 @@ import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.tree.io.java.JavaTree;
 
 import jakarta.json.Json;
 import jakarta.json.JsonStructure;
@@ -158,22 +157,12 @@ public class JunitRunner {
                 return validateQuads(testCase, options, quads, true);
             }
 
-            // TODO remove
-            if (result instanceof JsonStructure json) {
-                return validateJsonLd(testCase, options, json, JakartaAdapter.instance(), true);
-            }
-
             return validateJsonLd(
                     testCase,
                     options,
                     result,
-                    JavaAdapter.instance(),
+                    JavaTree.adapter(),
                     true);
-//            }
-
-//            fail("Unexpected result type [" + result.getClass() + "]");
-
-//            return false;
 
         } catch (IOException e) {
             fail(e);
@@ -240,6 +229,7 @@ public class JunitRunner {
                 fail(e.getMessage());
             }
         }
+
         return false;
     }
 
@@ -269,6 +259,7 @@ public class JunitRunner {
                 fail(e.getMessage());
             }
         }
+
         return false;
     }
 

@@ -258,22 +258,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 ## 🤝 Contributing
 
-Contributions of all kinds are welcome — whether it’s code, documentation, testing, or community support! Please open a **pull request** or **issue** to get started.
-
-### 💻 Develop
-- Implement a new feature  
-- Fix an existing issue or bug  
-- Refactor or optimize existing code  
-
-### 🧪 Test
-- Report bugs or unexpected behavior  
-- Add or improve unit/integration tests  
-- Verify milestone builds and provide feedback  
-
-### 📖 Document
-- Write or improve **Javadoc** and inline comments  
-- Create or update tutorials and usage guides  
-- Proofread and improve clarity or accuracy in documentation  
+Contributions of all kinds are welcome - whether it’s code, documentation, testing, or community support! Please open a **pull request** or **issue** to get started.
 
 ### 🌟 Promote
 - Star ⭐ and share the project  

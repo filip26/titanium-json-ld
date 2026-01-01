@@ -100,20 +100,20 @@ public class ZipResourceLoader implements DocumentLoader {
             throw new LoaderException(uri, e);
         }
 
-        try (ZipFile zip = new ZipFile(zipFile)) {
+        try (final var zip = new ZipFile(zipFile)) {
 
-            ZipEntry zipEntry = zip.getEntry(uri.getPath().substring(1));
+            final var zipEntry = zip.getEntry(uri.getPath().substring(1));
 
             if (zipEntry == null) {
                 return null;
             }
 
-            try (InputStream is = zip.getInputStream(zipEntry)) {
+            try (final var is = zip.getInputStream(zipEntry)) {
 
                 return is.readAllBytes();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | IllegalStateException e) {
             throw new LoaderException(uri, e);
         }
     }
