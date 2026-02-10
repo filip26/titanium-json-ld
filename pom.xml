@@ -53,7 +53,7 @@
         
         <rdf-api.version>1.0.0</rdf-api.version>
         <jcs.version>3.0.0-M1</jcs.version>
-        <tree-io.version>0.11.0</tree-io.version>
+        <tree-io.version>0.14.0</tree-io.version>
 
         <!-- test resources -->
         <junit.version>6.0.2</junit.version>
