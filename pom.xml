@@ -56,7 +56,7 @@
         <tree-io.version>0.11.0</tree-io.version>
 
         <!-- test resources -->
-        <junit.version>6.0.2</junit.version>
+        <junit.version>6.0.3</junit.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
         <nquads.version>1.0.2</nquads.version>
         <rdf-primitives.version>1.0.3</rdf-primitives.version>
