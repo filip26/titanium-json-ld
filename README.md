@@ -3,7 +3,7 @@
 An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-based Serialization for Linked Data) specification in Java.
 
 ### ✨ Features
-
+- No vibe coding. No generated code. Just deliberate engineering
 - Full conformance with the JSON-LD 1.1 specification  
 - Secure, stable, high-performance implementation with ~3000 tests
 - Minimal external dependencies
