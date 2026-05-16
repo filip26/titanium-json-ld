@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.framing;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,15 +37,17 @@ public final class FramingState {
 
     private NodeMap graphMap;
 
-    private Map<String, Map<String, Boolean>> done;
-
     private Deque<String> parents;
+    private Set<String> parentIndex;
+
+    private Map<String, Set<String>> uniqueEmbeds;
 
     private Map<String, Map<String, Map<String, Set<String>>>> reversePropertyIndex;
 
     public FramingState() {
-        this.done = new HashMap<>();
         this.parents = new ArrayDeque<>();
+        this.parentIndex = new LinkedHashSet<>();
+        this.uniqueEmbeds = new HashMap<>();
     }
 
     public FramingState(FramingState state) {
@@ -55,8 +58,9 @@ public final class FramingState {
         this.omitDefault = state.omitDefault;
         this.graphMap = state.graphMap;
         this.graphName = state.graphName;
-        this.done = state.done;
         this.parents =  state.parents;
+        this.parentIndex = state.parentIndex;
+        this.uniqueEmbeds = state.uniqueEmbeds;
         this.reversePropertyIndex = state.reversePropertyIndex;
     }
 
@@ -116,28 +120,18 @@ public final class FramingState {
         this.graphMap = graphMap;
     }
 
-    public boolean isDone(String subject) {
-        return done.containsKey(graphName) && done.get(graphName).containsKey(subject);
-    }
-
-    public void markDone(String subject) {
-        done.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);
-    }
-
     public boolean isParent(String subject) {
-        return parents.contains(graphName + "@@@" +  subject);
+        return parentIndex.contains(parentKey(graphName, subject));
     }
 
     public void addParent(String subject) {
-        parents.push(graphName + "@@@" + subject);
+        final var parentKey = parentKey(graphName, subject);
+        parents.push(parentKey);
+        parentIndex.add(parentKey);
     }
 
     public void removeLastParent() {
-        parents.pop();
-    }
-
-    public void clearDone() {
-        done.clear();
+        parentIndex.remove(parents.pop());
     }
 
     public Set<String> getReversePropertySubjects(String graphName, String property, String value) {
@@ -161,5 +155,30 @@ public final class FramingState {
 
     public void setReversePropertyIndex(Map<String, Map<String, Map<String, Set<String>>>> index) {
         this.reversePropertyIndex = index;
+    }
+
+    public Map<String, ?> getSubject(String subject) {
+        return graphMap.find(graphName, subject).orElse(Map.of());
+    }
+
+    public void resetUniqueEmbeds() {
+        uniqueEmbeds.clear();
+        uniqueEmbeds.computeIfAbsent(graphName, x -> new LinkedHashSet<>());
+    }
+
+    public boolean isEmbedded(String subject) {
+        return uniqueEmbeds
+                .getOrDefault(graphName, Set.of())
+                .contains(subject);
+    }
+
+    public void markEmbedded(String subject) {
+        uniqueEmbeds
+                .computeIfAbsent(graphName, x -> new LinkedHashSet<>())
+                .add(subject);
+    }
+
+    private static String parentKey(String graphName, String subject) {
+        return graphName + "@@@" + subject;
     }
 }

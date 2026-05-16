@@ -317,14 +317,13 @@ public final class Frame {
 
         if (value instanceof Map map && map.containsKey(Keywords.ID)) {
 
-            final var valueObject = state
-                    .getGraphMap()
-                    .find(state.getGraphName())
-                    .map(graph -> (Map<String, ?>) graph.get((String) map.get(Keywords.ID)));
+            final var valueObject = map.get(Keywords.ID) instanceof String subjectId
+                    ? state.getSubject(subjectId)
+                    : Map.of();
 
-            return valueObject.isPresent()
+            return !valueObject.isEmpty()
                     && FrameMatcher.with(state, this, requireAll)
-                            .match(valueObject.get());
+                            .match(valueObject);
         }
         return false;
     }
