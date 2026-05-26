@@ -16,8 +16,8 @@
 package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,9 +102,11 @@ public final class Framing {
 
             final var id = ids.next();
 
-            final var node = (Map<String, ?>) state.getGraphMap()
-                    .find(state.getGraphName(), id)
-                    .orElse(Map.of());
+            if (activeProperty == null && !state.isEmbedded()) {
+                state.resetUniqueEmbeds();
+            }
+
+            final var node = state.getSubject(id);
 
             final var nodeId = node.get(Keywords.ID) instanceof String stringNodeId
                     ? stringNodeId
@@ -114,12 +116,8 @@ public final class Framing {
             final var output = new LinkedHashMap<String, Object>();
             output.put(Keywords.ID, id);
 
-            if (activeProperty == null) {
-                state.clearDone();
-            }
-
             // 4.2.
-            if (!state.isEmbedded() && state.isDone(id)) {
+            if (!state.isEmbedded() && state.isEmbedded(id)) {
                 continue;
             }
 
@@ -134,14 +132,12 @@ public final class Framing {
             // 4.4.
             if (state.isEmbedded()
                     && Embed.ONCE == embed
-                    && state.isDone(id)
-
-            ) {
+                    && state.isEmbedded(id)) {
                 addToResult(parent, activeProperty, output);
                 continue;
             }
 
-            state.markDone(id);
+            state.markEmbedded(id);
             state.addParent(nodeId);
 
             // 4.5.
@@ -181,7 +177,6 @@ public final class Framing {
                             graphState,
                             new ArrayList<>(
                                     state.getGraphMap().find(id)
-                                            .or(() -> state.getGraphMap().find(state.getGraphName())) // <— fallback to current graph
                                             .map(Map::keySet)
                                             .orElse(Set.of())),
                             subframe,
@@ -220,6 +215,7 @@ public final class Framing {
                 final var property = properties.next();
 
                 final var objects = state.getGraphMap().get(state.getGraphName(), id, property);
+                final var values = NativeAdapter.asCollection(objects);
 
                 // 4.7.1.
                 if (Keywords.contains(property)) {
@@ -233,7 +229,7 @@ public final class Framing {
                 }
 
                 // 4.7.3.
-                for (final var item : NativeAdapter.asCollection(objects)) {
+                for (final var item : values) {
 
                     var subframe = frame.get(property);
 
@@ -282,7 +278,7 @@ public final class Framing {
 
                                 Framing.with(
                                         listState,
-                                        Arrays.asList(idMap),
+                                        List.of(idMap),
                                         listFrame,
                                         listResult,
                                         Keywords.LIST)
@@ -313,7 +309,7 @@ public final class Framing {
 
                         Framing.with(
                                 clonedState,
-                                Arrays.asList(idMap),
+                                List.of(idMap),
                                 Frame.of(subframe),
                                 output,
                                 property)
@@ -372,9 +368,13 @@ public final class Framing {
 
                 if (reverseObject instanceof Map<?, ?> map) {
 
-                    for (final var reverseEntry : map.entrySet()) {
+                    final var reverseEntries = ordered
+                            ? map.entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(String.class::cast))).toList()
+                            : map.entrySet();
 
-                        final Frame subframe = Frame.of(map.get(reverseEntry.getValue()));
+                    for (final var reverseEntry : reverseEntries) {
+
+                        final Frame subframe = Frame.of(reverseEntry.getValue());
 
                         final Set<String> subjectProperties = state.getReversePropertySubjects(state.getGraphName(), (String) reverseEntry.getKey(), id);
 

@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.framing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -49,13 +50,12 @@ public final class FrameMatcher {
             return new ArrayList<>(subjects);
         }
 
+        final var candidates = prefilter(subjects);
         final var result = new ArrayList<String>();
 
-        for (final var subject : subjects) {
+        for (final var subject : candidates) {
 
-            if (match((Map<?, ?>) state.getGraphMap()
-                    .find(state.getGraphName(), subject)
-                    .orElse(Map.of()))) {
+            if (match(state.getSubject(subject))) {
                 result.add(subject);
             }
         }
@@ -78,14 +78,15 @@ public final class FrameMatcher {
 
                 nodeValue = nodeValue instanceof Collection
                         ? nodeValue
-                        : List.of(nodeValue);
+                        : nodeValue != null
+                                ? List.of(nodeValue)
+                                : List.of();
 
                 final var propertyValue = frame.get(property);
 
                 if (propertyValue instanceof Collection<?> array
                         && array.stream().anyMatch(((Collection<?>) nodeValue)::contains)
-                        || frame.isWildCard(Keywords.ID)
-                        || frame.isNone(Keywords.ID)) {
+                        || frame.isWildCard(Keywords.ID)) {
 
                     if (requireAll) {
                         count++;
@@ -284,5 +285,52 @@ public final class FrameMatcher {
         }
 
         return !nonKeywordProperty || count > 0;
+    }
+
+    private Collection<String> prefilter(final Collection<String> subjects) {
+
+        if (subjects.size() <= 1) {
+            return subjects;
+        }
+
+        final var candidates = idCandidates();
+        if (candidates != null) {
+            return filterSubjects(subjects, candidates);
+        }
+
+        return subjects;
+    }
+
+    private Collection<String> idCandidates() {
+        if (!frame.contains(Keywords.ID)
+                || frame.isWildCard(Keywords.ID)
+                || frame.isNone(Keywords.ID)) {
+            return null;
+        }
+
+        final var candidates = new LinkedHashSet<String>();
+
+        for (final var value : frame.asCollection(Keywords.ID)) {
+            if (value instanceof String id) {
+                candidates.add(id);
+            }
+        }
+
+        return candidates;
+    }
+
+    private static Collection<String> filterSubjects(Collection<String> subjects, Collection<String> candidates) {
+        final var candidateSet = candidates instanceof LinkedHashSet<String> linkedHashSet
+                ? linkedHashSet
+                : new LinkedHashSet<>(candidates);
+        final var filtered = new ArrayList<String>(Math.min(subjects.size(), candidates.size()));
+
+        for (final var subject : subjects) {
+            if (candidateSet.contains(subject)) {
+                filtered.add(subject);
+            }
+        }
+
+        return filtered;
     }
 }
