@@ -261,8 +261,8 @@ public class JunitRunner {
         }
 
         write(testCase,
-                new JakartaMaterializer().node(result, resultAdapter),
-                new JakartaMaterializer().node(expected),
+                JakartaMaterializer.node(result, resultAdapter),
+                JakartaMaterializer.node(expected),
                 null);
 
         fail("Expected " + expected.node() + ", but was" + result);

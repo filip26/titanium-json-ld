@@ -120,11 +120,16 @@ public final class Comparison {
                         adapter1.stringValue(value1),
                         adapter2.stringValue(value2));
 
-        case NUMBER -> nativeEquals
-                ? Objects.equals(value1, value2)
-                : Objects.equals(
-                        adapter1.numericValue(value1),
-                        adapter2.numericValue(value2));
+        case NUMBER -> adapter1.isIntegral(value1)
+		        && adapter2.isIntegral(value2)
+		        && Objects.equals(
+		                adapter1.integerValue(value1),
+		                adapter2.integerValue(value2))
+		        || !adapter1.isIntegral(value1)
+		                && !adapter2.isIntegral(value2)
+		                && Objects.equals(
+		                        adapter1.decimalValue(value1),
+		                        adapter2.decimalValue(value2));        
 
         case BINARY -> nativeEquals
                 ? Objects.equals(value1, value2)
