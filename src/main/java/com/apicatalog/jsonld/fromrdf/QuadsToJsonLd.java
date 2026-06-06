@@ -38,7 +38,7 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
 import com.apicatalog.tree.io.TreeParser;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -257,7 +257,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                                     clEntry.graphName(),
                                     clEntry.subject(),
                                     clEntry.property())
-                            .map(NativeAdapter::asCollection)
+                            .map(JavaAdapter::asCollection)
                             .orElse(List.of())) {
 
                         if (clReference == null || !(clReference instanceof Map)) {

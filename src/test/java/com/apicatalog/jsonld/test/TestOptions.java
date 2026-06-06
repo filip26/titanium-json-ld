@@ -116,7 +116,7 @@ public class TestOptions {
                 break;
 
             case "httpLink":
-                if (adapter.isCollection(entry.getValue())) {
+                if (adapter.isSequence(entry.getValue())) {
                     options.httpLink = adapter.elementStream(entry.getValue())
                             .map(adapter::asString)
                             .collect(Collectors.toSet());

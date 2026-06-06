@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.uri.UriRelativizer;
 
 /**
@@ -111,7 +111,7 @@ public final class UriCompaction {
                 final var preserve = map.get(Keywords.PRESERVE);
 
                 if (preserve != null) {
-                    node = NativeAdapter.asCollection(preserve).iterator().next();
+                    node = JavaAdapter.asCollection(preserve).iterator().next();
                 }
             }
 
