@@ -49,18 +49,18 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <argLine>-Dfile.encoding=UTF-8</argLine>
         
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         
         <rdf-api.version>1.0.0</rdf-api.version>
         <jcs.version>3.0.0-M3</jcs.version>
         <tree-io.version>0.11.0</tree-io.version>
 
         <!-- test resources -->
-        <junit.version>6.0.3</junit.version>
+        <junit.version>6.1.0</junit.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
         <nquads.version>1.0.2</nquads.version>
         <rdf-primitives.version>1.0.3</rdf-primitives.version>
-        <rdfc.version>2.0.0</rdfc.version>        
+        <rdfc.version>3.0.0</rdfc.version>        
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
@@ -188,7 +188,7 @@
           </plugin>
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.5.5</version>
+            <version>3.5.6</version>
             <configuration>
                 <includes>                
                     <include>**Suite.java</include>
