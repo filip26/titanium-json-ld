@@ -27,7 +27,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Embed;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 /**
  *
@@ -233,7 +233,7 @@ public final class Framing {
                 }
 
                 // 4.7.3.
-                for (final var item : NativeAdapter.asCollection(objects)) {
+                for (final var item : JavaAdapter.asCollection(objects)) {
 
                     var subframe = frame.get(property);
 
@@ -267,7 +267,7 @@ public final class Framing {
 
                         final var list = new ArrayList<Object>();
 
-                        for (final var listItem : NativeAdapter.asCollection(itemMap.get(Keywords.LIST))) {
+                        for (final var listItem : JavaAdapter.asCollection(itemMap.get(Keywords.LIST))) {
 
                             // 4.7.3.1.1.
                             if (LdAdapter.isReference(listItem)) {

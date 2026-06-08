@@ -36,10 +36,11 @@ import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.TypeMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.TreeComparison;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonWriter;
@@ -82,7 +83,7 @@ class TypeMapTest {
 
         var expected = read(output);
 
-        var match = TreeIO.deepEquals(typeMap, NativeAdapter.instance(), expected.node(), expected.adapter());
+        var match = TreeComparison.deepEquals(typeMap, JavaAdapter.instance(), expected.node(), expected.adapter());
 
         if (!match) {
             var out = new StringWriter();
@@ -95,7 +96,7 @@ class TypeMapTest {
             out.write("\nActual\n");
 
             try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
-                jsonWriter.write(new JakartaMaterializer().node(typeMap, NativeAdapter.instance()));
+                jsonWriter.write(new JakartaMaterializer().node(typeMap, JavaAdapter.instance()));
             }
 
             System.out.println(out);
@@ -104,7 +105,7 @@ class TypeMapTest {
         assertTrue(match);
     }
 
-    private final TreeIO read(final String name) throws JsonLdException, TreeIOException, IOException {
+    private final Tree read(final String name) throws JsonLdException, TreeIOException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
             return JakartaTestSuite.PARSER.parse(is);
         }

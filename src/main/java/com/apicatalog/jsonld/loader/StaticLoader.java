@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.media.MediaType;
@@ -42,7 +42,7 @@ import com.apicatalog.web.media.MediaType;
  * </p>
  *
  * <p>
- * Each URI is explicitly mapped to a {@link Document} or {@link TreeIO}. When
+ * Each URI is explicitly mapped to a {@link Document} or {@link Tree}. When
  * {@link #loadDocument(URI, Options)} is invoked, the loader first checks the
  * internal registry. If no entry exists, it can delegate to an optional
  * fallback {@link DocumentLoader}.
@@ -167,7 +167,7 @@ public final class StaticLoader implements DocumentLoader {
          * @param node        the parsed JSON-LD node
          * @return this builder instance
          */
-        Builder node(String url, MediaType contentType, TreeIO node) {
+        Builder node(String url, MediaType contentType, Tree node) {
             return node(URI.create(url), contentType, node);
         }
 
@@ -179,7 +179,7 @@ public final class StaticLoader implements DocumentLoader {
          * @param node        the parsed JSON-LD node
          * @return this builder instance
          */
-        Builder node(URI url, MediaType contentType, TreeIO node) {
+        Builder node(URI url, MediaType contentType, Tree node) {
             resources.put(url, Document.of(node, contentType, url));
             return this;
         }

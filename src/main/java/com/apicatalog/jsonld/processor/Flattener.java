@@ -23,7 +23,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 
 /**
  *
@@ -38,7 +38,7 @@ public final class Flattener {
 
     public static Object flatten(
             Document document, 
-            TreeIO context, 
+            Tree context, 
             Options options, 
             Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
@@ -59,8 +59,8 @@ public final class Flattener {
     }
 
     public static Object flatten(
-            TreeIO document, 
-            TreeIO context, 
+            Tree document, 
+            Tree context, 
             Options options, 
             Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
@@ -94,7 +94,7 @@ public final class Flattener {
     static final Object flatten(
             final Collection<?> expandedInput,
             final URI documentUrl,
-            final TreeIO context,
+            final Tree context,
             final Options options,
             final Execution runtime) throws JsonLdException {
 

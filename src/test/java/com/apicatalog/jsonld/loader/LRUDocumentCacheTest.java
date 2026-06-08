@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader.Options;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonValue;
@@ -52,7 +52,7 @@ public class LRUDocumentCacheTest {
         public Document loadDocument(URI url, Options options) {
             requests.add(new Request(url, options));
             // Return empty document.
-            return Document.of(new TreeIO(JsonValue.EMPTY_JSON_ARRAY, JakartaAdapter.instance()));
+            return Document.of(new Tree(JsonValue.EMPTY_JSON_ARRAY, JakartaAdapter.instance()));
         }
 
     }

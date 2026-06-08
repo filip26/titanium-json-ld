@@ -42,7 +42,7 @@ import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 
 /**
  *
@@ -76,7 +76,7 @@ public final class Framer {
 
     public static final Context context(
             final URI baseUrl,
-            final TreeIO localContext,
+            final Tree localContext,
             final URI localContextBase,
             final Options options,
             final Execution runtime) throws JsonLdException {
@@ -103,7 +103,7 @@ public final class Framer {
     }
 
     public static final Collection<?> expand(
-            TreeIO document,
+            Tree document,
             final Options options,
             final Execution runtime) throws JsonLdException {
         return Expander.expand(
