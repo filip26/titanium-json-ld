@@ -1,0 +1,17 @@
+{
+    "@id": "http://example.org/Thomas",
+    "@type": [
+        "http://example.org/Person"
+    ],
+    "http://example.org/p": [
+        {
+            "@value": 3
+        }
+    ],
+    "http://example.org/description": [
+        {
+            "@language": "fr",
+            "@value": "Une description"
+        }
+    ]
+}

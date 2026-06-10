@@ -573,7 +573,9 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         Object convertedValue = null;
 
         // 2.4.
-        if (!nativeTypes.isEmpty()) {
+        // avoid cases where the native types mapping does not know about the datatype,
+        // typically in cases where the datatype is rdf:langString
+        if (!nativeTypes.isEmpty() && nativeTypes.get(datatype) != null) {
 
             if (datatype != null) {
 
