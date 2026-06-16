@@ -37,11 +37,11 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer;
+import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.tree.io.java.JavaTree;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
@@ -105,7 +105,7 @@ public final class ContextBuilder {
     }
 
     public ActiveContext build(
-            final TreeIO context,
+            final Tree context,
             final URI baseUrl) throws JsonLdException {
         return build(context.node(), context.adapter(), baseUrl);
     }
@@ -261,7 +261,7 @@ public final class ContextBuilder {
                         Terms.PROFILE_CONTEXT,
                         List.of(Terms.PROFILE_CONTEXT));
 
-                TreeIO importedContent = null;
+                Tree importedContent = null;
 
                 try {
 
@@ -311,27 +311,27 @@ public final class ContextBuilder {
 
                 try {
 
-                    if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                    if (importAdapter.isEqualTo(JavaAdapter.instance())
                             && importedContext instanceof Map<?, ?> map) {
                         merged = new LinkedHashMap<>(map);
 
                     } else {
-                        merged = new LinkedHashMap<>((Map<?, ?>) NativeMaterializer.node(importedContext, importAdapter));
+                        merged = new LinkedHashMap<>((Map<?, ?>) JavaTree.adapt(importedContext, importAdapter));
                     }
 
-                    if (importAdapter.isCompatibleWith(NativeAdapter.instance())
+                    if (importAdapter.isEqualTo(JavaAdapter.instance())
                             && contextDefinition instanceof Map<?, ?> map) {
                         merged.putAll(map);
 
                     } else {
-                        merged.putAll((Map<?, ?>) NativeMaterializer.node(contextDefinition, adapter));
+                        merged.putAll((Map<?, ?>) JavaTree.adapt(contextDefinition, adapter));
                     }
 
                 } catch (TreeIOException e) {
                     throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
                 }
 
-                contextAdapter = NativeAdapter.instance();
+                contextAdapter = JavaAdapter.instance();
                 contextDefinition = merged;
             }
 
@@ -639,7 +639,7 @@ public final class ContextBuilder {
             }
         }
 
-        final TreeIO importedContent = remoteDocument.content();
+        final Tree importedContent = remoteDocument.content();
 
 //        if (remoteImport.content() instanceof PolyNode adaptedNode) {
 //            importedNode = adaptedNode;
@@ -650,7 +650,7 @@ public final class ContextBuilder {
 //        }
 
         // 5.2.5.2.
-        if (!TreeIO.isMap(importedContent)) {
+        if (importedContent == null || !importedContent.isMap()) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
                     "An invalid imported JSON-LD, uri=" + contextUri + ", @context=" + importedContent.node());
         }
@@ -670,8 +670,8 @@ public final class ContextBuilder {
                 && newContextAdapter.keys(newContext).contains(Keywords.BASE)) {
 
             try {
-                newContext = NativeMaterializer.node(importedContext, importedContent.adapter());
-                newContextAdapter = NativeAdapter.instance();
+                newContext = JavaTree.adapt(importedContext, importedContent.adapter());
+                newContextAdapter = JavaAdapter.instance();
 
                 // remove @base from a remote context
                 if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {

@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.Tree;
 
 /**
  *
@@ -76,7 +76,7 @@ public final class RdfEmitter {
     }
 
     public static final void toRdf(
-            final TreeIO input,
+            final Tree input,
             final RdfQuadConsumer consumer,
             final Options options,
             final Execution runtime) throws JsonLdException {

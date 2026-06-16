@@ -42,12 +42,12 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.flow.QuadEmitter;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonStructure;
@@ -170,7 +170,7 @@ public class JunitRunner {
                     testCase,
                     options,
                     result,
-                    NativeAdapter.instance());
+                    JavaAdapter.instance());
 //            }
 
 //            fail("Unexpected result type [" + result.getClass() + "]");
@@ -254,7 +254,7 @@ public class JunitRunner {
         return false;
     }
 
-    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final TreeIO expected) throws TreeIOException {
+    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final Tree expected) throws TreeIOException {
 
         if (Comparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
             return true;
