@@ -147,45 +147,16 @@ public final class NodeMapBuilder {
             if (list == null) {
 
                 // 4.1.1.
-                final var propertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty);
-
-                if (propertyValue != null) {
-
-                    if (propertyValue instanceof Collection<?> values) {
-
-                        if (values.stream().noneMatch(element::equals)) {
-
-                            if (propertyValue instanceof ArrayList array) {
-                                @SuppressWarnings("unchecked")
-                                var list = (List<Object>) array;
-                                list.add(element);
-
-                            } else {
-                                var list = new ArrayList<Object>(values);
-                                list.add(element);
-                                nodeMap.set(
-                                        activeGraph,
-                                        activeSubject,
-                                        activeProperty,
-                                        list);
-                            }
-                        }
-
-                    } else {
-                        nodeMap.set(
-                                activeGraph,
-                                activeSubject,
-                                activeProperty,
-                                List.of(propertyValue, element));
-                    }
-
-                } else {
+                if (nodeMap.get(activeGraph, activeSubject, activeProperty) == null) {
                     // 4.1.2.
                     nodeMap.set(
                             activeGraph,
                             activeSubject,
                             activeProperty,
                             Set.of(elementMap));
+
+                } else {
+                    nodeMap.appendUnique(activeGraph, activeSubject, activeProperty, element);
                 }
 
             } else {
@@ -272,17 +243,7 @@ public final class NodeMapBuilder {
 
                 // 6.5.1.
                 if (activePropertyValue != null) {
-
-                    if (((Collection<?>) activePropertyValue).stream()
-                            .filter(Map.class::isInstance)
-                            .noneMatch(referencedNode::equals)) {
-
-                        nodeMap.set(
-                                activeGraph,
-                                id,
-                                activeProperty,
-                                append(activePropertyValue, referencedNode));
-                    }
+                    nodeMap.appendUnique(activeGraph, id, activeProperty, referencedNode);
 
                 } else {
                     // 6.5.2.
@@ -302,14 +263,7 @@ public final class NodeMapBuilder {
                     final var activePropertyValue = nodeMap.get(activeGraph, activeSubject, activeProperty);
 
                     if (activePropertyValue != null) {
-
-                        if (((Collection<?>) activePropertyValue).stream().noneMatch(reference::equals)) {
-                            nodeMap.set(
-                                    activeGraph,
-                                    activeSubject,
-                                    activeProperty,
-                                    append(activePropertyValue, reference));
-                        }
+                        nodeMap.appendUnique(activeGraph, activeSubject, activeProperty, reference);
 
                     } else {
                         // 6.6.2.1.
