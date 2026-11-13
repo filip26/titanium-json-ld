@@ -1,0 +1,4 @@
+
+<http://example.org/Thomas> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Person> .
+<http://example.org/Thomas> <http://example.org/p> "3"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/Thomas> <http://example.org/description> "Une description"@fr .
