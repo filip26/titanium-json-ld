@@ -36,10 +36,10 @@ import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.api.RdfQuadConsumer;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -263,11 +263,11 @@ public final class JsonLdToQuads {
         // 8.
         if (Keywords.JSON.equals(datatype)) {
             try {
-                if (value instanceof TreeIO node) {
+                if (value instanceof Tree node) {
                     valueString = jsonWriter.write(node.node(), node.adapter());
 
                 } else {
-                    valueString = jsonWriter.write(value, NativeAdapter.instance());
+                    valueString = jsonWriter.write(value, JavaAdapter.instance());
                 }
             } catch (TreeIOException e) {
                 throw new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
@@ -297,7 +297,7 @@ public final class JsonLdToQuads {
 
             if (Terms.XSD_DOUBLE.equals(datatype)
                     || Terms.XSD_FLOAT.equals(datatype)
-                    || (!NativeAdapter.instance().isIntegral(number) && number.doubleValue() % -1 != 0)
+                    || (!JavaAdapter.instance().isIntegral(number) && number.doubleValue() % -1 != 0)
                     || (number instanceof BigDecimal decimal && decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)) {
 
                 valueString = toXsdDouble(number.doubleValue());

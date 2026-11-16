@@ -34,12 +34,13 @@ import com.apicatalog.jsonld.lang.Direction;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LdAdapter;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.tree.io.NodeType;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.Tree.NodeType;
 import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeComparison;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.NativeAdapter;
-import com.apicatalog.tree.io.java.NativeMaterializer;
+import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.tree.io.java.JavaTree;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 
@@ -77,7 +78,7 @@ final class ObjectExpansion1314 {
             final String term) throws JsonLdException {
 
         final var keys = params.options().isOrdered()
-                ? adapter.keyStream(element).sorted(TreeIO.comparingElement(adapter::asString)).iterator()
+                ? adapter.keyStream(element).sorted(TreeComparison.comparingNode(adapter::asString)).iterator()
                 : adapter.keyStream(element).iterator();
 
         // 13.
@@ -145,7 +146,7 @@ final class ObjectExpansion1314 {
 
                 expandedValue = Map.of(
                         Keywords.TYPE, Keywords.JSON,
-                        Keywords.VALUE, new TreeIO(value, adapter));
+                        Keywords.VALUE, new Tree(value, adapter));
             }
             // 13.7.
             else if (adapter.isMap(value) && containerMapping.contains(Keywords.LANGUAGE)) {
@@ -323,7 +324,7 @@ final class ObjectExpansion1314 {
                                     activeContext,
                                     indexKey,
                                     index,
-                                    NativeAdapter.instance(),
+                                    JavaAdapter.instance(),
                                     params);
 
                             // 13.8.3.7.2.2.
@@ -577,7 +578,7 @@ final class ObjectExpansion1314 {
                     || params.frameExpansion()
                             && !adapter.isString(value)
                             && !adapter.isEmptyMap(value)
-                            && (!adapter.isCollection(value)
+                            && (!adapter.isSequence(value)
                                     || adapter.elementStream(value)
                                             .anyMatch(Predicate.not(adapter::isString)))) {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
@@ -618,11 +619,11 @@ final class ObjectExpansion1314 {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (adapter.isEmptyCollection(value)) {
+            } else if (adapter.isEmptySequence(value)) {
 
                 expandedValue = List.of();
 
-            } else if (adapter.isCollection(value)) {
+            } else if (adapter.isSequence(value)) {
 
                 List<Object> array = null;
 
@@ -651,13 +652,13 @@ final class ObjectExpansion1314 {
             // 13.4.4.1
             if ((!params.frameExpansion()
                     && !adapter.isString(value)
-                    && (!adapter.isCollection(value)
+                    && (!adapter.isSequence(value)
                             || adapter.elementStream(value)
                                     .anyMatch(Predicate.not(adapter::isString))))
                     || params.frameExpansion()
                             && !adapter.isString(value)
                             && !adapter.isEmptyMap(value)
-                            && (!adapter.isCollection(value)
+                            && (!adapter.isSequence(value)
                                     || adapter.elementStream(value)
                                             .anyMatch(Predicate.not(adapter::isString)))
                             && !LdAdapter.isDefault(value, adapter)
@@ -707,7 +708,7 @@ final class ObjectExpansion1314 {
 
 //                    params.runtime().onTypeMapping(Set.of((String)expandedValue));
 
-                } else if (adapter.isCollection(value)) {
+                } else if (adapter.isSequence(value)) {
 
                     List<String> expandedItems = null;
 
@@ -849,7 +850,7 @@ final class ObjectExpansion1314 {
                 }
 
                 try {
-                    expandedValue = NativeMaterializer.node(value, adapter);
+                    expandedValue = JavaTree.adapt(value, adapter);
                     // TODO use new TreeIO(value, adapter);
 
                 } catch (TreeIOException e) {
@@ -861,14 +862,14 @@ final class ObjectExpansion1314 {
                     || adapter.type(value).isScalar()
                     || params.frameExpansion()
                             && (adapter.isEmptyMap(value)
-                                    || adapter.isEmptyCollection(value)
-                                    || adapter.isCollection(value)
+                                    || adapter.isEmptySequence(value)
+                                    || adapter.isSequence(value)
                                             && adapter.elementStream(value)
                                                     .map(adapter::type)
                                                     .allMatch(NodeType::isScalar))) {
 
                 try {
-                    expandedValue = NativeMaterializer.node(value, adapter);
+                    expandedValue = JavaTree.adapt(value, adapter);
 
                 } catch (TreeIOException e) {
                     throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
@@ -912,11 +913,11 @@ final class ObjectExpansion1314 {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
+            } else if (params.frameExpansion() && adapter.isEmptySequence(value)) {
 
                 expandedValue = List.of();
 
-            } else if (params.frameExpansion() && adapter.isCollection(value)
+            } else if (params.frameExpansion() && adapter.isSequence(value)
                     && adapter
                             .elementStream(value)
                             .allMatch(adapter::isString)) {
@@ -952,11 +953,11 @@ final class ObjectExpansion1314 {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (params.frameExpansion() && adapter.isEmptyCollection(value)) {
+            } else if (params.frameExpansion() && adapter.isEmptySequence(value)) {
 
                 expandedValue = List.of();
 
-            } else if (params.frameExpansion() && adapter.isCollection(value)
+            } else if (params.frameExpansion() && adapter.isSequence(value)
                     && adapter
                             .elementStream(value)
                             .allMatch(adapter::isString)) {
@@ -1201,7 +1202,7 @@ final class ObjectExpansion1314 {
 
             final var nestedNode = adapter.property(nestedKey, element);
 
-            final var collection = adapter.isCollection(nestedNode);
+            final var collection = adapter.isSequence(nestedNode);
             var counter = 0;
 
             // 14.2.

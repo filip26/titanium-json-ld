@@ -37,7 +37,7 @@ import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
 import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.tree.io.java.JavaAdapter;
 
 class NativeInputTest {
 
@@ -50,7 +50,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_EXPANDED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }
@@ -64,7 +64,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_COMPACTED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }
@@ -82,7 +82,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_FLATTENED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }
@@ -96,7 +96,7 @@ class NativeInputTest {
         var match = Comparison.equals(
                 result,
                 PL_2_COMPACTED,
-                NativeAdapter.instance());
+                JavaAdapter.instance());
 
         assertTrue(match);
     }
