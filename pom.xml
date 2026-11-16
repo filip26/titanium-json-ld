@@ -60,7 +60,7 @@
         <jakarta.json.version>2.0.1</jakarta.json.version>
         <nquads.version>1.0.2</nquads.version>
         <rdf-primitives.version>1.0.3</rdf-primitives.version>
-        <rdfc.version>2.0.0</rdfc.version>        
+        <rdfc.version>3.0.0</rdfc.version>        
 
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
