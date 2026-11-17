@@ -37,20 +37,15 @@ import com.apicatalog.jsonld.runtime.TypeMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.media.MediaType;
 
 class TypeMapTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader
-            .newBuilder()
-            .defaultParser(JakartaTestSuite.PARSER)
-            .build();
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::parse);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
-    void testTypeMapper(TestCase testCase) throws JsonLdException, TreeIOException, IOException {
+    void testTypeMapper(TestCase testCase) throws JsonLdException, IOException {
         final var typeMap = new LinkedHashMap<String, Object>();
 
         final var typeMapper = new TypeMapCollector(typeMap::put);
@@ -59,7 +54,7 @@ class TypeMapTest {
             var options = testCase.getOptions();
 
             options.loader(StaticLoader.newBuilder()
-                    .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+                    .reader(MediaType.JSON_LD, JakartaTestSuite::parse)
                     .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
@@ -80,8 +75,7 @@ class TypeMapTest {
             TermMapTest.validateJson(
                     testCase,
                     options,
-                    typeMap,
-                    JavaAdapter.instance());
+                    typeMap);
 
         } catch (JsonLdException e) {
 

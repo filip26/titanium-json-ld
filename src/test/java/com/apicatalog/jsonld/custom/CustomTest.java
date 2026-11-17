@@ -31,11 +31,8 @@ import com.apicatalog.jsonld.test.TestManifest;
 
 public class CustomTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader
-            .newBuilder()
-            .defaultParser(JakartaTestSuite.PARSER)
-            .build();
-    
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::parse, null);
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testCustom(TestCase testCase) {
@@ -45,8 +42,8 @@ public class CustomTest {
     static final Stream<TestCase> data() throws JsonLdException {
         return TestManifest
                 .load(
-                        "classpath:/com/apicatalog/jsonld/test/", 
-                        "manifest.json", 
+                        "classpath:/com/apicatalog/jsonld/test/",
+                        "manifest.json",
                         LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0

@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -37,11 +38,6 @@ import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.runtime.Execution.TermsConsumer;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.JavaAdapter;
-import com.apicatalog.tree.io.java.JavaTree;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriResolver;
@@ -106,14 +102,7 @@ public final class ContextBuilder {
     }
 
     public ActiveContext build(
-            final Tree context,
-            final URI baseUrl) throws JsonLdException {
-        return build(context.node(), context.adapter(), baseUrl);
-    }
-
-    public ActiveContext build(
             final Object contextValue,
-            final TreeAdapter adapter,
             final URI baseUrl) throws JsonLdException {
 
         // 1. Initialize result to the result of cloning active context, with inverse
@@ -125,21 +114,22 @@ public final class ContextBuilder {
 
         // 2. If local context is an object containing the member @propagate,
         // its value MUST be boolean true or false, set propagate to that value.
-        if (adapter.isMap(contextValue)) {
+        if (contextValue instanceof Map contextMap) {
 
             if (!acceptInlineContext) {
                 throw new JsonLdException(ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED);
             }
 
-            var propagateValue = adapter.property(Keywords.PROPAGATE, contextValue);
+            var propagateValue = contextMap.get(Keywords.PROPAGATE);
 
-            if (!adapter.isNull(propagateValue)) {
+            if (propagateValue != null) {
 
-                if (!adapter.isBoolean(propagateValue)) {
+                if (propagateValue instanceof Boolean propagageBool) {
+                    propagate = propagageBool;
+
+                } else {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE);
                 }
-
-                propagate = adapter.isTrue(propagateValue);
             }
         }
 
@@ -150,10 +140,10 @@ public final class ContextBuilder {
         }
 
         // 5. For each item context in local context:
-        for (var itemContext : adapter.asIterable(contextValue)) {
+        for (var itemContext : JsonLdAdapter.asCollection(contextValue)) {
 
             // 5.1. If context is null:
-            if (adapter.isNull(itemContext)) {
+            if (itemContext == null) {
 
                 // 5.1.1. If override protected is false and active context contains any
                 // protected term definitions, an invalid context nullification has been
@@ -181,8 +171,8 @@ public final class ContextBuilder {
             }
 
             // 5.2. if context is a string,
-            if (adapter.isString(itemContext)) {
-                fetch(adapter.stringValue(itemContext), baseUrl);
+            if (itemContext instanceof String contextUri) {
+                fetch(contextUri, baseUrl);
                 continue;
             }
 
@@ -192,29 +182,30 @@ public final class ContextBuilder {
 
             // 5.3. If context is not a map, an invalid local context error has been
             // detected and processing is aborted.
-            if (!adapter.isMap(itemContext)) {
-                throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT, "A context must be a map, context=" + itemContext);
+            if (!(itemContext instanceof Map itemContextMap)) {
+                throw new JsonLdException(ErrorCode.INVALID_LOCAL_CONTEXT,
+                        "A context must be a map, context=" + itemContext);
             }
 
             if (collectTerms != null) {
                 collectTerms.terms(
                         EventType.CONTEXT_KEYS,
-                        adapter.keyStream(itemContext).map(adapter::asString).toList());
+                        itemContextMap.keySet());
             }
 
             // 5.4. Otherwise, it's a context definition
-            var versionNode = adapter.property(Keywords.VERSION, itemContext);
+            var versionNode = itemContextMap.get(Keywords.VERSION);
 
             // 5.5. If context has an @version
             if (versionNode != null) {
 
                 String versionString = null;
 
-                if (adapter.isString(versionNode)) {
-                    versionString = adapter.stringValue(versionNode);
+                if (versionNode instanceof String versionNodeString) {
+                    versionString = versionNodeString;
 
-                } else if (adapter.isNumber(versionNode)) {
-                    versionString = adapter.asString(versionNode);
+                } else if (versionNode instanceof Number versionNodeNumber) {
+                    versionString = versionNodeNumber.toString();
                 }
 
                 // 5.5.1. If the associated value is not 1.1, an invalid @version value has been
@@ -232,10 +223,8 @@ public final class ContextBuilder {
             }
 
             // 5.6. If context has an @import
-            var contextImport = adapter.property(Keywords.IMPORT, itemContext);
-
-            var contextDefinition = itemContext;
-            var contextAdapter = adapter;
+            var contextImport = itemContextMap.get(Keywords.IMPORT);
+            var contextDefinition = itemContextMap;
 
             if (contextImport != null) {
 
@@ -244,19 +233,24 @@ public final class ContextBuilder {
                     throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
-                // 5.6.2.
-                if (!adapter.isString(contextImport)) {
-                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_IMPORT_VALUE, "Invalid context @import value [" + contextImport + "].");
-                }
-
                 // 5.6.3.
-                final var contextImportUri = UriResolver.resolveAsUri(
-                        baseUrl,
-                        adapter.stringValue(contextImport));
+                final URI contextImportUri;
+
+                if (contextImport instanceof String contextImportString) {
+                    contextImportUri = UriResolver.resolveAsUri(
+                            baseUrl,
+                            contextImportString);
+
+                } else {
+                    // 5.6.2.
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_IMPORT_VALUE,
+                            "Invalid context @import value [" + contextImport + "].");
+                }
 
                 // 5.6.4.
                 if (loader == null) {
-                    throw new JsonLdException(ErrorCode.MISSING_DOCUMENT_LOADER, "Remote context cannot be loaded, a loader is not present, uri = " + contextImportUri);
+                    throw new JsonLdException(ErrorCode.MISSING_DOCUMENT_LOADER,
+                            "Remote context cannot be loaded, a loader is not present, uri = " + contextImportUri);
                 }
 
                 final var loaderOptions = new DocumentLoader.Options(
@@ -264,14 +258,15 @@ public final class ContextBuilder {
                         Terms.PROFILE_CONTEXT,
                         List.of(Terms.PROFILE_CONTEXT));
 
-                Tree importedContent = null;
+                Object importedContent = null;
 
                 try {
 
                     final Document importedDocument = loader.loadDocument(contextImportUri, loaderOptions);
 
                     if (importedDocument == null) {
-                        throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is null, uri = " + contextImportUri);
+                        throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
+                                "Imported context is null, uri = " + contextImportUri);
                     }
 
 //                    if (importedDocument instanceof JsonDocument jsonDocument) {
@@ -289,68 +284,48 @@ public final class ContextBuilder {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
 
-                var importedNode = importedContent.node();
-                var importAdapter = importedContent.adapter();
+                var importedNode = importedContent;
+                Map<String, ?> importedContextMap;
 
-                // 5.6.6
-                if (!importAdapter.isMap(importedNode)) {
+                if (importedNode instanceof Map nodeMap) {
+
+                    var importedContext = nodeMap.get(Keywords.CONTEXT);
+
+                    if (importedContent instanceof Map contextMap
+                            && !contextMap.containsKey(Keywords.IMPORT)) {
+
+                        importedContextMap = contextMap;
+
+                    } else {
+                        throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT);
+                    }
+
+                } else {
+                    // 5.6.6
                     throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT);
-                }
-
-                var importedContext = importAdapter.property(Keywords.CONTEXT, importedNode);
-
-                if (importedContext == null
-                        || !importAdapter.isMap(importedContext)) {
-                    throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT);
-                }
-
-                // 5.6.7
-                if (importAdapter.keys(importedContext).contains(Keywords.IMPORT)) {
-                    throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                 }
 
                 // 5.6.8
-                final Map<Object, Object> merged;
+                final Map<Object, Object> merged = new LinkedHashMap<>(importedContextMap);
 
-                try {
-
-                    if (importAdapter.isEqualTo(JavaAdapter.instance())
-                            && importedContext instanceof Map<?, ?> map) {
-                        merged = new LinkedHashMap<>(map);
-
-                    } else {
-                        merged = new LinkedHashMap<>((Map<?, ?>) JavaTree.adapt(importedContext, importAdapter));
-                    }
-
-                    if (importAdapter.isEqualTo(JavaAdapter.instance())
-                            && contextDefinition instanceof Map<?, ?> map) {
-                        merged.putAll(map);
-
-                    } else {
-                        merged.putAll((Map<?, ?>) JavaTree.adapt(contextDefinition, adapter));
-                    }
-
-                } catch (TreeIOException e) {
-                    throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
+                if (contextDefinition instanceof Map<?, ?> map) {
+                    merged.putAll(map);
                 }
 
-                contextAdapter = JavaAdapter.instance();
                 contextDefinition = merged;
             }
 
             // 5.7. If context has an @base entry and remote contexts is empty,
             // i.e., the currently being processed context is not a remote context:
-            var baseValue = contextAdapter.property(Keywords.BASE, contextDefinition);
+            if (contextDefinition.containsKey(Keywords.BASE) /* && remoteContexts.isEmpty() */) {
 
-            if (baseValue != null /* && remoteContexts.isEmpty() */) {
+                var baseValue = contextDefinition.get(Keywords.BASE);
 
                 // 5.7.2.
-                if (contextAdapter.isNull(baseValue)) {
+                if (baseValue == null) {
                     result.setBaseUri(null);
 
-                } else if (contextAdapter.isString(baseValue)) {
-
-                    final var valueString = contextAdapter.stringValue(baseValue);
+                } else if (baseValue instanceof String valueString) {
 
                     final var valueUri = valueString != null && !valueString.isBlank()
                             ? UriUtils.create(valueString)
@@ -388,18 +363,16 @@ public final class ContextBuilder {
             }
 
             // 5.8.
-            var vocabValue = contextAdapter.property(Keywords.VOCAB, contextDefinition);
+            if (contextDefinition.containsKey(Keywords.VOCAB)) {
 
-            if (vocabValue != null) {
+                var vocabValue = contextDefinition.get(Keywords.VOCAB);
 
                 // 5.8.2.
-                if (contextAdapter.isNull(vocabValue)) {
+                if (vocabValue == null) {
                     result.setVocabularyMapping(null);
 
                     // 5.8.3
-                } else if (contextAdapter.isString(vocabValue)) {
-
-                    final var valueString = contextAdapter.stringValue(vocabValue);
+                } else if (vocabValue instanceof String valueString) {
 
                     if (valueString == null
                             || valueString.isBlank()
@@ -415,45 +388,50 @@ public final class ContextBuilder {
                             result.setVocabularyMapping(vocabularyMapping);
 
                         } else {
-                            throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING, "An invalid vocabulary mapping has been detected, @vocab=" + vocabularyMapping);
+                            throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING,
+                                    "An invalid vocabulary mapping has been detected, @vocab=" + vocabularyMapping);
                         }
 
                     } else {
-                        throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING, "An invalid vocabulary mapping has been detected, @vocab=" + valueString);
+                        throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING,
+                                "An invalid vocabulary mapping has been detected, @vocab=" + valueString);
                     }
 
                 } else {
-                    throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING, "A vocabulary mapping is not string value, @vocab=" + vocabValue);
+                    throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING,
+                            "A vocabulary mapping is not string value, @vocab=" + vocabValue);
                 }
             }
 
             // 5.9.
-            var langValue = contextAdapter.property(Keywords.LANGUAGE, contextDefinition);
+            if (contextDefinition.containsKey(Keywords.LANGUAGE)) {
 
-            if (langValue != null) {
+                var langValue = contextDefinition.get(Keywords.LANGUAGE);
 
                 // 5.9.2.
-                if (contextAdapter.isNull(langValue)) {
+                if (langValue == null) {
                     result.setDefaultLanguage(null);
 
                     // 5.9.3
-                } else if (contextAdapter.isString(langValue)) {
+                } else if (langValue instanceof String langString) {
 
-                    result.setDefaultLanguage(contextAdapter.stringValue(langValue));
+                    result.setDefaultLanguage(langString);
 
                     if (!LanguageTag.isWellFormed(result.getDefaultLanguage())) {
-                        LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", result.getDefaultLanguage());
+                        LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.",
+                                result.getDefaultLanguage());
                     }
 
                 } else {
-                    throw new JsonLdException(ErrorCode.INVALID_DEFAULT_LANGUAGE, "Language tag is not string value, @language=" + langValue);
+                    throw new JsonLdException(ErrorCode.INVALID_DEFAULT_LANGUAGE,
+                            "Language tag is not string value, @language=" + langValue);
                 }
             }
 
             // 5.10.
-            final var dirValue = contextAdapter.property(Keywords.DIRECTION, contextDefinition);
+            if (contextDefinition.containsKey(Keywords.DIRECTION)) {
 
-            if (dirValue != null) {
+                final var dirValue = contextDefinition.get(Keywords.DIRECTION);
 
                 // 5.10.1.
                 if (activeContext.isV10()) {
@@ -461,13 +439,11 @@ public final class ContextBuilder {
                 }
 
                 // 5.10.3.
-                if (contextAdapter.isNull(dirValue)) {
+                if (dirValue == null) {
                     result.setDefaultBaseDirection(Direction.NULL);
 
                     // 5.10.4.
-                } else if (contextAdapter.isString(dirValue)) {
-
-                    final String direction = contextAdapter.stringValue(dirValue);
+                } else if (dirValue instanceof String direction) {
 
                     if ("ltr".equalsIgnoreCase(direction)) {
                         result.setDefaultBaseDirection(Direction.LTR);
@@ -485,27 +461,29 @@ public final class ContextBuilder {
             }
 
             // 5.11.
-            var propagateValue = contextAdapter.property(Keywords.PROPAGATE, contextDefinition);
+            if (contextDefinition.containsKey(Keywords.PROPAGATE)) {
 
-            if (propagateValue != null) {
+                var propagateValue = contextDefinition.get(Keywords.PROPAGATE);
+
                 // 5.11.1.
                 if (activeContext.isV10()) {
                     throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                 }
                 // 5.11.2.
-                if (!contextAdapter.isBoolean(propagateValue)) {
+                if (!(propagateValue instanceof Boolean)) {
                     throw new JsonLdException(
                             ErrorCode.INVALID_KEYWORD_PROPAGATE_VALUE,
                             "Expected boolean but got %s".formatted(propagateValue));
                 }
             }
 
-            final var termBuilder = TermDefinitionBuilder.with(result, contextDefinition, contextAdapter, new HashMap<>(), loader, runtime)
+            final var termBuilder = TermDefinitionBuilder
+                    .with(result, contextDefinition, new HashMap<>(), loader, runtime)
                     .baseUrl(baseUrl)
                     .overrideProtectedFlag(overrideProtected);
 
             // 5.13
-            for (var keyValue : contextAdapter.keys(contextDefinition)) {
+            for (var keyValue : contextDefinition.keySet()) {
 
                 if (keyValue instanceof String key
                         && Keywords.noneMatch((String) key,
@@ -513,7 +491,7 @@ public final class ContextBuilder {
                                 Keywords.PROPAGATE, Keywords.PROTECTED, Keywords.VERSION, Keywords.VOCAB)) {
 
                     termBuilder
-                            .protectedFlag(contextAdapter.isTrue(contextAdapter.property(Keywords.PROTECTED, contextDefinition)))
+                            .protectedFlag(Boolean.TRUE.equals(contextDefinition.get(Keywords.PROTECTED)))
                             .remoteContexts(new ArrayList<>(remoteContexts))
                             .create(key);
                 }
@@ -644,20 +622,20 @@ public final class ContextBuilder {
         }
 
         final var importedContent = remoteDocument.content();
-        
+
         if (importedContent == null) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
                     "Remote context cannot be retrieved, uri=" + contextUri);
         }
 
         // 5.2.5.2.
-        if (!importedContent.isMap()) {
+        if (!(importedContent instanceof Map importedContextMap)) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
-                    "An invalid imported JSON-LD, uri=" + contextUri + ", @context=" + importedContent.node());
+                    "An invalid imported JSON-LD, uri=" + contextUri + ", @context=" + importedContent);
         }
 
         // 5.2.5.3.
-        final var importedContext = importedContent.property(Keywords.CONTEXT);
+        final var importedContext = importedContextMap.get(Keywords.CONTEXT);
 
         if (importedContext == null) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
@@ -665,25 +643,16 @@ public final class ContextBuilder {
         }
 
         var newContext = importedContext;
-        var newContextAdapter = importedContent.adapter();
 
-        if (newContextAdapter.isMap(newContext)
-                && newContextAdapter.keys(newContext).contains(Keywords.BASE)) {
+        // remove @base from a remote context
+        if (newContext instanceof Map newContextMap
+                && newContextMap.containsKey(Keywords.BASE)) {
 
-            try {
-                newContext = JavaTree.adapt(importedContext, importedContent.adapter());
-                newContextAdapter = JavaAdapter.instance();
+            @SuppressWarnings("unchecked")
+            var hashMap = new LinkedHashMap<>(newContextMap);
+            hashMap.remove(Keywords.BASE);
+            newContext = hashMap;
 
-                // remove @base from a remote context
-                if (newContext instanceof Map map && map.containsKey(Keywords.BASE)) {
-                    @SuppressWarnings("unchecked")
-                    var hashMap = new LinkedHashMap<>(map);
-                    hashMap.remove(Keywords.BASE);
-                    newContext = hashMap;
-                }
-            } catch (TreeIOException e) {
-                throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
-            }
         }
 
         // 5.2.6
@@ -693,7 +662,7 @@ public final class ContextBuilder {
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
                     .collectTerms(collectTerms)
-                    .build(newContext, newContextAdapter, remoteDocument.url());
+                    .build(newContext, remoteDocument.url());
 
         } catch (JsonLdException e) {
             throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, e);

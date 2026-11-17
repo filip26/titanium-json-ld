@@ -23,7 +23,6 @@ import java.util.Map;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.java.JavaAdapter;
 
 public final class FrameMatcher {
 
@@ -123,7 +122,7 @@ public final class FrameMatcher {
             final var propertyValue = frame.get(property);
 
             final var propertyFrame = propertyValue instanceof Collection array && !array.isEmpty()
-                    ? Frame.of(array)
+                    ? Frame.create(array)
                     : null;
 
             final var nodeValues = nodeValue instanceof Collection<?> array
@@ -189,10 +188,10 @@ public final class FrameMatcher {
                         if (((Collection<?>) listValue).iterator().next() instanceof Map map
                                 && JsonLdAdapter.isValueNode(map)) {
 
-                            final Frame frame = Frame.of(listValue);
+                            final Frame frame = Frame.create(listValue);
                             boolean match = false;
 
-                            for (final var value : JavaAdapter.asCollection(nodeListValue)) {
+                            for (final var value : JsonLdAdapter.asCollection(nodeListValue)) {
 
                                 match = frame.matchValue(value);
                                 if (match) {
@@ -211,10 +210,10 @@ public final class FrameMatcher {
                         } else if (JsonLdAdapter.isNode(((Collection<?>) listValue).iterator().next())
                                 || JsonLdAdapter.isReference(((Collection<?>) listValue).iterator().next())) {
 
-                            final var frame = Frame.of(listValue);
+                            final var frame = Frame.create(listValue);
                             boolean match = false;
 
-                            for (final var value : JavaAdapter.asCollection(nodeListValue)) {
+                            for (final var value : JsonLdAdapter.asCollection(nodeListValue)) {
 
                                 match = frame.matchNode(state, value, requireAll);
 

@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +26,9 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.uri.UriUtils;
 
 /**
@@ -42,23 +41,20 @@ import com.apicatalog.web.uri.UriUtils;
  */
 public final class ObjectExpansion {
 
-    private final Object element;
-    private final TreeAdapter adapter;
-    private final Tree propertyContext;
+    private final Map<String, ?> element;
+    private final Object propertyContext;
     private final Params params;
 
     private Context activeContext;
     private String term;
 
     public ObjectExpansion(
-            final Tree propertyContext,
-            final Object element,
-            final TreeAdapter adapter,
+            final Object propertyContext,
+            final Map<String, ?> element,
             final Params params) {
 
         this.propertyContext = propertyContext;
         this.element = element;
-        this.adapter = adapter;
         this.params = params;
     }
 
@@ -71,7 +67,6 @@ public final class ObjectExpansion {
         activeContext = initPreviousContext(
                 context,
                 element,
-                adapter,
                 params);
 
         // 8. initialize property context
@@ -88,7 +83,7 @@ public final class ObjectExpansion {
         }
 
         // 9. initialize local context
-        final var contextValue = adapter.property(Keywords.CONTEXT, element);
+        final var contextValue = element.get(Keywords.CONTEXT);
 
         if (contextValue != null) {
             activeContext = activeContext
@@ -97,7 +92,7 @@ public final class ObjectExpansion {
                     .collectTerms(params.runtime().hasValuesConsumer()
                             ? params.runtime()::fire
                             : null)
-                    .build(contextValue, adapter, params.baseUrl());
+                    .build(contextValue, params.baseUrl());
         }
 
         // 10.
@@ -115,7 +110,7 @@ public final class ObjectExpansion {
                 .result(result)
                 .typeContext(typeContext)
                 .nest(new LinkedHashMap<>())
-                .expand(activeContext, element, adapter, property, term);
+                .expand(activeContext, element, property, term);
 
         final var normalized = normalize(result, property, params);
 
@@ -149,8 +144,7 @@ public final class ObjectExpansion {
 
     private static Context initPreviousContext(
             final Context context,
-            final Object element,
-            final TreeAdapter adapter,
+            final Map<String, ?> element,
             final Params params) throws JsonLdException {
 
         // 7. If active context has a previous context, the active context is not
@@ -166,8 +160,7 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            final var it = adapter.keyStream(element)
-                    .map(adapter::asString)
+            final var it = element.keySet().stream()
                     .sorted()
                     .iterator();
 
@@ -184,7 +177,7 @@ public final class ObjectExpansion {
                         .expand(key);
 
                 if (Keywords.VALUE.equals(expandedKey)
-                        || (Keywords.ID.equals(expandedKey) && (adapter.isSingleEntry(element)))) {
+                        || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
                     revert = false;
                     break;
                 }
@@ -201,9 +194,7 @@ public final class ObjectExpansion {
 
         String typeKey = null;
 
-        final var typeKeys = adapter
-                .keyStream(element)
-                .map(adapter::asString)
+        final var typeKeys = element.keySet().stream()
                 .sorted()
                 .iterator();
 
@@ -231,12 +222,18 @@ public final class ObjectExpansion {
                 }
 
                 // 11.2
-                var terms = adapter.asStream(adapter.property(key, element))
-                        .filter(adapter::isString)
-                        .map(adapter::stringValue)
-                        .sorted()
-                        .iterator();
+//                var terms = adapter.asStream(element.get(key))
+//                        .filter(adapter::isString
+//                        .map(adapter::stringValue)
+//                        .sorted()
+//                        .iterator();
 
+                var typeValue = element.get(key);
+
+                final Iterator<String> terms = (typeValue instanceof Collection<?> typeSet)
+                        ? typeSet.stream().map(String.class::cast).sorted().iterator()
+                        : List.of((String)typeValue).iterator();
+                
                 while (terms.hasNext()) {
 
                     final var term = terms.next();
@@ -274,13 +271,12 @@ public final class ObjectExpansion {
         // value of the matched entry are URI expanded.
         if (typeKey != null) {
 
-            final var type = adapter.property(typeKey, element);
+            final var typeValue = element.get(typeKey);
 
-            if (adapter.isSequence(type)) {
+            if (typeValue instanceof Collection<?> col) {
 
-                final var lastValue = adapter.elementStream(type)
-                        .filter(adapter::isString)
-                        .map(adapter::stringValue)
+                final var lastValue = col.stream()
+                        .map(String.class::cast)
                         .sorted()
                         .reduce((first, second) -> second);
 
@@ -290,10 +286,10 @@ public final class ObjectExpansion {
                             .expand(lastValue.get());
                 }
 
-            } else if (adapter.isString(type)) {
+            } else if (typeValue instanceof String type) {
                 return UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                         .vocab(true)
-                        .expand(adapter.stringValue(type));
+                        .expand(type);
             }
         }
 

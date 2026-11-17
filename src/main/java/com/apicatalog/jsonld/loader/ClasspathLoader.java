@@ -16,15 +16,11 @@
 package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.TreeParser;
-import com.apicatalog.web.media.MediaType;
 
 /**
  * A {@link DocumentLoader} that retrieves JSON-LD documents from the
@@ -45,29 +41,48 @@ import com.apicatalog.web.media.MediaType;
  */
 public final class ClasspathLoader implements DocumentLoader {
 
-    private final Map<MediaType, TreeParser> parsers;
-    private final TreeParser defaultParser;
+    private final Document.ContentReader contentParser;
     private final Class<?> baseClass;
 
     /**
-     * Creates a new loader that parses classpath resources using the given reader.
+     * Creates a new loader that parses classpath resources using the given content
+     * parser.
      *
-     * @param parsers       the {@link TreeParser} used to parse the loaded resource
-     *                      (must not be {@code null})
-     * @param defaultParser
+     * @param contentParser the {@link Document.ContentReader} used to parse the
+     *                      loaded resource (must not be {@code null})
      * @param base          the class from which relative classpaths are resolved
      */
     private ClasspathLoader(
-            final Map<MediaType, TreeParser> parsers,
-            final TreeParser defaultParser,
+            final Document.ContentReader contentParser,
             final Class<?> base) {
-        this.parsers = parsers;
-        this.defaultParser = defaultParser;
+        this.contentParser = contentParser;
         this.baseClass = base;
     }
-    
-    public static Builder newBuilder() {
-        return new Builder();
+
+    /**
+     * Creates a new loader that parses classpath resources using the given content
+     * parser.
+     *
+     * @param contentParser the {@link Document.ContentReader} used to parse the
+     *                      loaded resource (must not be {@code null})
+     * @param base          the class from which relative classpaths are resolved
+     */
+    public static ClasspathLoader newInstance(
+            Document.ContentReader contentParser,
+            Class<?> base) {
+        return new ClasspathLoader(contentParser, base);
+    }
+
+    /**
+     * Creates a new loader that parses classpath resources using the given content
+     * parser.
+     *
+     * @param contentParser the {@link Document.ContentReader} used to parse the
+     *                      loaded resource (must not be {@code null})
+     * @param base          the class from which relative classpaths are resolved
+     */
+    public static ClasspathLoader newInstance(Document.ContentReader contentParser) {
+        return newInstance(contentParser, null);
     }
 
     /**
@@ -100,66 +115,31 @@ public final class ClasspathLoader implements DocumentLoader {
                 : uri.getSchemeSpecificPart();
 
         final var contentType = FileLoader.fromFileExtension(path); // detect media type
-        
-        final var parser = parsers.getOrDefault(contentType, defaultParser);
-        
-        if (parser == null) {
-            throw new LoaderException(
-                    ErrorCode.UNSUPPORTED_CONTENT_TYPE,
-                    uri,
-                    "Cannot parse content-type=" + contentType + ", uri=" + uri + ", base=" + baseClass.getPackageName());            
-        }
+
+//        if (parser == null) {
+//            throw new LoaderException(
+//                    ErrorCode.UNSUPPORTED_CONTENT_TYPE,
+//                    uri,
+//                    "Cannot parse content-type=" + contentType + ", uri=" + uri + ", base="
+//                            + baseClass.getPackageName());
+//        }
 
         try (final var is = baseClass.getResourceAsStream(path)) {
 
-            var node = parser.parse(is);
+            var node = contentParser.read(contentType, is);
 
-            return Document.of(
+            return new Document(
+                    uri,
                     node,
                     contentType,
-                    uri);
+                    null,
+                    null);
 
-        } catch (TreeIOException | IOException e) {
+        } catch (IOException | UncheckedIOException e) {
             throw new LoaderException(
                     uri,
                     "Document loader failed for uri=" + uri + ", base=" + baseClass.getPackageName(),
                     e);
-        }
-    }
-
-    public static final class Builder {
-
-        private final Map<MediaType, TreeParser> parsers;
-        private TreeParser defaultParser;
-        private Class<?> baseClass;
-
-        Builder() {
-            this.parsers = new HashMap<>();
-            this.defaultParser = null;
-            this.baseClass = ClasspathLoader.class;
-        }
-
-        public Builder parser(MediaType contentType, TreeParser parser) {
-            this.parsers.put(contentType, parser);
-            return this;
-        }
-        
-        public Builder defaultParser(TreeParser parser) {
-            this.defaultParser = parser;
-            return this;
-        }
-
-        public Builder base(Class<?> baseClass) {
-            this.baseClass = baseClass;
-            return this;
-        }
-
-        /** Builds an immutable {@link ClasspathLoader} instance. */
-        public ClasspathLoader build() {
-            return new ClasspathLoader(
-                    Map.copyOf(parsers),
-                    defaultParser,
-                    baseClass);
         }
     }
 }

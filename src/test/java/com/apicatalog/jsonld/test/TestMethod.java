@@ -19,11 +19,10 @@ import java.io.IOException;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.rdf.api.RdfConsumerException;
 
 @FunctionalInterface
 public interface TestMethod {
 
-    Object invoke(Options options) throws JsonLdException, RdfConsumerException, IOException;
+    Object invoke(Options options) throws JsonLdException, IOException;
 
 }

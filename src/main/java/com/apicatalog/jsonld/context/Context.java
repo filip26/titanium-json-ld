@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SequencedCollection;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd.Version;
@@ -31,9 +32,6 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.java.JavaAdapter;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -70,8 +68,7 @@ public interface Context {
 
     void newTerm(
             String term,
-            Object localContext,
-            TreeAdapter adapter,
+            Map<String, ?> localContext,
             Map<String, Boolean> defined,
             DocumentLoader loader,
             final Execution runtime) throws JsonLdException;
@@ -96,19 +93,17 @@ public interface Context {
 
     // TODO move to Frame.context()
     @Deprecated
-    public static Tree extract(Tree document) throws JsonLdException {
+    public static Object extract(Object document) throws JsonLdException {
 
-        final var node = document.node();
-        final var adapter = document.adapter();
-
-        if (!adapter.isMap(node)) {
-            throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY, "Document is not map but [" + node + "].");
+        if (!(document instanceof Map map)) {
+            throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY,
+                    "Document is not map but [" + document.getClass() + "].");
         }
 
-        final var context = adapter.property(Keywords.CONTEXT, node);
+        final var context = map.get(Keywords.CONTEXT);
 
         if (context != null) {
-            return new Tree(context, adapter);
+            return context;
         }
 
 //        if (context != null
@@ -120,47 +115,54 @@ public interface Context {
 //            return new PolyNode(context, adapter);
 //        }
 
-        return Tree.of(Map.of());
+        return Map.of();
 
     }
 
-    public static Tree unwrap(Tree context) {
+    public static Object unwrap(Object context) {
 
-        Object node = context.node();
-        var adapter = context.adapter();
-
+        Object node = context;
         boolean changed = false;
 
-        if (adapter.isSingleElement(node)) {
-            node = adapter.singleElement(node);
-            changed = true;
-        }
+        if (node instanceof SequencedCollection<?> col) {
+            if (col.size() == 1) {
+                node = col.getFirst();
+                changed = true;
 
-        if (adapter.isMap(node)) {
-            final var ctx = adapter.property(Keywords.CONTEXT, node);
-            if (ctx != null) {
-                node = ctx;
+            } else if (col.isEmpty()) {
+                node = Map.of();
                 changed = true;
             }
         }
 
-        if (node == null || adapter.isNull(node) || adapter.isEmpty(node)) {
-            node = Map.of();
-            adapter = JavaAdapter.instance();
-            changed = true;
+        if (node instanceof Map map) {
+
+            if (map.isEmpty()) {
+                node = Map.of();
+                changed = true;
+
+            } else {
+                final var ctx = map.get(Keywords.CONTEXT);
+                if (ctx != null) {
+                    node = ctx;
+                    changed = true;
+                }
+            }
         }
 
         return changed
-                ? new Tree(node, adapter)
+                ? node
                 : context;
     }
 
     public static Map<String, ?> inject(
             final Map<String, ?> node,
-            final Tree context) throws JsonLdException {
+            final Object context) throws JsonLdException {
 
         // 9.3.
-        if (context != null && !context.isEmptyOrNull()) {
+        if (context != null
+                && !(context instanceof Map map && map.isEmpty())
+                && !(context instanceof Collection col && col.isEmpty())) {
             final var compacted = new LinkedHashMap<String, Object>(node.size() + 1);
             compacted.put(Keywords.CONTEXT, context);
             compacted.putAll(node);
@@ -187,7 +189,8 @@ public interface Context {
 
                 // 5.2.5.1.
             } catch (LoaderException e) {
-                throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED, "There was a problem encountered loading a remote context [" + uri + "]", e);
+                throw new JsonLdException(ErrorCode.LOADING_REMOTE_CONTEXT_FAILED,
+                        "There was a problem encountered loading a remote context [" + uri + "]", e);
             }
 
             if (document == null) {
@@ -196,8 +199,9 @@ public interface Context {
         }
 
         // 5.2.5.2.
-        if (document.content() == null || !document.content().isMap()) {
-            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT, "Imported context is not valid JSON-LD context: " + document.content() + ".");
+        if (document.content() == null || !(document.content() instanceof Map)) {
+            throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
+                    "Imported context is not valid JSON-LD context: " + document.content() + ".");
         }
 
         return document;
@@ -292,18 +296,15 @@ public interface Context {
             return ctx;
         }
 
-        public Builder update(Tree node, boolean acceptInline, URI baseUrl) throws JsonLdException {
-            return update(node.node(), node.adapter(), acceptInline, baseUrl);
-        }
-
-        public Builder update(Object node, TreeAdapter adapter, boolean acceptInline, URI baseUrl) throws JsonLdException {
+        public Builder update(Object node, boolean acceptInline, URI baseUrl)
+                throws JsonLdException {
             // TODO merge if set
 //            this.context = node;
 //            this.adapter = adapter;
 //            this.baseUrl = baseUrl;
             this.ctx = ctx.newContext(loader, runtime)
                     .useInline(acceptInline)
-                    .build(node, adapter, baseUrl);
+                    .build(node, baseUrl);
             return this;
         }
 

@@ -39,19 +39,11 @@ import com.apicatalog.jsonld.runtime.TermMapCollector;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.media.MediaType;
 
 class TermMapTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader
-            .newBuilder()
-            .defaultParser(JakartaTestSuite.PARSER)
-            .build();
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::parse);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource( "data" )
@@ -64,7 +56,7 @@ class TermMapTest {
             var options = testCase.getOptions();
             
             options.loader( StaticLoader.newBuilder()
-                    .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+                    .reader(MediaType.JSON_LD, JakartaTestSuite::parse)
                     .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
@@ -83,8 +75,7 @@ class TermMapTest {
             validateJson(
                     testCase,
                     options,
-                    termMap,
-                    JavaAdapter.instance());
+                    termMap);
 
         } catch (JsonLdException e) {
 
@@ -113,7 +104,7 @@ class TermMapTest {
                 .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
 
-    static boolean validateJson(final TestCase testCase, final Options options, final Object result, final TreeAdapter resultAdapter) {
+    static boolean validateJson(final TestCase testCase, final Options options, final Object result) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -123,26 +114,26 @@ class TermMapTest {
             assertNotNull(expectedDocument);
 
             // compare expected with the result
-            return compareJson(testCase, result, resultAdapter, expectedDocument.content());
+            return compareJson(testCase, result, expectedDocument.content());
 
-        } catch (LoaderException | TreeIOException e) {
+        } catch (LoaderException e) {
             fail(e.getMessage());
         }
         return false;
     }
 
-    public static final boolean compareJson(final TestCase testCase, final Object result, final TreeAdapter resultAdapter, final Tree expected) throws TreeIOException {
+    public static final boolean compareJson(final TestCase testCase, final Object result, final Object expected) {
 
-        if (expected.isIsomorphicTo(result, resultAdapter)) {
-            return true;
-        }
+//FIXME        if (expected.isIsomorphicTo(result, resultAdapter)) {
+//            return true;
+//        }
 
-        JunitRunner.write(testCase,
-                JakartaMaterializer.node(result, resultAdapter),
-                JakartaMaterializer.node(expected),
-                null);
+//        JunitRunner.write(testCase,
+//                JakartaMaterializer.node(result, resultAdapter),
+//                JakartaMaterializer.node(expected),
+//                null);
 
-        fail("Expected " + expected.node() + ", but was" + result);
+        fail("Expected " + expected + ", but was" + result);
         return false;
     }
 }

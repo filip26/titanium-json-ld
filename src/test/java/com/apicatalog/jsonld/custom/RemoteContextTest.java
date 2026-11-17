@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Duration;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -36,39 +38,31 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.CacheLoader;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.rdf.RdfComparison;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.model.RdfQuad;
 import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
-import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
-import com.apicatalog.rdf.primitive.set.OrderedQuadDataset;
-import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.rdf.provider.QuadSetProvider;
+import com.apicatalog.web.media.MediaType;
 
 class RemoteContextTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader
-            .newBuilder()
-            .defaultParser(JakartaTestSuite.PARSER)
-            .build();
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::parse);
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
      *      #61</a>
      */
     @Test
-    void testToRdfMissingTriples1() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
+    void testToRdfMissingTriples1() throws JsonLdException, IOException, NQuadsReaderException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
         final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
 
-        final OrderedQuadDataset result = new OrderedQuadDataset();
+        final var result = new LinkedHashSet<RdfQuad>();
 
         JsonLd.toRdf(
-                document,
-                new QuadAcceptor(result),
+                (Map) document,
+                new QuadSetProvider(result)::quad,
                 Options.newOptions()
                         .expandContext(context));
 
@@ -76,9 +70,11 @@ class RemoteContextTest {
 
             assertNotNull(is);
 
-            RdfQuadSet expected = new OrderedQuadDataset();
+            var expected = new LinkedHashSet<RdfQuad>();
 
-            new NQuadsReader(new InputStreamReader(is)).provide(new QuadAcceptor(expected));
+            try (var reader = new NQuadsReader(new InputStreamReader(is))) {
+                reader.provide(new QuadSetProvider(expected)::quad);
+            }
 
             boolean match = RdfComparison.equals(result, expected);
 
@@ -91,25 +87,28 @@ class RemoteContextTest {
      *      #61</a>
      */
     @Test
-    void testToRdfMissingTriples2() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
+    void testToRdfMissingTriples2()
+            throws JsonLdException, IOException, NQuadsReaderException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue61-in.json");
         final var context = read("/com/apicatalog/jsonld/test/issue61-context.json");
 
-        final OrderedQuadSet result = new OrderedQuadSet();
+        final var result = new LinkedHashSet<RdfQuad>();
 
         JsonLd.toRdf(
-                document,
-                new QuadAcceptor(result),
+                (Map) document,
+                new QuadSetProvider(result)::quad,
                 Options.newOptions().expandContext(context));
 
         try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
             assertNotNull(is);
 
-            final OrderedQuadSet expected = new OrderedQuadSet();
+            final var expected = new LinkedHashSet<RdfQuad>();
 
-            new NQuadsReader(new InputStreamReader(is)).provide(new QuadAcceptor(expected));
+            try (var reader = new NQuadsReader(new InputStreamReader(is))) {
+                reader.provide(new QuadSetProvider(expected));
+            }
 
             boolean match = RdfComparison.equals(result, expected);
 
@@ -122,15 +121,16 @@ class RemoteContextTest {
      *      #63</a>
      */
     @Test
-    void testRemoteContext() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException, TreeIOException {
+    void testRemoteContext()
+            throws JsonLdException, IOException, NQuadsReaderException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue63-in.json");
 
-        final OrderedQuadSet result = new OrderedQuadSet();
+        final var result = new LinkedHashSet<RdfQuad>();
 
         JsonLd.toRdf(
-                document,
-                new QuadAcceptor(result),
+                (Map)document,
+                new QuadSetProvider(result)::quad,
                 Options.with(LOADER));
 
         assertNotNull(result);
@@ -139,9 +139,11 @@ class RemoteContextTest {
 
             assertNotNull(is);
 
-            final OrderedQuadSet expected = new OrderedQuadSet();
+            final var expected = new LinkedHashSet<RdfQuad>();
 
-            new NQuadsReader(new InputStreamReader(is)).provide(new QuadAcceptor(expected));
+            try (var reader = new NQuadsReader(new InputStreamReader(is))) {
+                reader.provide(new QuadSetProvider(expected));
+            }
 
             boolean match = RdfComparison.equals(result, expected);
 
@@ -159,7 +161,7 @@ class RemoteContextTest {
      */
     @Test
     @Disabled
-    void testPerformance() throws JsonLdException, TreeIOException, IOException {
+    void testPerformance() throws JsonLdException, IOException {
 
         final var document = read("/com/apicatalog/jsonld/test/issue62-in.json");
         assertNotNull(document);
@@ -173,7 +175,7 @@ class RemoteContextTest {
 
             final var loader = CacheLoader.of(JakartaTestSuite.HTTP_LOADER, 256);
 
-            final var result = JsonLd.expand(document, Options.with(loader));
+            final var result = JsonLd.expand((Map) document, Options.with(loader));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
             System.out.println("Cached documents: " + loader.cache().size());
@@ -181,16 +183,16 @@ class RemoteContextTest {
             assertNotNull(result);
 
             boolean match = Comparison.equals(
-                    result, JavaAdapter.instance(),
-                    expected.node(), expected.adapter());
+                    result,
+                    expected);
 
             assertTrue(match);
         });
     }
 
-    private final Tree read(final String name) throws JsonLdException, TreeIOException, IOException {
+    private final Object read(final String name) throws JsonLdException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
-            return JakartaTestSuite.PARSER.parse(is);
+            return JakartaTestSuite.parse(MediaType.JSON, is);
         }
     }
 }

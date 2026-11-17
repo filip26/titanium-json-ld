@@ -24,21 +24,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriUtils;
@@ -47,20 +39,67 @@ import com.apicatalog.web.uri.UriValidationPolicy;
 public final class JsonLdToQuads {
 
     @FunctionalInterface
-    public interface RdfJsonLiteralWriter {
+    public interface QuadConsumer {
 
-        default String write(Tree node) throws JsonLdException, TreeIOException {
-            return write(node.node(), node.adapter());
-        }
-
-        String write(Object node, TreeAdapter adapter) throws JsonLdException, TreeIOException;
+        /**
+         * Consumes an RDF quad where the {@code object} may be an IRI, blank node,
+         * typed literal, or language-tagged literal.
+         * <p>
+         * This method provides fine-grained control over RDF quad data, allowing
+         * precise handling of datatypes and language tags.
+         *
+         * @param subject   the subject of the quad; must be an IRI or blank node
+         *                  identifier prefixed with "<code>_:</code>". Must not be
+         *                  {@code null}.
+         * @param predicate the predicate of the quad; must be an IRI. Must not be
+         *                  {@code null}.
+         * @param object    the object of the quad; must be either:
+         *                  <ul>
+         *                  <li>an IRI</li>
+         *                  <li>a blank node identifier prefixed with
+         *                  "<code>_:</code>"</li>
+         *                  <li>a literal value, when {@code datatype} is not
+         *                  {@code null}</li>
+         *                  </ul>
+         *                  Must not be {@code null}.
+         *                  <p>
+         *                  Use {@link #isLiteral(String, String, String)},
+         *                  {@link #isLangString(String, String, String)},
+         *                  {@link #isDirLangString(String, String, String)}, and
+         *                  {@link #isI18nString(String, String, String)} to validate
+         *                  and classify the input.
+         * @param datatype  the datatype IRI of the literal. Must be {@code null} if
+         *                  {@code object} is not a literal. Must not be {@code null}
+         *                  when {@code language} is provided.
+         * @param language  the language tag of the literal. May be {@code null}.
+         * @param direction the text direction, or null
+         * @param graph     the graph name of the quad; must be an IRI or blank node
+         *                  identifier prefixed with "<code>_:</code>". May be
+         *                  {@code null} to indicate the default graph.
+         *
+         * @throws IllegalArgumentException if an error occurs while processing the quad
+         *                                  statement.
+         */
+        void quad(
+                String subject,
+                String predicate,
+                String object,
+                String datatype,
+                String language,
+                String direction,
+                String graph);
     }
 
-    public static final RdfJsonLiteralWriter JCS = Jcs::canonize;
+    @FunctionalInterface
+    public interface JsonLiteralWriter {
+
+        String write(Object node) throws JsonLdException;
+    }
 
     private static final Logger LOGGER = Logger.getLogger(JsonLdToQuads.class.getName());
 
-    private static final DecimalFormat xsdDecimalFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
+    private static final DecimalFormat xsdDecimalFormat = new DecimalFormat("0.0##############E0",
+            new DecimalFormatSymbols(Locale.ENGLISH));
 
     static {
         xsdDecimalFormat.setMinimumFractionDigits(1);
@@ -68,36 +107,28 @@ public final class JsonLdToQuads {
 
     // required
     private final NodeMap nodeMap;
+    private final JsonLiteralWriter jsonWriter;
 
     // optional
     private boolean produceGeneralizedRdf;
-    private RdfJsonLiteralWriter jsonWriter;
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
 
-    private JsonLdToQuads(NodeMap nodeMap) {
+    private JsonLdToQuads(NodeMap nodeMap, JsonLiteralWriter jsonWriter) {
         this.nodeMap = nodeMap;
 
         this.produceGeneralizedRdf = false;
-        this.jsonWriter = JCS;
+        this.jsonWriter = null;
         this.rdfDirection = null;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
     }
 
-    public static final JsonLdToQuads with(NodeMap nodeMap) {
-        return new JsonLdToQuads(nodeMap);
+    public static final JsonLdToQuads with(NodeMap nodeMap, JsonLiteralWriter jsonWriter) {
+        return new JsonLdToQuads(nodeMap, jsonWriter);
     }
 
-    public void provide(RdfQuadConsumer consumer) throws JsonLdException {
-
-        try {
-            provide(RdfQuadEmitter.newEmitter(consumer));
-        } catch (RdfConsumerException e) {
-            if (e.getCause() instanceof JsonLdException) {
-                throw (JsonLdException) e.getCause();
-            }
-            throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
-        }
+    public void provide(QuadConsumer consumer) throws JsonLdException {
+        provide(RdfQuadEmitter.newEmitter(consumer));
     }
 
     public JsonLdToQuads produceGeneralizedRdf(boolean enable) {
@@ -110,17 +141,12 @@ public final class JsonLdToQuads {
         return this;
     }
 
-    public JsonLdToQuads rdfJsonLiteralWriter(RdfJsonLiteralWriter jsonWriter) {
-        this.jsonWriter = jsonWriter;
-        return this;
-    }
-
     public JsonLdToQuads uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }
 
-    protected void provide(RdfTripleConsumer consumer) throws JsonLdException, RdfConsumerException {
+    protected void provide(RdfTripleConsumer consumer) throws JsonLdException {
 
         final var graphNames = nodeMap.graphs()
                 .stream()
@@ -141,7 +167,8 @@ public final class JsonLdToQuads {
                 consumer.namedGraph(graphName);
 
             } else {
-                LOGGER.log(Level.WARNING, "Graph has been skipped because of non well-formed graph name [{0}]", graphName);
+                LOGGER.log(Level.WARNING, "Graph has been skipped because of non well-formed graph name [{0}]",
+                        graphName);
                 continue;
             }
 
@@ -176,7 +203,8 @@ public final class JsonLdToQuads {
 
                                 if (!BlankNode.isWellFormed(typeString)
                                         && UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
-                                    LOGGER.log(Level.WARNING, "Non well-formed type [{0}] has been skipped.", typeString);
+                                    LOGGER.log(Level.WARNING, "Non well-formed type [{0}] has been skipped.",
+                                            typeString);
                                     continue;
                                 }
 
@@ -225,7 +253,7 @@ public final class JsonLdToQuads {
             final RdfTripleConsumer consumer,
             final Map<String, ?> item,
             final String subject,
-            final String predicate) throws JsonLdException, RdfConsumerException {
+            final String predicate) throws JsonLdException {
 
         // 1. - 2.
         if (JsonLdAdapter.isNode(item)) {
@@ -264,7 +292,8 @@ public final class JsonLdToQuads {
         if (datatype != null
                 && !Keywords.JSON.equals(datatype)
                 && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
-            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute URI nor @json and value is skipped.", datatype);
+            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute URI nor @json and value is skipped.",
+                    datatype);
             return;
         }
 
@@ -272,7 +301,8 @@ public final class JsonLdToQuads {
         if (item.containsKey(Keywords.LANGUAGE)
                 && (!(item.get(Keywords.LANGUAGE) instanceof String langString)
                         || !LanguageTag.isWellFormed(langString))) {
-            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
+            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.",
+                    item.get(Keywords.LANGUAGE));
             return;
         }
 
@@ -280,23 +310,11 @@ public final class JsonLdToQuads {
 
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            try {
-                if (value instanceof Tree node) {
-                    valueString = jsonWriter.write(node);
-
-                } else {
-                    valueString = jsonWriter.write(value, JavaAdapter.instance());
-                }
-
-            } catch (TreeIOException e) {
-                throw new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
-            }
-
+            valueString = jsonWriter.write(value);
             datatype = Terms.RDF_JSON;
 
             // 9.
         } else if (Boolean.TRUE.equals(value)) {
-
             valueString = "true";
 
             if (datatype == null) {
@@ -304,7 +322,6 @@ public final class JsonLdToQuads {
             }
 
         } else if (Boolean.FALSE.equals(value)) {
-
             valueString = "false";
 
             if (datatype == null) {
@@ -316,8 +333,9 @@ public final class JsonLdToQuads {
 
             if (Terms.XSD_DOUBLE.equals(datatype)
                     || Terms.XSD_FLOAT.equals(datatype)
-                    || (!JavaAdapter.instance().isIntegral(number) && number.doubleValue() % -1 != 0)
-                    || (number instanceof BigDecimal decimal && decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)
+//                    || (!JavaAdapter.instance().isIntegral(number) && number.doubleValue() % -1 != 0)
+                    || (number instanceof BigDecimal decimal
+                            && decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)
                     || (number instanceof Double decimal && decimal >= 1e21)
                     || (number instanceof Float decimal && decimal >= 1e21f)) {
 
@@ -432,7 +450,7 @@ public final class JsonLdToQuads {
             final RdfTripleConsumer consumer,
             final Collection<Map<String, Object>> list,
             final String subject,
-            final String predicate) throws JsonLdException, RdfConsumerException {
+            final String predicate) throws JsonLdException {
 
         // 1.
         if (list.isEmpty()) {

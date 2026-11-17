@@ -47,6 +47,7 @@ import com.apicatalog.jsonld.Document;
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#loaddocumentcallback">
  *      JSON-LD 1.1 API — LoadDocumentCallback</a>
  */
+//TODO move to Document
 public interface DocumentLoader {
 
     /**

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.SequencedCollection;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -28,11 +29,10 @@ import java.util.logging.Logger;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.expansion.UriExpansion;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.Tree.NodeType;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.CompactUri;
@@ -75,8 +75,7 @@ public final class TermDefinitionBuilder {
     // mandatory
     private final ActiveContext activeContext;
 
-    private final Object localContext;
-    private final TreeAdapter adapter;
+    private final Map<String, ?> localContext;
 
     private final Map<String, Boolean> defined;
     private final DocumentLoader loader;
@@ -91,10 +90,10 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
+    private TermDefinitionBuilder(ActiveContext activeContext, Map<String, ?> localContext,
+            Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
         this.activeContext = activeContext;
         this.localContext = localContext;
-        this.adapter = adapter;
         this.defined = defined;
         this.loader = loader;
         this.runtime = runtime;
@@ -106,9 +105,13 @@ public final class TermDefinitionBuilder {
         this.remoteContexts = new ArrayList<>();
     }
 
-    public static final TermDefinitionBuilder with(ActiveContext activeContext, Object localContext, TreeAdapter adapter, Map<String, Boolean> defined, DocumentLoader loader,
-            final Execution runtime) {
-        return new TermDefinitionBuilder(activeContext, localContext, adapter, defined, loader, runtime);
+    public static final TermDefinitionBuilder with(
+            ActiveContext activeContext,
+            Map<String, ?> localContext,
+            Map<String, Boolean> defined,
+            DocumentLoader loader,
+            Execution runtime) {
+        return new TermDefinitionBuilder(activeContext, localContext, defined, loader, runtime);
     }
 
     public void create(final String term) throws JsonLdException {
@@ -131,7 +134,7 @@ public final class TermDefinitionBuilder {
         defined.put(term, false);
 
         // 3.
-        var value = adapter.property(term, localContext);
+        var value = localContext.get(term);
 
         // 4.
         if (Keywords.TYPE.equals(term)) {
@@ -140,32 +143,30 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
             }
 
-            if (adapter.isMap(value)) {
+            if (value instanceof Map map) {
 
-                var container = adapter.property(Keywords.CONTAINER, value);
-                var protect = adapter.property(Keywords.PROTECTED, value);
+                var container = map.get(Keywords.CONTAINER);
+                var protect = map.get(Keywords.PROTECTED);
 
-                if (container != null && adapter.isSingleEntry(value)) {
+                if (container != null && map.size() == 1) {
 
-                    if (!adapter.isString(container) || !Keywords.SET.equals(adapter.stringValue(container))) {
+                    if (!Keywords.SET.equals(container)) {
                         throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
                     }
 
                 } else if (container != null
                         && protect != null
-                        && adapter.keys(value).size() == 2) {
+                        && map.size() == 2) {
 
-                    if (adapter.isString(container) && !Keywords.SET.equals(adapter.stringValue(container))
-                            || adapter.isSequence(container) && adapter.elementStream(container)
-                                    .map(adapter::asString)
-                                    .noneMatch(Keywords.SET::equals)
-                            || adapter.isMap(container) && adapter.keyStream(container)
-                                    .map(adapter::asString)
-                                    .noneMatch(Keywords.SET::equals)) {
+                    if (container instanceof String && !Keywords.SET.equals(container)
+                            || container instanceof Collection<?> containerCol
+                                    && !containerCol.contains(Keywords.SET)
+                            || container instanceof Map containerMap
+                                    && !containerMap.containsKey(Keywords.SET)) {
                         throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
                     }
 
-                } else if (protect == null || adapter.keys(value).size() != 1) {
+                } else if (protect == null || map.size() != 1) {
                     throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION);
                 }
 
@@ -175,7 +176,8 @@ public final class TermDefinitionBuilder {
 
         } else if (Keywords.contains(term)) {
             // 5.
-            throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION, "A keyword [" + term + "] redefinition has been detected.");
+            throw new JsonLdException(ErrorCode.KEYWORD_REDEFINITION,
+                    "A keyword [" + term + "] redefinition has been detected.");
 
         } else if (Keywords.matchForm(term)) {
             LOGGER.log(Level.WARNING, "Term [{0}] has form of a keyword. Keywords cannot be overridden.", term);
@@ -191,27 +193,24 @@ public final class TermDefinitionBuilder {
         final Object idValue;
 
         // 7.
-        if (adapter.isNull(value)) {
+        if (value == null) {
             propertyGetter = x -> null;
             valueObjectKeys = Set.of();
             idValue = false;
             simpleTerm = false;
 
-        } else if (adapter.isString(value)) {
+        } else if (value instanceof String) {
             // 8.
             propertyGetter = x -> null;
             valueObjectKeys = Set.of();
             idValue = value;
             simpleTerm = true;
 
-        } else if (adapter.isMap(value)) {
+        } else if (value instanceof Map map) {
             // 9.
-            propertyGetter = name -> adapter.property(name, value);
-            valueObjectKeys = adapter
-                    .keyStream(value)
-                    .map(adapter::stringValue)
-                    .toList();
-            idValue = adapter.property(Keywords.ID, value);
+            propertyGetter = name -> map.get(name);
+            valueObjectKeys = map.keySet();
+            idValue = map.get(Keywords.ID);
             simpleTerm = false;
 
         } else {
@@ -230,11 +229,11 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (!adapter.isBoolean(protectedValue)) {
+            if (!(protectedValue instanceof Boolean protectedBool)) {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_PROTECTED_VALUE);
             }
 
-            definition.setProtected(adapter.isTrue(protectedValue));
+            definition.setProtected(protectedBool);
         }
 
         // 12.
@@ -242,16 +241,16 @@ public final class TermDefinitionBuilder {
 
         if (typeValue != null) {
 
-            if (!adapter.isString(typeValue)) {
+            if (!(typeValue instanceof String typeString)) {
                 throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
             }
 
             // 12.2.
             final String expandedTypeString = UriExpansion.with(activeContext, loader, runtime)
-                    .localContext(localContext, adapter)
+                    .localContext(localContext)
                     .defined(defined)
                     .vocab(true)
-                    .expand(adapter.stringValue(typeValue));
+                    .expand(typeString);
 
             if (expandedTypeString == null) {
                 throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
@@ -261,7 +260,8 @@ public final class TermDefinitionBuilder {
             if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
                     && activeContext.isV10())
                     // 12.4.
-                    || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE, Keywords.VOCAB)
+                    || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE,
+                            Keywords.VOCAB)
                             && UriUtils.isNotAbsoluteUri(expandedTypeString, UriValidationPolicy.Full))) {
                 throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
             }
@@ -281,22 +281,21 @@ public final class TermDefinitionBuilder {
             }
 
             // 13.2.
-            if (!adapter.isString(reverseValue)) {
+            if (!(reverseValue instanceof String reverseString)) {
                 throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
             }
 
-            final String reverseString = adapter.stringValue(reverseValue);
-
             // 13.3.
             if (Keywords.matchForm(reverseString)) {
-                LOGGER.log(Level.WARNING, "The value [{0}] associated with @reverse cannot have form of a keyword.", reverseString);
+                LOGGER.log(Level.WARNING, "The value [{0}] associated with @reverse cannot have form of a keyword.",
+                        reverseString);
                 return;
             }
 
             // 13.4.
             definition.setUriMapping(
                     UriExpansion.with(activeContext, loader, runtime)
-                            .localContext(localContext, adapter)
+                            .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
                             .expand(reverseString));
@@ -308,23 +307,14 @@ public final class TermDefinitionBuilder {
             // 13.5.
             final var containerValue = propertyGetter.apply(Keywords.CONTAINER);
 
-            if (containerValue != null) {
+            if (containerValue instanceof String containerString
+                    && (Keywords.SET.equals(containerString)
+                            || Keywords.INDEX.equals(containerString))) {
+                definition.addContainerMapping(containerString);
 
-                if (!adapter.isString(containerValue) && !adapter.isNull(containerValue)) {
-                    throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY);
-                }
-
-                if (adapter.isString(containerValue)) {
-
-                    final String containerString = adapter.stringValue(containerValue);
-
-                    if (Keywords.SET.equals(containerString) || Keywords.INDEX.equals(containerString)) {
-                        definition.addContainerMapping(containerString);
-
-                    } else {
-                        throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY);
-                    }
-                }
+            } else if (containerValue != null) {
+                throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY,
+                        "The @reverse value=" + containerValue + " is invalid");
             }
 
             // 13.6.
@@ -336,32 +326,32 @@ public final class TermDefinitionBuilder {
 
             // 14.
         } else if (idValue != null
-                && (!adapter.isString(idValue)
-                        || !term.equals(adapter.stringValue(idValue)))) {
+                && (!(idValue instanceof String idString)
+                        || !term.equals(idString))) {
 
             // 14.1.
-            if (!adapter.isNull(idValue) && !Boolean.FALSE.equals(idValue)) {
+            if (idValue != null && !Boolean.FALSE.equals(idValue)) {
 
-                // 14.2.1
-                if (!adapter.isString(idValue)) {
+                if (idValue instanceof String idValueString) {
+
+                    // 14.2.2
+                    if (!Keywords.contains(idValueString) && Keywords.matchForm(idValueString)) {
+                        LOGGER.log(Level.WARNING,
+                                "The value [{0}] associated with @id has form of a keyword but is not keyword.",
+                                idValueString);
+                        return;
+                    }
+
+                    // 14.2.3
+                    definition.setUriMapping(
+                            UriExpansion.with(activeContext, loader, runtime)
+                                    .localContext(localContext)
+                                    .defined(defined)
+                                    .vocab(true)
+                                    .expand(idValueString));
+                } else {
                     throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
                 }
-
-                final String idValueString = adapter.stringValue(idValue);
-
-                // 14.2.2
-                if (!Keywords.contains(idValueString) && Keywords.matchForm(idValueString)) {
-                    LOGGER.log(Level.WARNING, "The value [{0}] associated with @id has form of a keyword but is not keyword.", idValueString);
-                    return;
-                }
-
-                // 14.2.3
-                definition.setUriMapping(
-                        UriExpansion.with(activeContext, loader, runtime)
-                                .localContext(localContext, adapter)
-                                .defined(defined)
-                                .vocab(true)
-                                .expand(idValueString));
 
                 if (Keywords.CONTEXT.equals(definition.getUriMapping())) {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ALIAS);
@@ -381,7 +371,7 @@ public final class TermDefinitionBuilder {
 
                     // 14.2.4.2
                     final var expandedTerm = UriExpansion.with(activeContext, loader, runtime)
-                            .localContext(localContext, adapter)
+                            .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
                             .expand(term);
@@ -398,7 +388,8 @@ public final class TermDefinitionBuilder {
                             && simpleTerm
                             && (definition.getUriMapping() != null
                                     && ((UriUtils.endsWithGenDelim(definition.getUriMapping())
-                                            && UriUtils.isURI(definition.getUriMapping().substring(0, definition.getUriMapping().length() - 1)))
+                                            && UriUtils.isURI(definition.getUriMapping().substring(0,
+                                                    definition.getUriMapping().length() - 1)))
                                             || BlankNode.hasPrefix(definition.getUriMapping()))));
                 }
             }
@@ -411,20 +402,19 @@ public final class TermDefinitionBuilder {
             // 15.1.
             if (compactUri != null
                     && compactUri.isNotBlank()
-                    && adapter.keys(localContext).contains(compactUri.prefix())) {
+                    && localContext.containsKey(compactUri.prefix())) {
 
                 activeContext
                         .newTerm(
                                 compactUri.prefix(),
                                 localContext,
-                                adapter,
                                 defined,
                                 loader,
                                 runtime);
             }
             // 15.2.
-            if (compactUri != null 
-                    && compactUri.isNotBlank() 
+            if (compactUri != null
+                    && compactUri.isNotBlank()
                     && activeContext.containsTerm(compactUri.prefix())) {
 
                 definition.setUriMapping(
@@ -444,7 +434,7 @@ public final class TermDefinitionBuilder {
 
             definition.setUriMapping(
                     UriExpansion.with(activeContext, loader, runtime)
-                            .localContext(localContext, adapter)
+                            .localContext(localContext)
                             .defined(defined)
                             .vocab(true)
                             .expand(term));
@@ -475,10 +465,13 @@ public final class TermDefinitionBuilder {
             }
 
             // 19.3.
-            adapter.asStream(containerValue)
-                    .filter(adapter::isString)
-                    .map(adapter::stringValue)
-                    .forEach(definition::addContainerMapping);
+            for (var mapping : JsonLdAdapter.asCollection(containerValue)) {
+                if (mapping instanceof String mappingString) {
+                    definition.addContainerMapping(mappingString);
+                } else {
+                    throw new IllegalStateException("TODO");
+                }
+            }
 
             // 19.4.
             if (definition.getContainerMapping().contains(Keywords.TYPE)) {
@@ -507,23 +500,23 @@ public final class TermDefinitionBuilder {
             // 20.2.
             final var index = propertyGetter.apply(Keywords.INDEX);
 
-            if (!adapter.isString(index)) {
+            if (index instanceof String indexString) {
+
+                final var expandedIndex = UriExpansion.with(activeContext, loader, runtime)
+                        .localContext(localContext)
+                        .defined(defined)
+                        .vocab(true)
+                        .expand(indexString);
+
+                if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
+                    throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
+                }
+
+                definition.setIndexMapping(indexString);
+
+            } else {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
-
-            final var indexString = adapter.stringValue(index);
-
-            final var expandedIndex = UriExpansion.with(activeContext, loader, runtime)
-                    .localContext(localContext, adapter)
-                    .defined(defined)
-                    .vocab(true)
-                    .expand(indexString);
-
-            if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
-                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
-            }
-
-            definition.setIndexMapping(indexString);
         }
 
         // 21.
@@ -543,28 +536,26 @@ public final class TermDefinitionBuilder {
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(false)
-                        .build(contextValue, adapter, baseUrl);
+                        .build(contextValue, baseUrl);
 
             } catch (JsonLdException e) {
                 throw new JsonLdException(ErrorCode.INVALID_SCOPED_CONTEXT, e);
             }
 
             // 21.4.
-            definition.setLocalContext(contextValue, adapter);
+            definition.setLocalContext(contextValue);
             definition.setBaseUrl(baseUrl);
         }
 
         // 22.
-        final var languageValue = propertyGetter.apply(Keywords.LANGUAGE);
+        if (valueObjectKeys.contains(Keywords.LANGUAGE) && !valueObjectKeys.contains(Keywords.TYPE)) {
 
-        if (languageValue != null && !valueObjectKeys.contains(Keywords.TYPE)) {
+            final var languageValue = propertyGetter.apply(Keywords.LANGUAGE);
 
-            if (adapter.isNull(languageValue)) {
+            if (languageValue == null) {
                 definition.setLanguageMapping(Keywords.NULL);
 
-            } else if (adapter.isString(languageValue)) {
-
-                final var language = adapter.stringValue(languageValue);
+            } else if (languageValue instanceof String language) {
 
                 if (!LanguageTag.isWellFormed(language)) {
                     LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", language);
@@ -578,17 +569,15 @@ public final class TermDefinitionBuilder {
         }
 
         // 23.
-        final var directionValue = propertyGetter.apply(Keywords.DIRECTION);
 
-        if (directionValue != null
-                && !valueObjectKeys.contains(Keywords.TYPE)) {
+        if (valueObjectKeys.contains(Keywords.DIRECTION) && !valueObjectKeys.contains(Keywords.TYPE)) {
 
-            if (adapter.isNull(directionValue)) {
+            final var directionValue = propertyGetter.apply(Keywords.DIRECTION);
+
+            if (directionValue == null) {
                 definition.setDirectionMapping(Direction.NULL);
 
-            } else if (adapter.isString(directionValue)) {
-
-                var directionString = adapter.stringValue(directionValue);
+            } else if (directionValue instanceof String directionString) {
 
                 if ("ltr".equals(directionString)) {
                     definition.setDirectionMapping(Direction.LTR);
@@ -615,17 +604,16 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (!adapter.isString(nestValue)) {
+            if (nestValue instanceof String nestString) {
+
+                if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
+                }
+
+                definition.setNestValue(nestString);
+            } else {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
-
-            var nestString = adapter.stringValue(nestValue);
-
-            if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
-                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
-            }
-
-            definition.setNestValue(nestString);
         }
 
         // 25.
@@ -638,12 +626,10 @@ public final class TermDefinitionBuilder {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            final var prefixType = adapter.type(prefixValue);
-
-            if (prefixType == NodeType.TRUE) {
+            if (Boolean.TRUE.equals(prefixValue)) {
                 definition.setPrefix(true);
 
-            } else if (prefixType == NodeType.FALSE) {
+            } else if (Boolean.FALSE.equals(prefixValue)) {
                 definition.setPrefix(false);
 
             } else {
@@ -701,34 +687,32 @@ public final class TermDefinitionBuilder {
 
     private final boolean validateContainer(final Object value) {
 
-        if (adapter.isNull(value)) {
+        if (value == null) {
             return false;
         }
 
         var container = value;
 
         if (activeContext.isV10()) {
-            return adapter.isString(container)
+            return container instanceof String containerString
                     && Keywords.noneMatch(
-                            adapter.stringValue(container),
+                            containerString,
                             Keywords.GRAPH,
                             Keywords.ID,
                             Keywords.TYPE);
         }
 
-        if (adapter.isSingleElement(container)) {
-            container = adapter.singleElement(container);
+        // unwrap single element
+        if (container instanceof SequencedCollection<?> col && col.size() == 1) {
+            container = col.getFirst();
         }
 
-        if (adapter.isString(container)) {
-            return CONTAINER_KEYWORDS.contains(adapter.stringValue(container));
+        if (container instanceof String containerString) {
+            return CONTAINER_KEYWORDS.contains(containerString);
         }
 
-        return adapter.isSequence(container)
-                && validateContainerArray(adapter.elementStream(container)
-                        .filter(adapter::isString)
-                        .map(adapter::stringValue)
-                        .toList());
+        return container instanceof Collection col
+                && validateContainerArray(col);
     }
 
     private static final boolean validateContainerArray(final Collection<String> containers) {

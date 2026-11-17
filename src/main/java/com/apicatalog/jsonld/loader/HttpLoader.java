@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
-import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.link.Link;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
@@ -53,13 +52,13 @@ import com.apicatalog.web.uri.UriResolver;
  *
  * <p>
  * The loader uses a configurable {@link Client} to send HTTP requests and a
- * {@link TreeParser} to parse the retrieved content into {@link Document}
- * instances.
+ * {@link Document.ContentReader} to parse the retrieved content into
+ * {@link Document} instances.
  * </p>
  *
  * @see DocumentLoader
  * @see Client
- * @see TreeParser
+ * @see Document.ContentReader
  */
 public class HttpLoader implements DocumentLoader {
 
@@ -109,8 +108,8 @@ public class HttpLoader implements DocumentLoader {
 
     private final Client client;
 
-    private final Map<MediaType, TreeParser> parsers;
-    private final TreeParser defaultParser;
+    private final Map<MediaType, Document.ContentReader> parsers;
+    private final Document.ContentReader defaultParser;
 
     private Predicate<MediaType> acceptContent;
     private int maxRedirections;
@@ -122,7 +121,7 @@ public class HttpLoader implements DocumentLoader {
      * @param parser  the default parser for decoding JSON documents
      * @param parsers the content-type to parser mapping table
      */
-    protected HttpLoader(Client client, TreeParser parser, Map<MediaType, TreeParser> parsers) {
+    protected HttpLoader(Client client, Document.ContentReader parser, Map<MediaType, Document.ContentReader> parsers) {
         this.client = client;
         this.defaultParser = parser;
         this.parsers = parsers;
@@ -133,10 +132,11 @@ public class HttpLoader implements DocumentLoader {
     /**
      * Creates a new {@link HttpLoader} with a default {@link HttpClient}.
      *
-     * @param parser the {@link TreeParser} used to parse retrieved content
+     * @param parser the {@link Document.ContentReader} used to parse retrieved
+     *               content
      * @return a new configured {@link HttpLoader}
      */
-    public static HttpLoader newLoader(final TreeParser parser) {
+    public static HttpLoader newLoader(final Document.ContentReader parser) {
         return newLoader(
                 HttpClient
                         .newBuilder()
@@ -149,11 +149,13 @@ public class HttpLoader implements DocumentLoader {
     /**
      * Creates a new {@link HttpLoader} with a default {@link HttpClient}.
      *
-     * @param parser  the {@link TreeParser} used to parse retrieved content
+     * @param parser  the {@link Document.ContentReader} used to parse retrieved
+     *                content
      * @param parsers the content-type to parser mapping table
      * @return a new configured {@link HttpLoader}
      */
-    public static HttpLoader newLoader(final TreeParser parser, Map<MediaType, TreeParser> parsers) {
+    public static HttpLoader newLoader(final Document.ContentReader parser,
+            Map<MediaType, Document.ContentReader> parsers) {
         return newLoader(
                 HttpClient
                         .newBuilder()
@@ -171,7 +173,7 @@ public class HttpLoader implements DocumentLoader {
      * @param parser the JSON parser used to parse responses
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final HttpClient client, TreeParser parser) {
+    public static HttpLoader newLoader(final HttpClient client, Document.ContentReader parser) {
         return newLoader(client, parser, Map.of());
     }
 
@@ -184,7 +186,8 @@ public class HttpLoader implements DocumentLoader {
      * @param parsers the content-type to parser mapping table
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final HttpClient client, TreeParser parser, Map<MediaType, TreeParser> parsers) {
+    public static HttpLoader newLoader(final HttpClient client, Document.ContentReader parser,
+            Map<MediaType, Document.ContentReader> parsers) {
         return newLoader(new JavaHttpClient(client), parser, parsers);
     }
 
@@ -195,7 +198,7 @@ public class HttpLoader implements DocumentLoader {
      * @param reader the JSON parser used to parse responses
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final Client client, TreeParser reader) {
+    public static HttpLoader newLoader(final Client client, Document.ContentReader reader) {
         return newLoader(client, reader, Map.of());
     }
 
@@ -207,7 +210,8 @@ public class HttpLoader implements DocumentLoader {
      * @param parsers the content-type to parser mapping table
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final Client client, TreeParser parser, Map<MediaType, TreeParser> parsers) {
+    public static HttpLoader newLoader(final Client client, Document.ContentReader parser,
+            Map<MediaType, Document.ContentReader> parsers) {
         return new HttpLoader(client, parser, parsers).headers(VENDOR_HEADERS);
     }
 
@@ -283,7 +287,7 @@ public class HttpLoader implements DocumentLoader {
                     }
 
                     contentType = response.contentType()
-                            .map(MediaType::of)
+                            .map(MediaType::from)
                             .orElse(null);
 
                     final var linkValues = response.links();
@@ -389,9 +393,9 @@ public class HttpLoader implements DocumentLoader {
 
         try (final var is = response.body()) {
 
-            final var content = parser.parse(is);
+            final var content = parser.read(contentType, is);
 
-            return Document.of(content, contentType, targetUri, contextUrl);
+            return new Document(targetUri, content, contentType, null, contextUrl);
 
         } catch (Exception e) {
             throw new LoaderException(targetUri, e);
@@ -437,7 +441,8 @@ public class HttpLoader implements DocumentLoader {
      *
      * <p>
      * The predicate must not be {@code null}. Regardless of the accepted content
-     * type, the response body must still be parseable by {@link TreeParser}.
+     * type, the response body must still be parseable by
+     * {@link Document.ContentReader}.
      * </p>
      *
      * @param predicate a non-{@code null} predicate that returns {@code true} for

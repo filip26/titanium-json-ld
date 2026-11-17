@@ -29,40 +29,39 @@ import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 public final class Frame {
 
     /**
-    *
-    * @see <a href="https://www.w3.org/TR/json-ld11-framing/#dom-jsonldembed">JsonLdEmbed</a>
-    *
-    */
-   public enum Embed {
+     *
+     * @see <a href=
+     *      "https://www.w3.org/TR/json-ld11-framing/#dom-jsonldembed">JsonLdEmbed</a>
+     *
+     */
+    public enum Embed {
 
-       /**
-        * Always embed node objects as property values,
-        * unless this would cause a circular reference.
-        */
-       ALWAYS,
+        /**
+         * Always embed node objects as property values, unless this would cause a
+         * circular reference.
+         */
+        ALWAYS,
 
-       /**
-        * Always use a node reference when serializing matching values.
-        */
-       NEVER,
+        /**
+         * Always use a node reference when serializing matching values.
+         */
+        NEVER,
 
-       /**
-        * Only a single value within a given node object should be embedded,
-        * other values of other properties use a node reference.
-        * This is the default value if neither @embed nor object embed flag is specified.
-        */
-       ONCE
+        /**
+         * Only a single value within a given node object should be embedded, other
+         * values of other properties use a node reference. This is the default value if
+         * neither @embed nor object embed flag is specified.
+         */
+        ONCE
 
-   }
+    }
 
-    
     public static final Frame EMPTY = new Frame(Map.of(), Set.of());
 
     private final Map<String, ?> expanded;
@@ -73,12 +72,12 @@ public final class Frame {
         this.frameGraphs = frameGraphs;
     }
 
-    public static final Frame of(
+    public static final Frame create(
             final Document frame,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
-        return of(
+        return create(
                 Expander.expandFrame(
                         frame,
                         Options.copyOf(options).ordered(false),
@@ -86,12 +85,12 @@ public final class Frame {
                 keysOf(frame.content()));
     }
 
-    public static final Frame of(
-            final Tree frame,
+    public static final Frame create(
+            final Object frame,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
-        return of(
+        return create(
                 Expander.expandFrame(
                         frame,
                         Expander.context(
@@ -111,11 +110,11 @@ public final class Frame {
                 : options.base();
     }
 
-    static final Frame of(final Object expanded) throws JsonLdException {
-        return of(expanded, List.of());
+    static final Frame create(final Object expanded) throws JsonLdException {
+        return create(expanded, List.of());
     }
 
-    static final Frame of(final Object expanded, Collection<String> frameGraphs) throws JsonLdException {
+    static final Frame create(final Object expanded, Collection<String> frameGraphs) throws JsonLdException {
 
         final Map<String, Object> frameMap;
 
@@ -129,7 +128,8 @@ public final class Frame {
                 frameMap = typedMap;
 
             } else {
-                throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
+                throw new JsonLdException(ErrorCode.INVALID_FRAME,
+                        "Frame is not JSON object nor an array containing JSON object [" + expanded + "]");
             }
 
         } else if ((expanded instanceof Map map)) {
@@ -147,12 +147,14 @@ public final class Frame {
 
         // 1.2.
         if (frameMap.containsKey(Keywords.ID) && !validateFrameId(frameMap)) {
-            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame @id value is not valid [@id = " + frameMap.get(Keywords.ID) + "].");
+            throw new JsonLdException(ErrorCode.INVALID_FRAME,
+                    "Frame @id value is not valid [@id = " + frameMap.get(Keywords.ID) + "].");
         }
 
         // 1.3.
         if (frameMap.containsKey(Keywords.TYPE) && !validateFrameType(frameMap)) {
-            throw new JsonLdException(ErrorCode.INVALID_FRAME, "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
+            throw new JsonLdException(ErrorCode.INVALID_FRAME,
+                    "Frame @type value is not valid [@type = " + frameMap.get(Keywords.TYPE) + "].");
         }
 
         return new Frame(frameMap, frameGraphs);// , context, contextUrl, documentUrl);
@@ -169,13 +171,16 @@ public final class Frame {
             }
 
             if (embed instanceof Map map && JsonLdAdapter.isValueNode(map)) {
-                embed = JsonLdAdapter.findValue(embed).orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE));
+                embed = JsonLdAdapter.findValue(embed)
+                        .orElseThrow(() -> new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE));
             }
 
             if (embed instanceof String stringValue) {
 
                 if (Keywords.noneMatch(stringValue, Keywords.ALWAYS, Keywords.ONCE, Keywords.NEVER)) {
-                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + stringValue + "].");
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE,
+                            "The value for @embed is not one recognized for the object embed flag [@embed = "
+                                    + stringValue + "].");
                 }
 
                 return Embed.valueOf(stringValue.substring(1).toUpperCase());
@@ -187,7 +192,8 @@ public final class Frame {
                 return Embed.ONCE;
             }
 
-            throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE, "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
+            throw new JsonLdException(ErrorCode.INVALID_KEYWORD_EMBED_VALUE,
+                    "The value for @embed is not one recognized for the object embed flag [@embed = " + embed + "].");
         }
 
         return defaultValue;
@@ -268,7 +274,8 @@ public final class Frame {
 
         return type instanceof Collection array && array.isEmpty()
                 || type instanceof Map map && map.isEmpty()
-                || type instanceof String stringType && (Keywords.JSON.equals(stringType) // see https://github.com/w3c/json-ld-framing/issues/142
+                || type instanceof String stringType && (Keywords.JSON.equals(stringType) // see
+                                                                                          // https://github.com/w3c/json-ld-framing/issues/142
                         || UriUtils.isAbsoluteUri(stringType, UriValidationPolicy.Full));
     }
 
@@ -369,9 +376,9 @@ public final class Frame {
         return false;
     }
 
-    private static Collection<String> keysOf(Tree frame) {
-        return frame.isMap()
-                ? frame.keyStream().map(String.class::cast).toList()
+    private static Collection<String> keysOf(Object frame) {
+        return frame instanceof Map map
+                ? map.keySet()
                 : List.of();
     }
 }

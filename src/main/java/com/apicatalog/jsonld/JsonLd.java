@@ -29,9 +29,7 @@ import com.apicatalog.jsonld.processor.Flattener;
 import com.apicatalog.jsonld.processor.Framer;
 import com.apicatalog.jsonld.processor.RdfEmitter;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.java.JavaTree;
+import com.apicatalog.jsonld.tordf.JsonLdToQuads.QuadConsumer;
 
 /**
  * The {@code JsonLd} class provides high-level static methods to process
@@ -108,20 +106,23 @@ public final class JsonLd {
             final Map<String, ?> document,
             final Options options) throws JsonLdException {
 
-        return expand(Tree.of(document), options);
+        return Expander.expand(
+                document,
+                options,
+                Execution.of(options));
     }
 
     /**
-     * Expands a JSON-LD document provided as a {@link Tree} node.
+     * Expands a JSON-LD document provided as a {@link Collection}.
      *
-     * @param document a {@link Tree} representation of the JSON-LD document to
-     *                 expand
+     * @param document a {@link Collection} representation of the JSON-LD document
+     *                 to expand
      * @param options  options to configure expansion
      * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
     public static final Collection<?> expand(
-            final Tree document,
+            final Collection<?> document,
             final Options options) throws JsonLdException {
 
         return Expander.expand(
@@ -129,7 +130,6 @@ public final class JsonLd {
                 options,
                 Execution.of(options));
     }
-
     /* --- COMPACT -- */
 
     /**
@@ -184,7 +184,8 @@ public final class JsonLd {
      */
     public static final Map<String, ?> compact(
             final Document document,
-            final URI context, Options options) throws JsonLdException {
+            final URI context,
+            Options options) throws JsonLdException {
         return compact(
                 document,
                 Context.load(context, options.loader()),
@@ -211,32 +212,7 @@ public final class JsonLd {
                 options,
                 Execution.of(options));
     }
-
-    /**
-     * Compacts a JSON-LD document and context provided as {@link Tree} node.
-     *
-     * @param document a {@link Tree} representation of the JSON-LD document to
-     *                 compact
-     * @param context  a {@link Tree} representation of the context to use
-     * @param options  options to configure compaction
-     * @return the compacted JSON-LD document
-     * @throws JsonLdException if compaction fails
-     */
-    public static final Map<String, ?> compact(
-            final Tree document,
-            final Tree context,
-            final Options options) throws JsonLdException {
-
-        final Execution runtime = Execution.of(options);
-
-        return Compactor.compact(
-                Compactor.expand(document, options, runtime),
-                null,
-                context,
-                options,
-                runtime);
-    }
-
+    
     /**
      * Compacts a JSON-LD document provided as a {@link Collection} using a context
      * provided as a {@link Map}.
@@ -253,10 +229,14 @@ public final class JsonLd {
             final Map<String, ?> context,
             final Options options) throws JsonLdException {
 
-        return compact(
-                Tree.of(document),
-                Tree.of(context),
-                options);
+        final Execution runtime = Execution.of(options);
+
+        return Compactor.compact(
+                Compactor.expand(document, options, runtime),
+                null,
+                context,
+                options,
+                runtime);
     }
 
     /* --- FLATTEN -- */
@@ -363,7 +343,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                Tree.of(document),
+                document,
                 null,
                 options);
     }
@@ -385,10 +365,8 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                Tree.of(document),
-                context != null
-                        ? Tree.of(context)
-                        : null,
+                document,
+                context,
                 options);
     }
 
@@ -406,7 +384,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                JavaTree.of(document),
+                document,
                 null,
                 options);
     }
@@ -428,47 +406,25 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return flatten(
-                JavaTree.of(document),
-                context != null
-                        ? Tree.of(context)
-                        : null,
+                document,
+                context,
                 options);
     }
 
     /**
-     * Flattens a JSON-LD document represented as a {@link Tree} node.
+     * Flattens a JSON-LD document represented as a {@link Map} node.
      *
-     * @param document a {@link Tree} representation of the JSON-LD document to
+     * @param document a {@link Map} representation of the JSON-LD document to
      *                 flatten
+     * @param context  a {@link Map} representation of the context to apply during
+     *                 flattening
      * @param options  options to configure flattening
      * @return the flattened JSON-LD document
      * @throws JsonLdException if flattening fails
      */
     public static final Object flatten(
-            final Tree document,
-            final Options options) throws JsonLdException {
-
-        return Flattener.flatten(
-                document,
-                null,
-                options,
-                Execution.of(options));
-    }
-
-    /**
-     * Flattens a JSON-LD document represented as a {@link Tree} node.
-     *
-     * @param document a {@link Tree} representation of the JSON-LD document to
-     *                 flatten
-     * @param context  a {@link Tree} representation of the context to apply
-     *                 during flattening
-     * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
-     * @throws JsonLdException if flattening fails
-     */
-    public static final Object flatten(
-            final Tree document,
-            final Tree context,
+            final Map<String, ?> document,
+            final Object context,
             final Options options) throws JsonLdException {
 
         return Flattener.flatten(
@@ -575,27 +531,6 @@ public final class JsonLd {
             final Map<String, ?> frame,
             final Options options) throws JsonLdException {
 
-        return frame(
-                Tree.of(document),
-                Tree.of(frame),
-                options);
-    }
-
-    /**
-     * Frames a JSON-LD document and frame provided as {@link Tree} node.
-     *
-     * @param document a {@link Tree} representation of the JSON-LD document to
-     *                 frame
-     * @param frame    a {@link Tree} representation of the JSON-LD frame to apply
-     * @param options  options to configure framing
-     * @return the framed JSON-LD document
-     * @throws JsonLdException if framing fails
-     */
-    public static final Map<String, ?> frame(
-            final Tree document,
-            final Tree frame,
-            final Options options) throws JsonLdException {
-
         final Execution runtime = Execution.of(options);
 
         final var contextNode = Context.extract(frame);
@@ -603,7 +538,7 @@ public final class JsonLd {
         return Context.inject(
                 Framer.frame(
                         Framer.expand(document, options, runtime),
-                        Frame.of(frame, options, runtime),
+                        Frame.create(frame, options, runtime),
                         Framer.context(
                                 null,
                                 contextNode,
@@ -620,14 +555,14 @@ public final class JsonLd {
      * Transforms the given input into RDF.
      *
      * @param uri      {@code URI} referencing JSON-LD document to transform
-     * @param consumer {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param consumer {@link QuadConsumer} receiving emitted RDF quads
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      * 
      */
     public static final void toRdf(
             final URI uri,
-            RdfQuadConsumer consumer,
+            QuadConsumer consumer,
             Options options) throws JsonLdException {
         toRdf(Document
                 .load(
@@ -642,13 +577,13 @@ public final class JsonLd {
      * Transforms the given JSON-LD document into RDF quads.
      *
      * @param document {@link URI} referencing the JSON-LD document to transform
-     * @param consumer {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param consumer {@link QuadConsumer} receiving emitted RDF quads
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      */
     public static final void toRdf(
             final Document document,
-            final RdfQuadConsumer consumer,
+            final QuadConsumer consumer,
             final Options options) throws JsonLdException {
 
         RdfEmitter.toRdf(
@@ -659,18 +594,18 @@ public final class JsonLd {
     }
 
     /**
-     * Transforms a JSON-LD document represented as {@link Tree} node into RDF
+     * Transforms a JSON-LD document represented as {@link Collection} node into RDF
      * quads.
      *
-     * @param document a {@link Tree} representation of the JSON-LD document to
-     *                 transform
-     * @param consumer an {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param document a {@link Collection} representation of the JSON-LD document
+     *                 to transform
+     * @param consumer an {@link QuadConsumer} receiving emitted RDF quads
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      */
     public static final void toRdf(
-            final Tree document,
-            final RdfQuadConsumer consumer,
+            final Collection<?> document,
+            final QuadConsumer consumer,
             final Options options) throws JsonLdException {
 
         RdfEmitter.toRdf(
@@ -685,17 +620,17 @@ public final class JsonLd {
      *
      * @param document a {@link Map} representation of the JSON-LD document to
      *                 transform
-     * @param consumer an {@link RdfQuadConsumer} receiving emitted RDF quads
+     * @param consumer an {@link QuadConsumer} receiving emitted RDF quads
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      */
     public static final void toRdf(
             final Map<String, ?> document,
-            final RdfQuadConsumer consumer,
+            final QuadConsumer consumer,
             final Options options) throws JsonLdException {
 
         RdfEmitter.toRdf(
-                Tree.of(document),
+                document,
                 consumer,
                 options,
                 Execution.of(options));
@@ -714,9 +649,9 @@ public final class JsonLd {
      * {@link QuadsToJsonLd#toJsonLd()}.
      * </p>
      * <p>
-     * <strong>Note:</strong> {@link QuadsToJsonLd} adopts the
-     * {@link RdfQuadConsumer} interface, allowing integration with Jena, Jelly,
-     * RDF4J, and other RDF libraries.
+     * <strong>Note:</strong> {@link QuadsToJsonLd} adopts the {@link QuadConsumer}
+     * interface, allowing integration with Jena, Jelly, RDF4J, and other RDF
+     * libraries.
      * </p>
      * 
      * @since 1.7.0
@@ -774,7 +709,7 @@ public final class JsonLd {
          * @return the corresponding {@link Version}, or {@code null} if unrecognized
          * @throws NullPointerException if {@code version} is null
          */
-        public static Version of(String version) {
+        public static Version from(String version) {
 
             Objects.requireNonNull(version);
 

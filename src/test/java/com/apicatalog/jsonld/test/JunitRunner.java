@@ -23,8 +23,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
 import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JakartaTestSuite;
@@ -36,18 +37,11 @@ import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.jsonld.test.TestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.model.RdfQuad;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.nquads.NQuadsWriter;
-import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
-import com.apicatalog.rdf.primitive.flow.QuadEmitter;
-import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.JavaTree;
+import com.apicatalog.rdf.provider.QuadEmitter;
+import com.apicatalog.rdf.provider.QuadSetProvider;
 
 import jakarta.json.Json;
 import jakarta.json.JsonStructure;
@@ -95,9 +89,9 @@ public class JunitRunner {
         if (testCase.type.contains(Type.TO_RDF_TEST)) {
             return execute(options -> {
 
-                final var set = new OrderedQuadSet();
+                final var set = new LinkedHashSet<RdfQuad>();
 
-                JsonLd.toRdf(testCase.input, new QuadAcceptor(set), options);
+                JsonLd.toRdf(testCase.input, new QuadSetProvider(set)::quad, options);
 
                 return set;
             });
@@ -106,11 +100,11 @@ public class JunitRunner {
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
 
-                final var toLd = JsonLd.fromRdf(options).jsonParser(JakartaTestSuite.PARSER);
+                final var toLd = JsonLd.fromRdf(options).jsonReader(JakartaTestSuite::parse);
 
                 try {
 
-                    QuadEmitter.create(toLd).emit(readQuads(testCase, testCase.input));
+                    QuadEmitter.create(toLd::quad).emit(readQuads(testCase, testCase.input));
 
                 } catch (NQuadsReaderException | LoaderException e) {
                     fail(e);
@@ -153,7 +147,7 @@ public class JunitRunner {
                 return false;
             }
 
-            if (result instanceof RdfQuadSet quads) {
+            if (result instanceof Set quads) {  //TODO
                 return validateQuads(testCase, options, quads, true);
             }
 
@@ -161,7 +155,6 @@ public class JunitRunner {
                     testCase,
                     options,
                     result,
-                    JavaTree.adapter(),
                     true);
 
         } catch (IOException e) {
@@ -189,18 +182,18 @@ public class JunitRunner {
 
             return false;
 
-        } catch (RdfConsumerException e) {
-
-            if (e.getCause() instanceof JsonLdException) {
-                if (Objects.equals(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode)) {
-                    return true;
-                }
-
-                write(testCase, null, null, ((JsonLdException) e.getCause()));
-                fail("Unexpected error: " + ((JsonLdException) e.getCause()) + ".");
-
-            }
-            return false;
+//        } catch (RdfConsumerException e) {
+//
+//            if (e.getCause() instanceof JsonLdException) {
+//                if (Objects.equals(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode)) {
+//                    return true;
+//                }
+//
+//                write(testCase, null, null, ((JsonLdException) e.getCause()));
+//                fail("Unexpected error: " + ((JsonLdException) e.getCause()) + ".");
+//
+//            }
+//            return false;
         } catch (NQuadsReaderException e) {
             fail(e);
             return false;
@@ -211,7 +204,6 @@ public class JunitRunner {
             final TestCase testCase,
             final Options options,
             final Object result,
-            final TreeAdapter resultAdapter,
             final boolean fail) {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
@@ -222,9 +214,9 @@ public class JunitRunner {
             assertNotNull(expectedDocument);
 
             // compare expected with the result
-            return compareJson(testCase, result, resultAdapter, expectedDocument.content(), fail);
+            return compareJson(testCase, result, expectedDocument.content(), fail);
 
-        } catch (LoaderException | TreeIOException e) {
+        } catch (LoaderException e) {
             if (fail) {
                 fail(e.getMessage());
             }
@@ -236,8 +228,8 @@ public class JunitRunner {
     public static boolean validateQuads(
             final TestCase testCase,
             final Options options,
-            final RdfQuadSet result,
-            final boolean fail) throws NQuadsReaderException, RdfConsumerException {
+            final Set<RdfQuad> result,
+            final boolean fail) throws NQuadsReaderException {
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
@@ -266,27 +258,27 @@ public class JunitRunner {
     public static final boolean compareJson(
             final TestCase testCase,
             final Object result,
-            final TreeAdapter resultAdapter,
-            final Tree expected,
-            final boolean fail) throws TreeIOException {
+            final Object expected,
+            final boolean fail) {
 
-        if (Comparison.equals(expected.node(), expected.adapter(), result, resultAdapter)) {
+        if (Comparison.equals(expected, result)) {
             return true;
         }
 
-        write(
-                testCase,
-                JakartaMaterializer.node(result, resultAdapter),
-                JakartaMaterializer.node(expected),
-                null);
+//        write(
+//                testCase,
+//                new JakartaEmitter().node(result, resultAdapter),
+//                JakartaMaterializer.node(expected),
+//                null);
 
         if (fail) {
-            fail("Expected " + expected.node() + ", but was" + result);
+            fail("Expected " + expected + ", but was" + result);
         }
         return false;
     }
 
-    public static void write(final TestCase testCase, final JsonValue result, final JsonValue expected, JsonLdException error) {
+    public static void write(final TestCase testCase, final JsonValue result, final JsonValue expected,
+            JsonLdException error) {
         final StringWriter stringWriter = new StringWriter();
 
         try (final var writer = new PrintWriter(stringWriter)) {
@@ -313,7 +305,8 @@ public class JunitRunner {
         System.out.println(stringWriter.toString());
     }
 
-    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
+    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name,
+            final JsonValue result) {
 
         writer.println(name + ":");
 
@@ -329,50 +322,44 @@ public class JunitRunner {
 
     public static final boolean compareRdf(
             final TestCase testCase,
-            final RdfQuadSet result,
-            final RdfQuadSet expected,
-            final boolean fail) {
+            final Set<RdfQuad> result,
+            final Set<RdfQuad> expected,
+            final boolean fail) throws IOException {
 
-        try {
-            boolean match = RdfComparison.equals(expected, result);
+        boolean match = RdfComparison.equals(expected, result);
 
-            if (!match) {
+        if (!match) {
 
-                final var stringWriter = new StringWriter();
+            final var stringWriter = new StringWriter();
 
-                try (final var writer = new PrintWriter(stringWriter)) {
+            try (final var writer = new PrintWriter(stringWriter)) {
 
-                    final var emitter = QuadEmitter.create(new NQuadsWriter(writer));
+                final var emitter = QuadEmitter.create(new NQuadsWriter(writer));
 
-                    writer.println("Test " + testCase.id + ": " + testCase.name);
-                    writer.println("Expected:");
-                    emitter.emit(expected);
+                writer.println("Test " + testCase.id + ": " + testCase.name);
+                writer.println("Expected:");
+                emitter.emit(expected);
 
-                    writer.println();
-                    writer.println("Actual:");
-                    emitter.emit(result);
+                writer.println();
+                writer.println("Actual:");
+                emitter.emit(result);
 
-                    writer.println();
-                }
-                System.out.print(stringWriter.toString());
+                writer.println();
             }
-
-            if (fail) {
-                assertTrue(match, "The result does not match expected output.");
-            }
-
-            return match;
-
-        } catch (RdfConsumerException e) {
-            if (fail) {
-                fail(e.getMessage());
-            }
+            System.out.print(stringWriter.toString());
         }
-        return false;
+
+        if (fail) {
+            assertTrue(match, "The result does not match expected output.");
+        }
+
+        return match;
     }
 
-    static RdfQuadSet readQuads(TestCase testCase, URI uri) throws NQuadsReaderException, RdfConsumerException, LoaderException, IOException {
-        RdfQuadSet set = null;
+    static Set<RdfQuad> readQuads(TestCase testCase, URI uri)
+            throws NQuadsReaderException, LoaderException, IOException {
+
+        Set<RdfQuad> set = Set.of();
 
         final var rebased = testCase.rebase(uri);
 

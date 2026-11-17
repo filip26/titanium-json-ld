@@ -35,12 +35,12 @@ class MediaTypeTest {
 
     @Test
     void testNull() {
-        assertThrows(NullPointerException.class, () -> MediaType.of(null));
+        assertThrows(NullPointerException.class, () -> MediaType.from(null));
     }
 
     @Test
     void test1() {
-        MediaType type = MediaType.of("text/plain");
+        MediaType type = MediaType.from("text/plain");
         assertNotNull(type);
         assertEquals("text", type.type());
         assertEquals("plain", type.subtype());
@@ -51,13 +51,13 @@ class MediaTypeTest {
     @ParameterizedTest
     @ValueSource(strings = {"text", "text//xxx", "1/!", "   ", "&"})
     void test2(String mediaType) {
-        MediaType type = MediaType.of(mediaType);
+        MediaType type = MediaType.from(mediaType);
         assertNull(type);
     }
 
     @Test
     void test4() {
-        MediaType type = MediaType.of("  x/y+a  ");
+        MediaType type = MediaType.from("  x/y+a  ");
         assertNotNull(type);
         assertEquals("x", type.type());
         assertEquals("y+a", type.subtype());
@@ -67,7 +67,7 @@ class MediaTypeTest {
 
     @Test
     void test6() {
-        MediaType type = MediaType.of("1/2.a;3=4;5");
+        MediaType type = MediaType.from("1/2.a;3=4;5");
         assertNotNull(type);
         assertEquals("1", type.type());
         assertEquals("2.a", type.subtype());
@@ -80,7 +80,7 @@ class MediaTypeTest {
 
     @Test
     void test7() {
-        MediaType type = MediaType.of("A#/Z^ ; a = \"4\"");
+        MediaType type = MediaType.from("A#/Z^ ; a = \"4\"");
         assertNotNull(type);
         assertEquals("A#", type.type());
         assertEquals("Z^", type.subtype());
@@ -93,7 +93,7 @@ class MediaTypeTest {
 
     @Test
     void test8() {
-        MediaType type = MediaType.of("a/b;1;2=3");
+        MediaType type = MediaType.from("a/b;1;2=3");
         assertNotNull(type);
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
@@ -106,7 +106,7 @@ class MediaTypeTest {
 
     @Test
     void test10() {
-        MediaType type= MediaType.of("a/b !");
+        MediaType type= MediaType.from("a/b !");
         assertNotNull(type);
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
@@ -116,7 +116,7 @@ class MediaTypeTest {
 
     @Test
     void test11() {
-        MediaType type= MediaType.of("a/b;1= 2; 1=\"3\"");
+        MediaType type= MediaType.from("a/b;1= 2; 1=\"3\"");
         assertNotNull(type);
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());
@@ -128,7 +128,7 @@ class MediaTypeTest {
 
     @Test
     void test12() {
-        MediaType type= MediaType.of("a/b;1=\"a\\\tb\"");
+        MediaType type= MediaType.from("a/b;1=\"a\\\tb\"");
         assertNotNull(type);
         assertEquals("a", type.type());
         assertEquals("b", type.subtype());

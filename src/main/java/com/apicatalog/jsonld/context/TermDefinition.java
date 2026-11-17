@@ -21,10 +21,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeComparison;
-
 public final class TermDefinition {
 
     // required
@@ -39,7 +35,7 @@ public final class TermDefinition {
     // optional
     private URI baseUrl;
 
-    private Tree localContext;
+    private Object localContext;
 
     private Set<String> containerMapping;
 
@@ -60,8 +56,8 @@ public final class TermDefinition {
         this.containerMapping = new HashSet<>();
     }
 
-    public void setLocalContext(Object context, TreeAdapter adapter) {
-        this.localContext = new Tree(context, adapter);
+    public void setLocalContext(Object context) {
+        this.localContext = context;
     }
 
     public String getUriMapping() {
@@ -104,7 +100,7 @@ public final class TermDefinition {
         return containerMapping;
     }
 
-    public Tree getLocalContext() {
+    public Object getLocalContext() {
         return localContext;
     }
     
@@ -177,7 +173,8 @@ public final class TermDefinition {
                 || !Objects.equals(nestValue, ref.nestValue)
                 || !Objects.equals(typeMapping, ref.typeMapping)
                 || !Objects.equals(languageMapping, ref.languageMapping)
-                || !TreeComparison.deepEquals(localContext, ref.localContext);
+                //FIXME || !TreeComparison.deepEquals(localContext, ref.localContext)
+                ;
     }
 
     public boolean hasContainerMapping(String value) {

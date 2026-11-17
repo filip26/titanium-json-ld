@@ -25,8 +25,8 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.Direction;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.java.JavaAdapter;
 
 /**
  *
@@ -126,7 +126,7 @@ public final class ValueCompaction {
 
             if (resultTypes != null) {
 
-                for (final var type : JavaAdapter.asCollection(resultTypes)) {
+                for (final var type : JsonLdAdapter.asCollection(resultTypes)) {
                     types.add(UriCompaction.withVocab(context, (String) type, options));
                 }
 

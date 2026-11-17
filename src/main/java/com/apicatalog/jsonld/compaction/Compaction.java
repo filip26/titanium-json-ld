@@ -34,7 +34,6 @@ import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.java.JavaAdapter;
 
 /**
  *
@@ -185,7 +184,7 @@ public final class Compaction {
                     activeProperty,
                     options);
 
-            if (result != null && JavaAdapter.instance().type(result).isScalar()
+            if (result != null && JsonLdAdapter.isScalar(result)
                     || activePropertyDefinition
                             .map(TermDefinition::getTypeMapping)
                             .filter(Keywords.JSON::equals)
@@ -217,7 +216,7 @@ public final class Compaction {
 
             final List<String> compactedTypes = new ArrayList<>();
 
-            for (final var type : JavaAdapter.asCollection(object.get(Keywords.TYPE))) {
+            for (final var type : JsonLdAdapter.asCollection(object.get(Keywords.TYPE))) {
                 compactedTypes.add(UriCompaction.withVocab(
                         activeContext,
                         (String) type,
@@ -534,7 +533,7 @@ public final class Compaction {
                         && JsonLdAdapter.isList(expandedItemMap)) {
 
                     // 12.8.7.1.
-                    compactedItem = JavaAdapter.asCollection(compactedItem);
+                    compactedItem = JsonLdAdapter.asCollection(compactedItem);
 
                     // 12.8.7.2.
                     if (!container.contains(Keywords.LIST)) {
@@ -830,7 +829,7 @@ public final class Compaction {
 
                             if (compactedKeyValue != null) {
 
-                                final var compactedKeyArray = JavaAdapter.asCollection(compactedKeyValue);
+                                final var compactedKeyArray = JsonLdAdapter.asCollection(compactedKeyValue);
 
                                 var it = compactedKeyArray.iterator();
 

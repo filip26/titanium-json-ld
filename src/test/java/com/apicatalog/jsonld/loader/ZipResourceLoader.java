@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.loader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,15 +27,13 @@ import java.util.zip.ZipFile;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.TreeParser;
 
 public class ZipResourceLoader implements DocumentLoader {
 
-    private final TreeParser reader;
+    private final Document.ContentReader parser;
 
-    public ZipResourceLoader(TreeParser reader) {
-        this.reader = reader;
+    public ZipResourceLoader(Document.ContentReader parser) {
+        this.parser = parser;
     }
 
     @Override
@@ -69,12 +68,12 @@ public class ZipResourceLoader implements DocumentLoader {
 
             try (final InputStream is = zip.getInputStream(zipEntry)) {
 
-                var node = reader.parse(is);
+                var node = parser.read(null, is);
 
-                return Document.of(node, uri);
+                return new Document(uri, node, null, null, null);
             }
 
-        } catch (IOException | TreeIOException e) {
+        } catch (IOException | UncheckedIOException e) {
             throw new LoaderException(uri, e);
         }
     }

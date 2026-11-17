@@ -30,9 +30,6 @@ import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.Tree.NodeType;
 
 /**
  *
@@ -76,22 +73,19 @@ public final class Expansion {
     public static final Object expand(
             final Context activeContext,
             final Object node,
-            final TreeAdapter nodeAdapter,
             final String activeProperty,
             final String term,
             final String expandedTerm,
             final Params params) throws JsonLdException {
 
         // 1. If element is null, return null
-        if (nodeAdapter.isNull(node)) {
+        if (node == null) {
             return null;
         }
 
-        var nodeType = nodeAdapter.type(node);
-
         // 5. If element is an array,
-        if (nodeType == NodeType.SEQUENCE) {
-            return array(activeContext, node, nodeAdapter, activeProperty, term, expandedTerm, params);
+        if (node instanceof Collection<?> col) {
+            return array(activeContext, col, activeProperty, term, expandedTerm, params);
         }
 
         // 3. If active property has a term definition in active context with a local
@@ -103,44 +97,38 @@ public final class Expansion {
 
         // Extension: CBOR-LD collector
         if (params.runtime().hasValuesConsumer()
-                && propertyContext != null
-                && propertyContext.isMap()) {
+                && propertyContext instanceof Map propertyContextMap) {
             params.runtime().fire(
                     EventType.CONTEXT_KEYS,
-                    propertyContext
-                            .keyStream()
-                            .map(propertyContext.adapter()::asString)
-                            .toList());
+                    propertyContextMap.keySet());
         }
 
-        // 4. If element is a scalar
-        if (nodeType.isScalar()) {
-            final var scalar = scalar(activeContext,
-                    activeProperty,
+        if (node instanceof Map map) {
+            return new ObjectExpansion(
                     propertyContext,
-                    node,
-                    nodeAdapter,
-                    params);
-
-            if (Keywords.SET.equals(expandedTerm)) {
-                params.runtime().fire(EventType.TERM_KEY, term);
-            }
-            return scalar;
+                    map,
+                    new Params(
+                            params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
+                            params.fromMap,
+                            params.baseUrl,
+                            params.options,
+                            params.runtime))
+                    .term(term)
+                    .expand(activeContext, activeProperty);
         }
 
-        // 6. Otherwise element is a map
-        return new ObjectExpansion(
+        // Otherwise element is a scalar
+        final var scalar = scalar(
+                activeContext,
+                activeProperty,
                 propertyContext,
                 node,
-                nodeAdapter,
-                new Params(
-                        params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
-                        params.fromMap,
-                        params.baseUrl,
-                        params.options,
-                        params.runtime))
-                .term(term)
-                .expand(activeContext, activeProperty);
+                params);
+
+        if (Keywords.SET.equals(expandedTerm)) {
+            params.runtime().fire(EventType.TERM_KEY, term);
+        }
+        return scalar;
     }
 
     /**
@@ -176,9 +164,8 @@ public final class Expansion {
     static final Map<String, ?> scalar(
             final Context context,
             final String property,
-            final Tree propertyContext,
+            final Object propertyContext,
             final Object node,
-            final TreeAdapter nodeAdapter,
             final Params params) throws JsonLdException {
 
         /*
@@ -205,7 +192,6 @@ public final class Expansion {
                                     .orElse(null)),
                     property,
                     node,
-                    nodeAdapter,
                     params);
         }
 
@@ -213,7 +199,7 @@ public final class Expansion {
          * 4.3. Return the result of the Value Expansion algorithm, passing the active
          * context, active property, and element as value.
          */
-        return ValueExpansion.expand(context, property, node, nodeAdapter, params);
+        return ValueExpansion.expand(context, property, node, params);
     }
 
     /**
@@ -249,20 +235,17 @@ public final class Expansion {
      *                         an item
      */
     static final Collection<?> array(final Context context,
-            final Object node,
-            final TreeAdapter nodeAdapter,
+            final Collection<?> node,
             final String property,
             final String term,
             final String expandedTerm,
             final Params params) throws JsonLdException {
 
-        if (nodeAdapter.isEmptySequence(node)) {
+        if (node.isEmpty()) {
             return List.of();
         }
 
-        final var indexedSingleton = Keywords.INDEX.equals(expandedTerm)
-                && (nodeAdapter.type(node) != NodeType.SEQUENCE
-                        || nodeAdapter.isSingleElement(node));
+        final var indexedSingleton = Keywords.INDEX.equals(expandedTerm) && node.size() == 1;
 
         if (!indexedSingleton) {
             params.runtime().fire(EventType.BEGIN_LIST, term);
@@ -273,13 +256,12 @@ public final class Expansion {
         var counter = 0;
 
         // 5.2.
-        for (final var item : nodeAdapter.asIterable(node)) {
+        for (final var item : node) {
 
             // 5.2.1
             var expanded = expand(
                     context,
                     item,
-                    nodeAdapter,
                     property,
                     indexedSingleton
                             ? term

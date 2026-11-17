@@ -17,6 +17,8 @@ package com.apicatalog.jsonld;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,9 +26,7 @@ import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.framing.Frame.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
-import com.apicatalog.jsonld.tordf.JsonLdToQuads.RdfJsonLiteralWriter;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.java.JavaTree;
+import com.apicatalog.jsonld.tordf.JsonLdToQuads.JsonLiteralWriter;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
@@ -120,7 +120,7 @@ public final class Options {
      * A context that is used to initialize the active context when expanding a
      * document.
      */
-    private Tree expandContext;
+    private Object expandContext;
 
     private boolean extractAllScripts;
 
@@ -136,7 +136,7 @@ public final class Options {
 
     private boolean useRdfType;
 
-    private RdfJsonLiteralWriter rdfJsonLiteralWriter;
+    private JsonLiteralWriter rdfJsonLiteralWriter;
 
     // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
 
@@ -184,7 +184,7 @@ public final class Options {
         this.rdfDirection = null;
         this.useNativeTypes = false;
         this.useRdfType = false;
-        this.rdfJsonLiteralWriter = JsonLdToQuads.JCS;
+        this.rdfJsonLiteralWriter = null;
 
         // framing defaults
         this.embed = Embed.ONCE;
@@ -393,12 +393,12 @@ public final class Options {
     }
 
     /**
-     * Returns the {@link RdfJsonLiteralWriter} used when converting {@code @json}
-     * type <strong>to RDF</strong> to serialize JSON as {@code rdf:JSON}.
+     * Returns the {@link JsonLiteralWriter} used when converting {@code @json} type
+     * <strong>to RDF</strong> to serialize JSON as {@code rdf:JSON}.
      *
-     * @return the configured {@link RdfJsonLiteralWriter}, never {@code null}.
+     * @return the configured {@link JsonLiteralWriter}, never {@code null}.
      */
-    public RdfJsonLiteralWriter rdfJsonLiteralWriter() {
+    public JsonLiteralWriter rdfJsonLiteralWriter() {
         return rdfJsonLiteralWriter;
     }
 
@@ -406,9 +406,10 @@ public final class Options {
      * Returns the expand context used to initialize the active context when
      * expanding a document.
      *
-     * @return the expand context, or {@code null} if none is set.
+     * @return {@link Map} or {@link Collection} representing the expand context, or
+     *         {@code null} if none is set.
      */
-    public Tree expandContext() {
+    public Object expandContext() {
         return expandContext;
     }
 
@@ -580,13 +581,13 @@ public final class Options {
     }
 
     /**
-     * Sets the {@link RdfJsonLiteralWriter} used for serializing {@code @json} type
+     * Sets the {@link JsonLiteralWriter} used for serializing {@code @json} type
      * when converting to {@code rdf:JSON}. {@link JsonLdToQuads#JCS} by default.
      *
      * @param jsonWriter the JSON literal writer implementation, never {@code null}.
      * @return this {@link Options} instance, for method chaining
      */
-    public Options rdfJsonLiteralWriter(RdfJsonLiteralWriter jsonWriter) {
+    public Options rdfJsonLiteralWriter(JsonLiteralWriter jsonWriter) {
         this.rdfJsonLiteralWriter = Objects.requireNonNull(jsonWriter);
         return this;
     }
@@ -608,7 +609,7 @@ public final class Options {
             this.expandContext = null;
             return this;
         }
-        this.expandContext = JavaTree.of(Set.of(uri));
+        this.expandContext = Set.of(uri);
         return this;
     }
 
@@ -633,24 +634,44 @@ public final class Options {
     }
 
     /**
-     * Sets the expand context using a {@link Tree} node.
+     * Sets the expand context.
      *
      * <p>
      * If {@code null} is provided, the expand context is cleared.
      * </p>
      *
-     * @param node the tree node representing the context, or {@code null} to clear
-     *             it
+     * @param context {@link Map} or {@link Collection} representing the context, or
+     *                {@code null} to clear it
      * @return this {@link Options} instance, for method chaining
      */
-    public Options expandContext(Tree node) {
-
-        if (node == null) {
+    public Options expandContext(Object context) {
+        if (context == null) {
             this.expandContext = null;
             return this;
         }
 
-        this.expandContext = node;
+        this.expandContext = context;
+        return this;
+    }
+
+    /**
+     * Sets the expand context.
+     *
+     * <p>
+     * If {@code null} is provided, the expand context is cleared.
+     * </p>
+     *
+     * @param context {@link Collection} representing the context, or {@code null}
+     *                to clear it
+     * @return this {@link Options} instance, for method chaining
+     */
+    public Options expandContext(Collection<?> context) {
+        if (context == null) {
+            this.expandContext = null;
+            return this;
+        }
+
+        this.expandContext = context;
         return this;
     }
 

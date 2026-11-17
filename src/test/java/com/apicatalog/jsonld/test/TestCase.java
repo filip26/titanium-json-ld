@@ -16,9 +16,13 @@
 package com.apicatalog.jsonld.test;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -30,18 +34,16 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriRewriter;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.model.RdfQuad;
 import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
-import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
-import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.rdf.provider.QuadSetProvider;
 import com.apicatalog.web.media.MediaType;
 
 public final class TestCase {
 
-    public static final Predicate<TestCase> IS_NOT_V1_0 = test -> test.options != null && !Version.V1_0.equals(test.options.version);
+    public static final Predicate<TestCase> IS_NOT_V1_0 = test -> test.options != null
+            && !Version.V1_0.equals(test.options.version);
 
     public String id;
 
@@ -69,14 +71,14 @@ public final class TestCase {
 
     private final DocumentLoader loader;
 
-    public TestCase(final String testsBase, final DocumentLoader loader) {
+    private TestCase(final String testsBase, final DocumentLoader loader) {
         this.testsBase = testsBase;
         this.loader = loader;
     }
 
-    public static final TestCase of(
-            final Object node,
-            final TreeAdapter adapter,
+    @SuppressWarnings("unchecked")
+    public static final TestCase create(
+            final Map<String, ?> node,
             final String manifestUri,
             final String manifestBase,
             final String baseUri,
@@ -85,57 +87,53 @@ public final class TestCase {
         final var testCase = new TestCase(manifestBase, loader);
         testCase.baseUri = baseUri;
 
-        for (final var entry : adapter.entries(node)) {
+        for (final var entry : node.entrySet()) {
 
-            final var key = adapter.stringValue(entry.getKey());
+            if (entry.getValue() == null) {
+                continue;
+            }
 
-            switch (key) {
+            switch (entry.getKey()) {
             case Keywords.ID:
-                testCase.id = adapter.stringValue(entry.getValue());
-                testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length()) + testCase.id;
+                testCase.id = (String) entry.getValue();
+                testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length())
+                        + testCase.id;
                 break;
 
             case Keywords.TYPE:
-                testCase.type = adapter.elementStream(entry.getValue())
-                        .map(adapter::stringValue)
-                        .map(Type::of)
+                testCase.type = ((Collection<?>) entry.getValue())
+                        .stream()
+                        .map(String.class::cast)
+                        .map(Type::from)
                         .collect(Collectors.toSet());
                 break;
 
             case "name":
-                testCase.name = adapter.asString(entry.getValue());
+                testCase.name = (String) entry.getValue();
                 break;
 
             case "input":
-                testCase.input = adapter.isNull(entry.getValue())
-                        ? null
-                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                testCase.input = URI.create(baseUri + (String) entry.getValue());
                 break;
 
             case "context":
-                testCase.context = adapter.isNull(entry.getValue())
-                        ? null
-                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                testCase.context = URI.create(baseUri + (String) entry.getValue());
                 break;
 
             case "expect":
-                testCase.expect = adapter.isNull(entry.getValue())
-                        ? null
-                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                testCase.expect = URI.create(baseUri + (String) entry.getValue());
                 break;
 
             case "expectErrorCode":
-                testCase.expectErrorCode = errorCode(adapter.stringValue(entry.getValue()));
+                testCase.expectErrorCode = errorCode((String) entry.getValue());
                 break;
 
             case "frame":
-                testCase.frame = adapter.isNull(entry.getValue())
-                        ? null
-                        : URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                testCase.frame = URI.create(baseUri + (String) (entry.getValue()));
                 break;
 
             case "option":
-                testCase.options = TestOptions.of(entry.getValue(), adapter, baseUri);
+                testCase.options = TestOptions.create((Map<String, ?>) entry.getValue(), baseUri);
                 break;
 
             case "purpose":
@@ -147,7 +145,7 @@ public final class TestCase {
                 break;
 
             default:
-                System.err.println("An unknown test case property " + key + " = " + entry.getValue() + ".");
+                System.err.println("An unknown test case property " + entry.getKey() + " = " + entry.getValue() + ".");
 
             }
         }
@@ -204,7 +202,8 @@ public final class TestCase {
             return ErrorCode.UNSPECIFIED;
         }
 
-        return ErrorCode.valueOf(errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_"));
+        return ErrorCode.valueOf(
+                errorCode.strip().toUpperCase().replace(" ", "_").replace("-", "_").replaceAll("\\_\\@", "_KEYWORD_"));
     }
 
     public enum Type {
@@ -226,7 +225,7 @@ public final class TestCase {
             this.curi = curi;
         }
 
-        static Type of(final String value) {
+        static Type from(final String value) {
 
             Objects.requireNonNull(value);
 
@@ -245,16 +244,17 @@ public final class TestCase {
         return id + ": " + name;
     }
 
-    public RdfQuadSet readQuads(byte[] bytes) throws NQuadsReaderException, RdfConsumerException {
+    public Set<RdfQuad> readQuads(byte[] bytes) throws NQuadsReaderException, IOException {
         return readQuads(new ByteArrayInputStream(bytes));
     }
 
-    public RdfQuadSet readQuads(InputStream is) throws NQuadsReaderException, RdfConsumerException {
+    public Set<RdfQuad> readQuads(InputStream is) throws NQuadsReaderException, IOException {
 
-        var content = new OrderedQuadSet();
+        var content = new LinkedHashSet<RdfQuad>();
 
-        new NQuadsReader(new InputStreamReader(is))
-                .provide(new QuadAcceptor(content));
+        try (var reader = new NQuadsReader(new InputStreamReader(is))) {
+            reader.provide(new QuadSetProvider(content));
+        }
 
         return content;
     }
@@ -267,5 +267,4 @@ public final class TestCase {
 
         return URI.create(testsBase + relativePath);
     }
-
 }

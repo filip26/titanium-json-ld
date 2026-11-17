@@ -40,13 +40,10 @@ import com.apicatalog.web.media.MediaType;
 
 class PoliciesTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader
-            .newBuilder()
-            .defaultParser(JakartaTestSuite.PARSER)
-            .build();
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::parse);
 
     static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
-            .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+            .reader(MediaType.JSON_LD, JakartaTestSuite::parse)
             .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
             .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
             .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
@@ -64,7 +61,7 @@ class PoliciesTest {
             var options = testCase.getOptions();
 
             options.loader(StaticLoader.newBuilder()
-                    .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+                    .reader(MediaType.JSON_LD, JakartaTestSuite::parse)
                     .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")

@@ -15,6 +15,9 @@
  */
 package com.apicatalog.jsonld;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.time.Duration;
@@ -33,10 +36,11 @@ import com.apicatalog.jsonld.std.FramerTest;
 import com.apicatalog.jsonld.std.FromRdfTest;
 import com.apicatalog.jsonld.std.RemoteTest;
 import com.apicatalog.jsonld.std.ToRdfTest;
-import com.apicatalog.tree.io.TreeParser;
-import com.apicatalog.tree.io.TreeRenderer;
+import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.jakarta.JakartaParser;
-import com.apicatalog.tree.io.jakarta.JakartaRenderer;
+import com.apicatalog.web.media.MediaType;
+
+import jakarta.json.Json;
 
 @Suite(failIfNoTests = true)
 @SuiteDisplayName("JSON-LD Suite (Jakarta)")
@@ -51,9 +55,9 @@ import com.apicatalog.tree.io.jakarta.JakartaRenderer;
 })
 public class JakartaTestSuite extends SuiteEvironment {
 
-    public static final TreeParser PARSER = new JakartaParser();
-
-    public static final TreeRenderer RENDERER = new JakartaRenderer();
+//    public static final TreeParser PARSER = new JakartaParser();
+//
+//    public static final TreeRenderer RENDERER = new JakartaRenderer();
 
     public static final HttpClient HTTP_CLIENT = HttpClient
             .newBuilder()
@@ -62,17 +66,25 @@ public class JakartaTestSuite extends SuiteEvironment {
             .build();
 
     public static final HttpLoader HTTP_LOADER = HttpLoader
-            .newLoader(HTTP_CLIENT, PARSER)
+            .newLoader(HTTP_CLIENT, JakartaTestSuite::parse)
             .timeout(Duration.ofSeconds(5));
 
     @BeforeSuite
     public static void beforeSuite() {
-        start(PARSER, RENDERER);
+//        start(PARSER, RENDERER);
     }
 
     @AfterSuite
     public static void afterSuite() {
         stop();
+    }
+
+    public static final Object parse(MediaType contentType, InputStream is) {
+        try (var parser = new JakartaParser(Json.createParser(is))) {
+            return Tree.read(parser);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
 }

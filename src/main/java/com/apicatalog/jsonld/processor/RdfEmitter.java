@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.processor;
 
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
@@ -24,8 +25,7 @@ import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads;
-import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.Tree;
+import com.apicatalog.jsonld.tordf.JsonLdToQuads.QuadConsumer;
 
 /**
  *
@@ -51,8 +51,8 @@ public final class RdfEmitter {
      * @throws JsonLdException if the document transformation fails
      */
     public void provide(
-            Document document, 
-            RdfQuadConsumer consumer,
+            Document document,
+            QuadConsumer consumer,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -60,8 +60,8 @@ public final class RdfEmitter {
     }
 
     public static final void toRdf(
-            final Document input, 
-            final RdfQuadConsumer consumer, 
+            final Document input,
+            final QuadConsumer consumer,
             final Options options,
             final Execution runtime) throws JsonLdException {
         final Options expansionOptions = Options.copyOf(options);
@@ -76,11 +76,11 @@ public final class RdfEmitter {
     }
 
     public static final void toRdf(
-            final Tree input,
-            final RdfQuadConsumer consumer,
+            final Map<String, ?> input,
+            final QuadConsumer consumer,
             final Options options,
             final Execution runtime) throws JsonLdException {
-        
+
         final Options expansionOptions = Options.copyOf(options);
 
         expansionOptions.mode(options.mode());
@@ -99,14 +99,17 @@ public final class RdfEmitter {
 
     public static final void toRdf(
             final Collection<?> expanded,
-            final RdfQuadConsumer consumer,
+            final QuadConsumer consumer,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
+        if (options.rdfJsonLiteralWriter() == null) {
+            throw new IllegalArgumentException("RDF JSON literal writer must not be null.");
+        }
+
         JsonLdToQuads
-                .with(new NodeMapBuilder(expanded, new NodeMap()).build())
+                .with(new NodeMapBuilder(expanded, new NodeMap()).build(), options.rdfJsonLiteralWriter())
                 .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
-                .rdfJsonLiteralWriter(options.rdfJsonLiteralWriter())
                 .rdfDirection(options.rdfDirection())
                 .uriValidation(options.uriValidation())
                 .provide(consumer);

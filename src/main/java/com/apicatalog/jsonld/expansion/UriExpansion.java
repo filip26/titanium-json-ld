@@ -27,7 +27,6 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriResolver;
 import com.apicatalog.web.uri.UriUtils;
@@ -74,8 +73,7 @@ public final class UriExpansion {
     private boolean vocab;
     private UriValidationPolicy uriValidation;
 
-    private Object localContext;
-    private TreeAdapter adapter;
+    private Map<String, ?> localContext;
     private Map<String, Boolean> defined;
 
     private UriExpansion(final Context activeContext, final DocumentLoader loader, final Execution runtime) {
@@ -87,7 +85,6 @@ public final class UriExpansion {
         this.documentRelative = false;
         this.vocab = false;
         this.localContext = null;
-        this.adapter = null;
         this.defined = null;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
     }
@@ -208,13 +205,11 @@ public final class UriExpansion {
     /**
      * Sets the local context to be used during expansion.
      *
-     * @param value   the local context
-     * @param adapter
+     * @param value the local context
      * @return this instance, for method chaining
      */
-    public UriExpansion localContext(Object value, TreeAdapter adapter) {
+    public UriExpansion localContext(Map<String, ?> value) {
         this.localContext = value;
-        this.adapter = adapter;
         return this;
     }
 
@@ -257,20 +252,17 @@ public final class UriExpansion {
          * value as term, and defined. This will ensure that a term definition is
          * created for value in active context during Context Processing
          */
-        if (localContext != null && adapter.keys(localContext).contains(value)) {
+        if (localContext != null && localContext.containsKey(value)) {
 
-            var entryValue = adapter.property(value, localContext);
+            var entryValue = localContext.get(value);
 
-            if (adapter.isString(entryValue)) {
-
-                final String entryValueString = adapter.stringValue(entryValue);
+            if (entryValue instanceof String entryValueString) {
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
                     activeContext
                             .newTerm(
                                     value,
                                     localContext,
-                                    adapter,
                                     defined,
                                     loader,
                                     runtime);
@@ -301,10 +293,10 @@ public final class UriExpansion {
 
         // 6.3. Create term definition for the prefix if it exists in the local context.
         if (localContext != null
-                && adapter.keys(localContext).contains(prefix)
+                && localContext.containsKey(prefix)
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
 
-            activeContext.newTerm(prefix, localContext, adapter, defined, loader, runtime);
+            activeContext.newTerm(prefix, localContext, defined, loader, runtime);
 
             if (runtime.hasValuesConsumer()) {
                 runtime.fire(EventType.CONTEXT_KEYS, activeContext.getTermsMapping().keySet());

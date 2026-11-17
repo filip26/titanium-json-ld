@@ -19,13 +19,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
-import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.web.media.MediaType;
 
 /**
@@ -33,8 +31,9 @@ import com.apicatalog.web.media.MediaType;
  *
  * <p>
  * This loader only supports {@code file:} URIs. It reads the referenced file,
- * parses it with the provided {@link TreeParser}, and wraps the result in a
- * {@link Document}. Files must exist and be readable by the current process.
+ * parses it with the provided {@link Document.ContentReader}, and wraps the
+ * result in a {@link Document}. Files must exist and be readable by the current
+ * process.
  * </p>
  *
  * @see DocumentLoader
@@ -54,25 +53,20 @@ public final class FileLoader implements DocumentLoader {
             ".yaml", MediaType.YAML,
             ".yamlld", MediaType.YAML_LD);
 
-    private final Map<MediaType, TreeParser> parsers;
-    private final TreeParser defaultParser;
+    private final Document.ContentReader contentParser;
 
-    private FileLoader(TreeParser defaultParser, Map<MediaType, TreeParser> parsers) {
-        this.defaultParser = defaultParser;
-        this.parsers = parsers;
+    private FileLoader(Document.ContentReader contentParser) {
+        this.contentParser = contentParser;
     }
 
     /**
-     * Creates a loader that parses local files using the given {@link TreeParser}.
+     * Creates a loader that parses local files using the given
+     * {@link Document.ContentReader}.
      *
-     * @param defaultParser parser used to decode the file content
+     * @param parser parser used to decode the file content
      */
-    public static final FileLoader of(TreeParser parser) {
-        return new FileLoader(Objects.requireNonNull(parser), Map.of());
-    }
-
-    public static final Builder newBuilder() {
-        return new Builder();
+    public static final FileLoader newInstance(Document.ContentReader parser) {
+        return new FileLoader(Objects.requireNonNull(parser));
     }
 
     /**
@@ -94,7 +88,7 @@ public final class FileLoader implements DocumentLoader {
         if (!"file".equalsIgnoreCase(uri.getScheme())) {
             throw new LoaderException(
                     ErrorCode.UNSUPPORTED_SCHEME,
-                    uri, 
+                    uri,
                     "Unsupported URI scheme [" + uri.getScheme() + "]. FileLoader accepts only file scheme.");
         }
 
@@ -103,18 +97,17 @@ public final class FileLoader implements DocumentLoader {
         if (!file.canRead()) {
             throw new LoaderException(
                     ErrorCode.FORBIDDEN,
-                    uri, 
+                    uri,
                     "File [" + uri + "] is not accessible to read.");
         }
 
         final var contentType = fromFileExtension(file.getName());
 
-        final var parser = parsers.getOrDefault(contentType, defaultParser);
-
         try (final var is = new FileInputStream(file)) {
-            var node = parser.parse(is);
 
-            return Document.of(node, contentType, uri);
+            var node = contentParser.read(contentType, is);
+
+            return new Document(uri, node, contentType, null, null);
 
         } catch (FileNotFoundException e) {
             throw new LoaderException(ErrorCode.NOT_FOUND, uri, "File not found [" + uri + "].");
@@ -136,41 +129,5 @@ public final class FileLoader implements DocumentLoader {
                 .map(Map.Entry::getValue)
                 .findFirst()
                 .orElse(null);
-    }
-
-    /**
-     * Builder for constructing immutable {@link StaticLoader} instances.
-     *
-     * <p>
-     * Allows registering fixed document mappings and specifying an optional
-     * fallback {@link DocumentLoader} to handle unknown URIs.
-     * </p>
-     */
-    public static final class Builder {
-
-        private Map<MediaType, TreeParser> parsers;
-        private TreeParser defaultParser;
-
-        Builder() {
-            this.parsers = new HashMap<>();
-            this.defaultParser = null;
-        }
-
-        public Builder parser(MediaType contentType, TreeParser parser) {
-            this.parsers.put(contentType, parser);
-            return this;
-        }
-
-        public Builder parser(TreeParser parser) {
-            this.defaultParser = parser;
-            return this;
-        }
-
-        /** Builds an immutable {@link FileLoader} instance. */
-        public FileLoader build() {
-            return new FileLoader(
-                    defaultParser,
-                    Map.copyOf(parsers));
-        }
     }
 }

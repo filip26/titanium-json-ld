@@ -16,6 +16,7 @@
 package com.apicatalog.jsonld.fromrdf;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,13 +33,11 @@ import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.fromrdf.GraphMap.Reference;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Terms;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.api.RdfQuadConsumer;
-import com.apicatalog.tree.io.TreeParser;
-import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.lang.LanguageTag;
+import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
@@ -71,7 +70,12 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * @see RdfQuadConsumer
  * @since 1.7.0
  */
-public class QuadsToJsonLd implements RdfQuadConsumer {
+public class QuadsToJsonLd {
+
+    @FunctionalInterface
+    public interface JsonLiteralReader {
+        Object read(MediaType contentType, InputStream is);
+    }
 
     public static final Map<String, Function<String, Object>> DEFAULT_NATIVE_ADAPTERS = Map.of(
             Terms.XSD_STRING, s -> s,
@@ -90,7 +94,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
     protected UriValidationPolicy uriValidation;
     protected Version processingMode;
 
-    protected TreeParser jsonParser;
+    protected JsonLiteralReader jsonReader;
     protected Map<String, Function<String, Object>> nativeTypes;
 
     // runtime
@@ -106,7 +110,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         // default values
         this.ordered = false;
         this.rdfDirection = null;
-        this.jsonParser = null;
+        this.jsonReader = null;
         this.nativeTypes = Map.of();
         this.useXsdDecimal = false;
         this.useRdfType = false;
@@ -183,8 +187,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         return this;
     }
 
-    public QuadsToJsonLd jsonParser(TreeParser jsonParser) {
-        this.jsonParser = jsonParser;
+    public QuadsToJsonLd jsonReader(JsonLiteralReader jsonReader) {
+        this.jsonReader = jsonReader;
         return this;
     }
 
@@ -257,7 +261,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                                     clEntry.graphName(),
                                     clEntry.subject(),
                                     clEntry.property())
-                            .map(JavaAdapter::asCollection)
+                            .map(JsonLdAdapter::asCollection)
                             .orElse(List.of())) {
 
                         if (clReference == null || !(clReference instanceof Map)) {
@@ -267,7 +271,8 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                         @SuppressWarnings({ "unchecked" })
                         final var clReferenceObject = (Map<String, Object>) clReference;
 
-                        if (!clReferenceObject.containsKey(Keywords.ID) || !cl.equals(clReferenceObject.get(Keywords.ID))) {
+                        if (!clReferenceObject.containsKey(Keywords.ID)
+                                || !cl.equals(clReferenceObject.get(Keywords.ID))) {
                             continue;
                         }
 
@@ -439,8 +444,14 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         return result;
     }
 
-    @Override
-    public RdfQuadConsumer quad(String subject, String predicate, String object, String datatype, String language, String direction, String graph) throws RdfConsumerException {
+    public void quad(
+            String subject,
+            String predicate,
+            String object,
+            String datatype,
+            String language,
+            String direction,
+            String graph) {
 
         final String graphName = graph == null ? Keywords.DEFAULT : graph;
 
@@ -485,14 +496,15 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         }
 
         // 5.7.4.
-        if (!RdfQuadConsumer.isLiteral(datatype, language, direction)
+        if (!isLiteral(datatype, language, direction)
                 && !graphMap.contains(graphName, object)) {
 
             graphMap.set(graphName, object, Keywords.ID, object);
         }
 
         // 5.7.5.
-        if (!useRdfType && Terms.RDF_TYPE.equals(predicate) && !RdfQuadConsumer.isLiteral(datatype, language, direction)) {
+        if (!useRdfType && Terms.RDF_TYPE.equals(predicate)
+                && !isLiteral(datatype, language, direction)) {
 
             final var type = graphMap.get(graphName, subject, Keywords.TYPE);
 
@@ -508,7 +520,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                 graphMap.set(graphName, subject, Keywords.TYPE, Set.of(object));
             }
 
-            return this;
+            return;
         }
 
         // 5.7.6.
@@ -548,7 +560,7 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
             referenceOnce.put(object, null);
 
             // 5.7.11.
-        } else if (RdfQuadConsumer.isBlank(object)) {
+        } else if (isBlank(object)) {
 
             referenceOnce.put(object, new Reference(
                     graphName,
@@ -556,14 +568,16 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                     predicate,
                     value));
         }
-
-        return this;
     }
 
-    Map<String, Object> toObject(String object, String datatype, String langTag, String direction) throws RdfConsumerException {
+    Map<String, Object> toObject(
+            String object,
+            String datatype,
+            String langTag,
+            String direction) {
 
         // 1.
-        if (!RdfQuadConsumer.isLiteral(datatype, langTag, direction)) {
+        if (!isLiteral(datatype, langTag, direction)) {
             final var ref = new LinkedHashMap<String, Object>(1);
             ref.put(Keywords.ID, object);
             return ref;
@@ -595,13 +609,13 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         }
 
         // 2.5.
-        if (jsonParser != null
+        if (jsonReader != null
                 && processingMode != Version.V1_0
                 && Terms.RDF_JSON.equals(datatype)) {
 
-            try {
+//            try {
 
-                convertedValue = jsonParser.parse(new ByteArrayInputStream(object.getBytes()));
+                convertedValue = jsonReader.read(MediaType.JSON, new ByteArrayInputStream(object.getBytes()));
 
                 if (convertedValue == null) {
                     final var result = new HashMap<String, Object>(2);
@@ -614,9 +628,9 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
                         Keywords.VALUE, convertedValue,
                         Keywords.TYPE, Keywords.JSON);
 
-            } catch (Exception e) {
-                throw new RdfConsumerException(new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e));
-            }
+//            } catch (Exception e) {
+//                throw new Unchecked new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
+//            }
         }
 
         final var result = new LinkedHashMap<String, Object>(5);
@@ -735,5 +749,31 @@ public class QuadsToJsonLd implements RdfQuadConsumer {
         }
 
         return result;
+    }
+    
+    /**
+     * Determines if the provided combination of {@code datatype}, {@code language},
+     * and {@code direction} qualifies the object as RDF literal.
+     *
+     * @param datatype  the datatype IRI
+     * @param language  the language tag
+     * @param direction the text direction
+     * @return {@code true} indicating a literal, otherwise {@code false}.
+     */
+    static boolean isLiteral(String datatype, String language, String direction) {
+        return datatype != null || language != null || direction != null;
+    }
+
+
+    /**
+     * Checks whether the provided resource identifier represents a blank node. A
+     * blank node identifier must start with "<code>_:</code>".
+     *
+     * @param resource the resource identifier to check; may be {@code null}.
+     * @return {@code true} if the resource is a non-null blank node identifier;
+     *         otherwise {@code false}.
+     */
+    static boolean isBlank(String resource) {
+        return resource != null && resource.startsWith("_:");
     }
 }

@@ -20,9 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,30 +38,29 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.rdf.RdfComparison;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.model.RdfQuad;
 import com.apicatalog.rdf.nquads.NQuadsReader;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
-import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
-import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.java.JavaAdapter;
+import com.apicatalog.rdf.provider.QuadSetProvider;
 
 class NativeInputTest {
 
     static DocumentLoader UUID_LOADER = StaticLoader.newBuilder()
             .document(
                     "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
-                    Document.of(Tree.of(Map.of(
-                            "@context", Map.of(
-                                    "name", "http://xmlns.com/foaf/0.1/name",
-                                    "project", Map.of(
-                                            "@id", "http://xmlns.com/foaf/0.1/project",
-                                            "@type", "@id"),
-                                    "Person", "http://xmlns.com/foaf/0.1/Person",
-                                    "modified", Map.of(
-                                            "@id", "https://schema.org/dateModified",
-                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))))))
+                    new Document(
+                            URI.create("urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99"),
+                            Map.of(
+                                    "@context", Map.of(
+                                            "name", "http://xmlns.com/foaf/0.1/name",
+                                            "project", Map.of(
+                                                    "@id", "http://xmlns.com/foaf/0.1/project",
+                                                    "@type", "@id"),
+                                            "Person", "http://xmlns.com/foaf/0.1/Person",
+                                            "modified", Map.of(
+                                                    "@id", "https://schema.org/dateModified",
+                                                    "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
+                            null, null, null))
             .build();
 
     static Map<String, String> JSON_LD = Map.of(
@@ -68,11 +71,11 @@ class NativeInputTest {
             "modified", "2025-11-25T01:02:03Z");
 
     @Test
-    void testUUIDContextToRdf() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
+    void testUUIDContextToRdf() throws JsonLdException, IOException, NQuadsReaderException {
 
-        final var set = new OrderedQuadSet();
+        final var set = new LinkedHashSet<RdfQuad>();
 
-        JsonLd.toRdf(JSON_LD, new QuadAcceptor(set), Options.with(UUID_LOADER));
+        JsonLd.toRdf(JSON_LD, new QuadSetProvider(set)::quad, Options.with(UUID_LOADER));
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-0-quads.nq");
         assertNotNull(expected);
@@ -89,8 +92,7 @@ class NativeInputTest {
 
         var match = Comparison.equals(
                 result,
-                PL_2_EXPANDED,
-                JavaAdapter.instance());
+                PL_2_EXPANDED);
 
         assertTrue(match);
     }
@@ -103,8 +105,7 @@ class NativeInputTest {
 
         var match = Comparison.equals(
                 result,
-                PL_2_COMPACTED,
-                JavaAdapter.instance());
+                PL_2_COMPACTED);
 
         assertTrue(match);
     }
@@ -121,8 +122,7 @@ class NativeInputTest {
 
         var match = Comparison.equals(
                 result,
-                PL_2_FLATTENED,
-                JavaAdapter.instance());
+                PL_2_FLATTENED);
 
         assertTrue(match);
     }
@@ -135,18 +135,17 @@ class NativeInputTest {
 
         var match = Comparison.equals(
                 result,
-                PL_2_COMPACTED,
-                JavaAdapter.instance());
+                PL_2_COMPACTED);
 
         assertTrue(match);
     }
 
     @Test
-    void testToRdf() throws JsonLdException, IOException, NQuadsReaderException, RdfConsumerException {
+    void testToRdf() throws JsonLdException, IOException, NQuadsReaderException {
 
-        final var set = new OrderedQuadSet();
+        final var set = new LinkedHashSet<RdfQuad>();
 
-        JsonLd.toRdf(PL_2_COMPACTED, new QuadAcceptor(set), Options.newOptions());
+        JsonLd.toRdf(PL_2_COMPACTED, new QuadSetProvider(set)::quad, Options.newOptions());
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-2-quads.nq");
         assertNotNull(expected);
@@ -201,10 +200,12 @@ class NativeInputTest {
                             "@type", "xsd:dateTime")),
             "ical:location", "New Orleans Arena, New Orleans, Louisiana, USA");
 
-    public static RdfQuadSet readNQuads(String name) throws NQuadsReaderException, RdfConsumerException, JsonLdException, IOException {
-        try (final var is = NativeInputTest.class.getResourceAsStream(name)) {
-            final var content = new OrderedQuadSet();
-            new NQuadsReader(new InputStreamReader(is)).provide(new QuadAcceptor(content));
+    public static Set<RdfQuad> readNQuads(String name)
+            throws NQuadsReaderException, JsonLdException, IOException {
+        try (final var reader = new NQuadsReader(
+                new InputStreamReader(NativeInputTest.class.getResourceAsStream(name)))) {
+            final var content = new HashSet<RdfQuad>();
+            reader.provide(new QuadSetProvider(content)::quad);
             return content;
         }
     }

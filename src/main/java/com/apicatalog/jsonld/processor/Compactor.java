@@ -27,7 +27,6 @@ import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.Tree;
 
 /**
  *
@@ -41,7 +40,28 @@ public final class Compactor {
     }
 
     public static final Collection<?> expand(
-            final Tree input,
+            final Map<String, ?> input,
+            final Options options,
+            final Execution runtime) throws JsonLdException {
+
+        final var expansionOptions = Options.copyOf(options)
+                .ordered(false)
+                .extractAllScripts(false);
+
+        return Expander.expand(
+                input,
+                Expander.context(
+                        null,
+                        null,
+                        options,
+                        runtime),
+                Expander.baseUrl(null, options),
+                expansionOptions,
+                runtime);
+    }
+
+    public static final Collection<?> expand(
+            final Collection<?> input,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -85,7 +105,7 @@ public final class Compactor {
     public static final Map<String, ?> compact(
             final Object expanded,
             final URI baseUrl,
-            final Tree context,
+            final Object context,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -130,7 +150,7 @@ public final class Compactor {
     static final Map<String, ?> compact(
             final Object expanded,
             final Context context,
-            final Tree contextSource,
+            final Object contextSource,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -165,7 +185,7 @@ public final class Compactor {
             if (col.isEmpty()) {
                 return Map.of();
 
-            } else if (!contextSource.isEmptyOrNull()) {
+            } else if (contextSource != null) { //FIXME .isEmptyOrNull()
                 return Map.of(
                         Keywords.CONTEXT,
                         contextSource,

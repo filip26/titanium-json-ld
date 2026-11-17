@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -62,15 +64,15 @@ public final class TestManifest {
 
             assertNotNull(manifest);
 
-            final var node = manifest.content();
+            final var node = (Map<?, ?>) manifest.content();
 
-            final var baseUri = node.adapter().stringValue(node.property("baseIri"));
+            final var baseUri = (String) node.get("baseIri");
 
-            return node.adapter()
-                    .elementStream(node.property("sequence"))
-                    .map(test -> TestCase.of(
+            return ((Collection<?>) node.get("sequence"))
+                    .stream()
+                    .map(Map.class::cast)
+                    .map(test -> TestCase.create(
                             test,
-                            node.adapter(),
                             manifestName,
                             manifestBase,
                             baseUri,

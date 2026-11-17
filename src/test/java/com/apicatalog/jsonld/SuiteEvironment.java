@@ -15,23 +15,23 @@
  */
 package com.apicatalog.jsonld;
 
+import com.apicatalog.jsonld.Document.ContentReader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriBlocker;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
+import com.apicatalog.tree.io.TreeEmitter;
 import com.apicatalog.tree.io.TreeParser;
-import com.apicatalog.tree.io.TreeRenderer;
 
 public class SuiteEvironment {
 
     public static Boolean isRunning = false;
 
-    public static TreeParser PARSER;
+//    public static TreeParser PARSER;
     public static DocumentLoader LOADER;
 
-    static void start(TreeParser parser, TreeRenderer renderer) {
-        SuiteEvironment.PARSER = parser;
-        SuiteEvironment.LOADER = UriBlocker.newBlacklist(
-                new ZipResourceLoader(parser))
+    static void start(ContentReader reader, TreeEmitter emitter) {
+//        SuiteEvironment.PARSER = parser;
+        SuiteEvironment.LOADER = UriBlocker.newBlacklist(new ZipResourceLoader(reader))
                 .base("http:")
                 .base("https:")
                 .build();

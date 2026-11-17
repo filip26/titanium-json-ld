@@ -27,7 +27,6 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.framing.Frame.Embed;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.java.JavaAdapter;
 
 /**
  *
@@ -162,7 +161,7 @@ public final class Framing {
                     final var graph = frame.get(Keywords.GRAPH);
 
                     if (graph instanceof Map || graph instanceof Collection) {
-                        subframe = Frame.of(graph);
+                        subframe = Frame.create(graph);
 
                     } else {
                         subframe = Frame.EMPTY;
@@ -201,7 +200,7 @@ public final class Framing {
                 Framing.with(
                         includedState,
                         subjects,
-                        Frame.of(frame.get(Keywords.INCLUDED)),
+                        Frame.create(frame.get(Keywords.INCLUDED)),
                         output,
                         Keywords.INCLUDED)
                         .ordered(ordered)
@@ -233,7 +232,7 @@ public final class Framing {
                 }
 
                 // 4.7.3.
-                for (final var item : JavaAdapter.asCollection(objects)) {
+                for (final var item : JsonLdAdapter.asCollection(objects)) {
 
                     var subframe = frame.get(property);
 
@@ -263,11 +262,11 @@ public final class Framing {
                                     Keywords.REQUIRE_ALL, isRequireAll);
                         }
 
-                        final Frame listFrame = Frame.of(listFrameValue);
+                        final Frame listFrame = Frame.create(listFrameValue);
 
                         final var list = new ArrayList<Object>();
 
-                        for (final var listItem : JavaAdapter.asCollection(itemMap.get(Keywords.LIST))) {
+                        for (final var listItem : JsonLdAdapter.asCollection(itemMap.get(Keywords.LIST))) {
 
                             // 4.7.3.1.1.
                             if (JsonLdAdapter.isReference(listItem)) {
@@ -314,7 +313,7 @@ public final class Framing {
                         Framing.with(
                                 clonedState,
                                 Arrays.asList(idMap),
-                                Frame.of(subframe),
+                                Frame.create(subframe),
                                 output,
                                 property)
                                 .ordered(ordered)
@@ -322,7 +321,7 @@ public final class Framing {
 
                     } else if (item instanceof Map itemMap && JsonLdAdapter.isValueNode(itemMap)) {
 
-                        if (Frame.of(subframe).matchValue(item)) {
+                        if (Frame.create(subframe).matchValue(item)) {
                             JsonLdAdapter.setOrAdd(output, property, item);
                         }
 
@@ -374,7 +373,7 @@ public final class Framing {
 
                     for (final var reverseEntry : map.entrySet()) {
 
-                        final Frame subframe = Frame.of(map.get(reverseEntry.getValue()));
+                        final Frame subframe = Frame.create(map.get(reverseEntry.getValue()));
 
                         final Set<String> subjectProperties = state.getReversePropertySubjects(state.getGraphName(), (String) reverseEntry.getKey(), id);
 

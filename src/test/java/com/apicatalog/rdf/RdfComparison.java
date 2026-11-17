@@ -15,26 +15,23 @@
  */
 package com.apicatalog.rdf;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Set;
 
-import com.apicatalog.rdf.api.RdfConsumerException;
 import com.apicatalog.rdf.canon.RdfCanon;
 import com.apicatalog.rdf.canon.RdfCanonTimeTicker;
-import com.apicatalog.rdf.model.RdfQuadSet;
+import com.apicatalog.rdf.model.RdfQuad;
 import com.apicatalog.rdf.nquads.NQuadsWriter;
-import com.apicatalog.rdf.primitive.flow.QuadEmitter;
+import com.apicatalog.rdf.provider.QuadEmitter;
 
 public final class RdfComparison {
 
-    public static final boolean equals(final RdfQuadSet dataset1, final RdfQuadSet dataset2) {
-        try {
-            return canon(dataset1).equals(canon(dataset2));
-        } catch (RdfConsumerException e) {
-            return false;
-        }
+    public static final boolean equals(final Set<RdfQuad> dataset1, final Set<RdfQuad> dataset2) throws IOException {
+        return canon(dataset1).equals(canon(dataset2));
     }
 
-    private static final String canon(RdfQuadSet set) throws RdfConsumerException {
+    private static final String canon(Set<RdfQuad> set) throws IOException {
 
         var canon = RdfCanon.create("SHA-256", new RdfCanonTimeTicker(5 * 1000));
 
@@ -42,7 +39,9 @@ public final class RdfComparison {
 
         var writer = new StringWriter();
 
-        canon.provide(new NQuadsWriter(writer));
+        try (var nquads = new NQuadsWriter(writer)) {
+            canon.provide(nquads::quad);
+        }
 
         return writer.toString();
     }

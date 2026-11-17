@@ -126,7 +126,7 @@ public record MediaType(
      * @throws NullPointerException if {@code value} is {@code null}
      * @see MediaTypeParser
      */
-    public static final MediaType of(final String value) {
+    public static final MediaType from(final String value) {
         if (Objects.requireNonNull(value).isBlank()) {
             return null;
         }

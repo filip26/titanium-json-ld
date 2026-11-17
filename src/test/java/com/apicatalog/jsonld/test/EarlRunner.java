@@ -19,15 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.test.TestCase.Type;
-import com.apicatalog.rdf.api.RdfConsumerException;
-import com.apicatalog.rdf.model.RdfQuadSet;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
-import com.apicatalog.tree.io.java.JavaAdapter;
 
 import jakarta.json.JsonStructure;
 
@@ -59,14 +56,14 @@ public class EarlRunner {
                 return false;
             }
 
-            if ((result instanceof RdfQuadSet) && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
+            if ((result instanceof Set) && testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
                 return true;
 
             } else if (testCase.expect == null) {
                 return false;
             }
 
-            if (result instanceof RdfQuadSet quads) {
+            if (result instanceof Set quads) {
                 return JunitRunner.validateQuads(testCase, options, quads, false);
             }
 
@@ -75,7 +72,6 @@ public class EarlRunner {
                         testCase, 
                         options, 
                         json, 
-                        JakartaAdapter.instance(),
                         false);
             }
 
@@ -83,7 +79,6 @@ public class EarlRunner {
                     testCase,
                     options,
                     result,
-                    JavaAdapter.instance(),
                     false);
 
 
@@ -93,11 +88,11 @@ public class EarlRunner {
         } catch (JsonLdException e) {
             return Objects.equals(e.code(), testCase.expectErrorCode);
 
-        } catch (RdfConsumerException e) {
-            if (e.getCause() instanceof JsonLdException) {
-                return Objects.equals(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode);
-            }
+//        } catch (RdfConsumerException e) {
+//            if (e.getCause() instanceof JsonLdException) {
+//                return Objects.equals(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode);
+//            }
         }
-        return false;
+//        return false;
     }
 }

@@ -41,7 +41,6 @@ import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.uri.BlankNode;
 
 /**
@@ -63,7 +62,7 @@ public final class Framer {
         return Context.inject(
                 Framer.frame(
                         Framer.expand(document, options, runtime),
-                        Frame.of(frame, options, runtime),
+                        Frame.create(frame, options, runtime),
                         Framer.context(
                                 document.url(),
                                 contextNode,
@@ -76,7 +75,7 @@ public final class Framer {
 
     public static final Context context(
             final URI baseUrl,
-            final Tree localContext,
+            final Object localContext,
             final URI localContextBase,
             final Options options,
             final Execution runtime) throws JsonLdException {
@@ -94,8 +93,8 @@ public final class Framer {
 
     public static final Collection<?> expand(
             Document document,
-            final Options options,
-            final Execution runtime) throws JsonLdException {
+            Options options,
+            Execution runtime) throws JsonLdException {
         return Expander.expand(
                 document,
                 Options.copyOf(options).ordered(false),
@@ -103,9 +102,9 @@ public final class Framer {
     }
 
     public static final Collection<?> expand(
-            Tree document,
-            final Options options,
-            final Execution runtime) throws JsonLdException {
+            Map<String, ?> document,
+            Options options,
+            Execution runtime) throws JsonLdException {
         return Expander.expand(
                 document,
                 Expander.context(

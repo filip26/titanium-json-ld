@@ -32,7 +32,7 @@ import com.apicatalog.web.media.MediaType;
 
 class FileLoaderTest {
 
-    public static FileLoader FILE_LOADER = FileLoader.of(JakartaTestSuite.PARSER);
+    public static FileLoader FILE_LOADER = FileLoader.newInstance(JakartaTestSuite::parse);
 
     @Test
     void testLoadJson() throws URISyntaxException, LoaderException {
@@ -68,13 +68,15 @@ class FileLoaderTest {
 
         assertNotNull(fileUrl);
 
-        var ex = assertThrows(LoaderException.class, () -> FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions()));
+        var ex = assertThrows(LoaderException.class,
+                () -> FILE_LOADER.loadDocument(fileUrl.toURI(), DocumentLoader.defaultOptions()));
         assertEquals(LoaderException.ErrorCode.UNSUPPORTED_CONTENT_TYPE, ex.code());
     }
 
     @Test
     void testUnsupportedScheme() throws URISyntaxException {
-        var ex = assertThrows(LoaderException.class, () -> FILE_LOADER.loadDocument(URI.create("https://github.com/"), DocumentLoader.defaultOptions()));
+        var ex = assertThrows(LoaderException.class,
+                () -> FILE_LOADER.loadDocument(URI.create("https://github.com/"), DocumentLoader.defaultOptions()));
         assertEquals(LoaderException.ErrorCode.UNSUPPORTED_SCHEME, ex.code());
     }
 

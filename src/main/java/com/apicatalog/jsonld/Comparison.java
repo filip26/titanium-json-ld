@@ -16,12 +16,10 @@
 package com.apicatalog.jsonld;
 
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.Tree.NodeType;
 
 /**
  * Structural equality for JSON-LD values as defined by the
@@ -57,126 +55,67 @@ public final class Comparison {
     }
 
     /**
-     * Compares two nodes using the same {@link TreeAdapter}.
+     * Compares two node.
      *
      * @return {@code true} if both nodes are JSON-LD equivalent
      */
     public static final boolean equals(
             final Object value1,
-            final Object value2,
-            final TreeAdapter adapter) {
+            final Object value2) {
 
-        return equals(value1, adapter, value2, adapter, null);
-    }
-
-    /**
-     * Compares two nodes that may use different {@link TreeAdapter}s.
-     *
-     * @return {@code true} if both nodes are JSON-LD equivalent
-     */
-    public static final boolean equals(
-            final Object value1,
-            final TreeAdapter adapter1,
-            final Object value2,
-            final TreeAdapter adapter2) {
-
-        return equals(value1, adapter1, value2, adapter2, null);
+        return equals(value1, value2, null);
     }
 
     private static final boolean equals(
             final Object value1,
-            final TreeAdapter adapter1,
             final Object value2,
-            final TreeAdapter adapter2,
-            final String parentProperty) {
+            final Object parentProperty) {
 
-        final var type1 = adapter1.type(value1);
-
-        if (type1 == NodeType.TREE) {
-
-            return equals(
-                    ((Tree) value1).node(),
-                    ((Tree) value1).adapter(),
-                    value2,
-                    adapter2,
-                    parentProperty);
+        if (value1 == value2) {
+            return true;
         }
 
-        final var type2 = adapter2.type(value2);
-
-        if (type2 == NodeType.TREE) {
-            return equals(
-                    value1,
-                    adapter1,
-                    ((Tree) value2).node(),
-                    ((Tree) value2).adapter(),
-                    parentProperty);
-        }
-
-        if (type1 != type2) {
+        if (value1 == null || value2 == null) {
             return false;
         }
 
-        final var nativeEquals = adapter1.isEqualTo(adapter2);
+        if (value1 instanceof Map map1 && value2 instanceof Map map2) {
+            return objectEquals(map1, map2);
 
-        return switch (type1) {
-        case NULL, TRUE, FALSE -> true;
+        }
 
-        case STRING -> nativeEquals
-                ? Objects.equals(value1, value2)
-                : Objects.equals(
-                        adapter1.stringValue(value1),
-                        adapter2.stringValue(value2));
+        if (value1 instanceof Collection col1 && value2 instanceof Collection col2) {
+            return arrayEquals(col1, col2, parentProperty);
+        }
 
-        case NUMBER -> adapter1.isIntegral(value1)
-                && adapter2.isIntegral(value2)
-                && Objects.equals(
-                        adapter1.integerValue(value1),
-                        adapter2.integerValue(value2))
-                || !adapter1.isIntegral(value1)
-                        && !adapter2.isIntegral(value2)
-                        && Objects.equals(
-                                adapter1.decimalValue(value1),
-                                adapter2.decimalValue(value2));
+        if (value1 instanceof String && value2 instanceof String
+                || value1 instanceof Number && value2 instanceof Number
+                || value2 instanceof Boolean && value2 instanceof Boolean) {
+            return value1.equals(value2);
+        }
 
-        case BINARY -> nativeEquals
-                ? Objects.equals(value1, value2)
-                : Objects.equals(
-                        adapter1.binaryValue(value1),
-                        adapter2.binaryValue(value2));
-
-        case SEQUENCE -> arrayEquals(value1, adapter1, value2, adapter2, parentProperty);
-
-        case MAP -> objectEquals(value1, adapter1, value2, adapter2);
-
-        case TREE -> throw new IllegalStateException();
-
-        default -> false;
-
-        };
+        return false;
     }
 
     private static final boolean objectEquals(
-            final Object map1,
-            final TreeAdapter adapter1,
-            final Object map2,
-            final TreeAdapter adapter2) {
+            final Map<?, ?> map1,
+            final Map<?, ?> map2) {
 
-        final var it1 = adapter1.entryStream(map1).toList();
-
-        if (it1.size() != adapter2.keyStream(map2).count()) {
+        if (map1.size() != map2.size()) {
             return false;
         }
 
-        for (final var entry1 : it1) {
+        if (map1.isEmpty()) {
+            return true;
+        }
 
-            final var prop2 = adapter2.property(entry1.getKey(), adapter1, map2);
+        for (final var entry1 : map1.entrySet()) {
+
+            final var prop2 = map2.get(entry1.getKey());
             if (!equals(
                     entry1.getValue(),
-                    adapter1,
                     prop2,
-                    adapter2,
-                    adapter1.asString(entry1.getKey()))) {
+                    entry1.getKey())) {
                 return false;
             }
         }
@@ -184,20 +123,26 @@ public final class Comparison {
     }
 
     private static final boolean arrayEquals(
-            final Object array1,
-            final TreeAdapter adapter1,
-            final Object array2,
-            final TreeAdapter adapter2,
-            final String parentProperty) {
+            final Collection<?> array1,
+            final Collection<?> array2,
+            final Object parentProperty) {
+
+        if (array1.size() != array2.size()) {
+            return false;
+        }
+
+        if (array1.isEmpty()) {
+            return true;
+        }
 
         // For values of @list, the order of these items is significant
         if (Keywords.LIST.equals(parentProperty)) {
 
-            final var it1 = adapter1.elements(array1).iterator();
-            final var it2 = adapter2.elements(array2).iterator();
+            final var it1 = array1.iterator();
+            final var it2 = array2.iterator();
 
             while (it1.hasNext() && it2.hasNext()) {
-                if (!equals(it1.next(), adapter1, it2.next(), adapter2)) {
+                if (!equals(it1.next(), it2.next())) {
                     return false;
                 }
             }
@@ -205,36 +150,23 @@ public final class Comparison {
             return !it1.hasNext() && !it2.hasNext();
         }
 
-        return arraysEqualsUnordered(array1, adapter1, array2, adapter2);
+        return arraysEqualsUnordered(array1, array2);
     }
 
     // JSON arrays are generally compared with no regard to order
     private static final boolean arraysEqualsUnordered(
-            final Object array1,
-            final TreeAdapter adapter1,
-            final Object array2,
-            final TreeAdapter adapter2) {
+            final Collection<?> array1,
+            final Collection<?> array2) {
 
-        var list1 = adapter1.elementStream(array1).toList();
-        var list2 = adapter2.elementStream(array2).toList();
+        final var remaining = new ArrayList<>(array2);
 
-        if (list1.size() != list2.size()) {
-            return false;
-        }
-
-        if (list1.isEmpty()) {
-            return true;
-        }
-
-        final var remaining = new ArrayList<>(list2);
-
-        for (final var item1 : list1) {
+        for (final var item1 : array1) {
 
             boolean found = false;
 
             for (final var item2 : remaining) {
 
-                found = equals(item1, adapter1, item2, adapter2);
+                found = equals(item1, item2);
 
                 if (found) {
                     remaining.remove(item2);
@@ -249,4 +181,5 @@ public final class Comparison {
 
         return remaining.isEmpty();
     }
+
 }

@@ -25,7 +25,6 @@ import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.TreeAdapter;
 
 /**
  * A context that is used to resolve terms while the processing algorithm is
@@ -160,8 +159,8 @@ public final class ActiveContext implements Context {
     }
 
     @Override
-    public void newTerm(final String term, final Object localContext, final TreeAdapter adapter, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) throws JsonLdException {
-        TermDefinitionBuilder.with(this, localContext, adapter, defined, loader, runtime).create(term);
+    public void newTerm(final String term, final Map<String, ?> localContext, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) throws JsonLdException {
+        TermDefinitionBuilder.with(this, localContext, defined, loader, runtime).create(term);
     }
 
     public Optional<String> selectTerm(

@@ -61,11 +61,11 @@ public final class UriRewriter implements DocumentLoader {
             if (document != null) {
                 // update URL
                 if (target.equals(document.url())) {
-                    return Document.of(
+                    return new Document(
+                            url,
                             document.content(),
                             document.contentType(),
                             document.profile(),
-                            url,
                             document.context());
                 }
                 return document;
@@ -92,11 +92,11 @@ public final class UriRewriter implements DocumentLoader {
 
                 final var relativeSource = document.url().toString().substring(base.getValue().length());
 
-                return Document.of(
+                return new Document(
+                        URI.create(base.getKey() + relativeSource),
                         document.content(),
                         document.contentType(),
                         document.profile(),
-                        URI.create(base.getKey() + relativeSource),
                         document.context());
             }
 

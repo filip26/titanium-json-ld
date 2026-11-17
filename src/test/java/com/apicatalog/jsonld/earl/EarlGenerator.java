@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashSet;
 
 import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
@@ -35,10 +36,10 @@ import com.apicatalog.jsonld.test.EarlRunner;
 import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
+import com.apicatalog.rdf.model.RdfQuad;
 import com.apicatalog.rdf.nquads.NQuadsReaderException;
-import com.apicatalog.rdf.primitive.flow.QuadAcceptor;
-import com.apicatalog.rdf.primitive.flow.QuadEmitter;
-import com.apicatalog.rdf.primitive.set.OrderedQuadSet;
+import com.apicatalog.rdf.provider.QuadEmitter;
+import com.apicatalog.rdf.provider.QuadSetProvider;
 
 public class EarlGenerator {
 
@@ -48,7 +49,7 @@ public class EarlGenerator {
 
     public static void main(String[] args) throws JsonLdException, IOException {
 
-        SuiteEvironment.LOADER = new ZipResourceLoader(JakartaTestSuite.PARSER);
+        SuiteEvironment.LOADER = new ZipResourceLoader(JakartaTestSuite::parse);
 
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
     }
@@ -122,8 +123,8 @@ public class EarlGenerator {
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         (new EarlRunner(testCase)).execute(options -> {
-                            final var set = new OrderedQuadSet();
-                            JsonLd.toRdf(testCase.input, new QuadAcceptor(set), options);
+                            final var set = new LinkedHashSet<RdfQuad>();
+                            JsonLd.toRdf(testCase.input, new QuadSetProvider(set)::quad, options);
                             return set;
                         })));
     }
@@ -142,10 +143,10 @@ public class EarlGenerator {
 
                             final var toLd = JsonLd
                                     .fromRdf(options)
-                                    .jsonParser(JakartaTestSuite.PARSER);
+                                    .jsonReader(JakartaTestSuite::parse);
 
                             try {
-                                QuadEmitter.create(toLd).emit(
+                                QuadEmitter.create(toLd::quad).emit(
                                         testCase.readQuads(
                                                 ZipResourceLoader
                                                         .fetchBytes(testCase.rebase(testCase.input))));

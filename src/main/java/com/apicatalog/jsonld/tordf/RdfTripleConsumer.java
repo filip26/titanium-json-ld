@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.tordf;
 
-import com.apicatalog.rdf.api.RdfConsumerException;
-
 /**
  * An RDF triple consumer interface designed for high-speed processing and
  * seamless integration with third-party libraries.
@@ -35,11 +33,8 @@ interface RdfTripleConsumer {
      * triples belong to the unnamed default graph.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
-     * 
-     * @throws RdfConsumerException if an error occurs while processing the N-Quad
-     *                              statement
      */
-    RdfTripleConsumer defaultGraph() throws RdfConsumerException;
+    RdfTripleConsumer defaultGraph();
 
     /**
      * Sets a named graph as the active scope. Ensures that subsequent triples are
@@ -49,11 +44,8 @@ interface RdfTripleConsumer {
      *              with "_:"); never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
-     * 
-     * @throws RdfConsumerException if an error occurs while processing the N-Quad
-     *                              statement
      */
-    RdfTripleConsumer namedGraph(String graph) throws RdfConsumerException;
+    RdfTripleConsumer namedGraph(String graph);
 
     /**
      * Accepts an RDF triple where the object is an URI or a blank node. The triple
@@ -66,14 +58,11 @@ interface RdfTripleConsumer {
      *                  prefixed with "_:"); never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
-     * 
-     * @throws RdfConsumerException if an error occurs while processing the N-Quad
-     *                              statement
      */
     RdfTripleConsumer triple(
             String subject,
             String predicate,
-            String object) throws RdfConsumerException;
+            String object);
 
     /**
      * Accepts an RDF triple where the object is a literal with a datatype.
@@ -87,15 +76,12 @@ interface RdfTripleConsumer {
      * @param datatype  The datatype URI of the literal; never {@code null}.
      * 
      * @return An instance enabling fluent programming; never {@code null}.
-     * 
-     * @throws RdfConsumerException if an error occurs while processing the N-Quad
-     *                              statement
      */
     RdfTripleConsumer triple(
             String subject,
             String predicate,
             String literal,
-            String datatype) throws RdfConsumerException;
+            String datatype);
 
     /**
      * Accepts an RDF triple where the object is a localized string value. Optimized
@@ -104,21 +90,18 @@ interface RdfTripleConsumer {
      * 
      * @param subject   The subject of the triple (URI or blank node identifier
      *                  prefixed with "_:"); never {@code null}.
-     * @param predicate The predicate of the triple (URI); never {@code null}. 
+     * @param predicate The predicate of the triple (URI); never {@code null}.
      * @param literal   The literal value of the object; never {@code null}.
      * @param language  The language tag of the literal; never {@code null}.
      * @param direction The text direction of the literal (optional, may be
      *                  {@code null}).
      * 
      * @return An instance enabling fluent programming; never {@code null}.
-     * 
-     * @throws RdfConsumerException if an error occurs while processing the N-Quad
-     *                              statement
      */
     RdfTripleConsumer triple(
             String subject,
             String predicate,
             String literal,
             String language,
-            String direction) throws RdfConsumerException;
+            String direction);
 }

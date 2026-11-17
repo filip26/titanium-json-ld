@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.web.uri.UriUtils;
 
 /**
@@ -61,18 +62,18 @@ public class JsonLdAdapter {
                         || Set.of(Keywords.CONTEXT, Keywords.GRAPH).containsAll(map.keySet()));
     }
 
-    public static boolean isNode(Object value, TreeAdapter adapter) {
-        return adapter.isMap(value)
-                && (adapter.keyStream(value).noneMatch(
-                        Set.of(
-                                Keywords.VALUE,
-                                Keywords.LIST,
-                                Keywords.SET)::contains)
-                        || Set.of(
-                                Keywords.CONTEXT,
-                                Keywords.GRAPH).containsAll(adapter.keys(value)));
-    }
-
+//    public static boolean isNode(Object value, TreeAdapter adapter) {
+//        return adapter.isMap(value)
+//                && (adapter.keyStream(value).noneMatch(
+//                        Set.of(
+//                                Keywords.VALUE,
+//                                Keywords.LIST,
+//                                Keywords.SET)::contains)
+//                        || Set.of(
+//                                Keywords.CONTEXT,
+//                                Keywords.GRAPH).containsAll(adapter.keys(value)));
+//    }
+//
     public static final boolean isReference(final Object node) {
         return node instanceof Map map
                 && map.size() == 1
@@ -113,23 +114,9 @@ public class JsonLdAdapter {
         return node instanceof Map map && map.keySet().contains(Keywords.DEFAULT);
     }
 
-    /**
-     * A default node is a map that has a @default key.
-     *
-     * @see <a href="https://www.w3.org/TR/json-ld11/#dfn-default-object">Default
-     *      Object</a>
-     *
-     * @param node    to check
-     * @param adapter
-     * @return <code>true</code> if the provided value is valid default object
-     */
-    public static boolean isDefault(Object node, TreeAdapter adapter) {
-        return adapter.isMap(node) && adapter.keys(node).contains(Keywords.DEFAULT);
-    }
-
-    public static Optional<?> findDefaultValue(Object node, TreeAdapter adapter) {
-        return adapter.isMap(node)
-                ? Optional.ofNullable(adapter.property(Keywords.DEFAULT, node))
+    public static Optional<?> findDefaultValue(Object node) {
+        return node instanceof Map map
+                ? Optional.ofNullable(map.get(Keywords.DEFAULT))
                 : Optional.empty();
     }
 
@@ -346,6 +333,41 @@ public class JsonLdAdapter {
             }
             return true;
         }
+        return false;
+    }
+
+    // helpers
+
+    /**
+     * Returns the node's contents as a universal {@link Collection}. This is a
+     * convenience method that enables uniform iteration logic.
+     * <ul>
+     * <li>If the node is a collection, returns its elements.</li>
+     * <li>If the node is not a collection, wraps it in a single-element
+     * iterable.</li>
+     * <li>If the node is {@code null}, returns an empty collection.</li>
+     * </ul>
+     *
+     * @param node the node to convert.
+     * @return a non-null {@link Collection} representing the node's contents.
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Collection<? extends Object> asCollection(Object node) {
+        if (node == null) {
+            return List.of();
+        }
+        //TODO isArray, use switch
+        if (node instanceof Collection) {
+            return (Collection) node;
+        }
+        if (node instanceof Stream) {
+            return ((Stream<Object>) node).collect(Collectors.toList());
+        }
+        return List.of(node);
+    }
+
+    public static boolean isScalar(Object node) {
+        // TODO Auto-generated method stub
         return false;
     }
 }

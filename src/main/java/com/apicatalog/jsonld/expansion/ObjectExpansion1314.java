@@ -34,13 +34,6 @@ import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.Tree.NodeType;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeComparison;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.java.JavaAdapter;
-import com.apicatalog.tree.io.java.JavaTree;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.UriUtils;
 
@@ -72,22 +65,18 @@ final class ObjectExpansion1314 {
 
     public void expand(
             final Context activeContext,
-            final Object element,
-            final TreeAdapter adapter,
+            final Map<String, ?> element,
             final String activeProperty,
             final String term) throws JsonLdException {
 
         final var keys = params.options().isOrdered()
-                ? adapter.keyStream(element)
-                        .sorted(TreeComparison.comparingNode(adapter::asString))
-                        .iterator()
-                : adapter.keyStream(element)
-                        .iterator();
+                ? element.keySet().stream().sorted().iterator()
+                : element.keySet().iterator();
 
         // 13.
         while (keys.hasNext()) {
 
-            var key = adapter.asString(keys.next());
+            var key = keys.next();
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -113,9 +102,9 @@ final class ObjectExpansion1314 {
                     params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
                 }
 
-                final var value = adapter.property(key, element);
+                final var value = element.get(key);
 
-                keyword(activeContext, value, adapter, activeProperty, key, expandedProperty);
+                keyword(activeContext, value, activeProperty, key, expandedProperty);
 
                 // 13.4.17
                 continue;
@@ -136,7 +125,7 @@ final class ObjectExpansion1314 {
                     .map(TermDefinition::getContainerMapping)
                     .orElse(List.of());
 
-            final var value = adapter.property(key, element);
+            final var value = element.get(key);
             Object expandedValue = null;
 
             // 13.6.
@@ -149,10 +138,10 @@ final class ObjectExpansion1314 {
                         Keywords.TYPE,
                         Keywords.JSON,
                         Keywords.VALUE,
-                        new Tree(value, adapter));
+                        value);
             }
             // 13.7.
-            else if (adapter.isMap(value) && containerMapping.contains(Keywords.LANGUAGE)) {
+            else if (value instanceof Map map && containerMapping.contains(Keywords.LANGUAGE)) {
 
                 // 13.7.1.
                 final var langMaps = new ArrayList<>();
@@ -164,30 +153,30 @@ final class ObjectExpansion1314 {
 
                 // 13.7.4.
                 final var langCodes = params.options().isOrdered()
-                        ? adapter.keyStream(value).map(adapter::asString).sorted().iterator()
-                        : adapter.keyStream(value).map(adapter::asString).iterator();
+                        ? map.keySet().stream().sorted().iterator()
+                        : map.keySet().iterator();
 
                 params.runtime().fire(EventType.BEGIN_MAP, key);
                 while (langCodes.hasNext()) {
 
-                    final var langCode = langCodes.next();
-                    final var langValue = adapter.property(langCode, value);
+                    final var langCode = (String) langCodes.next();
+                    final var langValue = map.get(langCode);
 
                     // 13.7.4.2.
-                    for (final var item : adapter.asIterable(langValue)) {
+                    for (final var item : JsonLdAdapter.asCollection(langValue)) {
 
                         // 13.7.4.2.1.
-                        if (adapter.isNull(item)) {
+                        if (item == null) {
                             continue;
                         }
 
                         // 13.7.4.2.2.
-                        if (!adapter.isString(item)) {
+                        if (!(item instanceof String stringValue)) {
                             throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_MAP_VALUE);
                         }
 
                         final var langMap = new LinkedHashMap<>();
-                        langMap.put(Keywords.VALUE, adapter.stringValue(item));
+                        langMap.put(Keywords.VALUE, stringValue);
 
                         // 13.7.4.2.4.
                         if (!Keywords.NONE.equals(langCode)) {
@@ -200,7 +189,8 @@ final class ObjectExpansion1314 {
                             if (!Keywords.NONE.equals(expandedLangCode)) {
 
                                 if (!LanguageTag.isWellFormed((String) langCode)) {
-                                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", (String) langCode);
+                                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.",
+                                            (String) langCode);
                                 }
 
                                 langMap.put(Keywords.LANGUAGE, ((String) langCode).toLowerCase());
@@ -221,7 +211,7 @@ final class ObjectExpansion1314 {
 
                 expandedValue = List.copyOf(langMaps);
 
-            } else if (adapter.isMap(value)
+            } else if (value instanceof Map<?, ?> map
                     && (containerMapping.contains(Keywords.INDEX)
                             || containerMapping.contains(Keywords.TYPE)
                             || containerMapping.contains(Keywords.ID))) {
@@ -235,8 +225,8 @@ final class ObjectExpansion1314 {
                         .orElse(Keywords.INDEX);
 
                 final var valueKeys = params.options().isOrdered()
-                        ? adapter.keyStream(value).sorted().iterator()
-                        : adapter.keys(value).iterator();
+                        ? map.keySet().stream().sorted().iterator()
+                        : map.keySet().iterator();
 
                 params.runtime().fire(EventType.BEGIN_MAP, key);
 
@@ -245,9 +235,9 @@ final class ObjectExpansion1314 {
 
                     final var valueKey = valueKeys.next();
 
-                    final var indexValue = adapter.property(valueKey, value);
+                    final var indexValue = map.get(valueKey);
 
-                    final var index = adapter.asString(valueKey);
+                    final var index = (String) valueKey;
 
                     params.runtime().fire(EventType.TERM_KEY, index, Keywords.INDEX);
 
@@ -255,7 +245,8 @@ final class ObjectExpansion1314 {
                     Context mapContext = activeContext;
 
                     if (activeContext.getPreviousContext() != null
-                            && ((containerMapping.contains(Keywords.ID) && !containerMapping.contains(Keywords.SET)) || containerMapping.contains(Keywords.TYPE))) {
+                            && ((containerMapping.contains(Keywords.ID) && !containerMapping.contains(Keywords.SET))
+                                    || containerMapping.contains(Keywords.TYPE))) {
                         mapContext = activeContext.getPreviousContext();
                     }
 
@@ -289,8 +280,7 @@ final class ObjectExpansion1314 {
                     // 13.8.3.6.
                     final var indexValues = Expansion.array(
                             mapContext,
-                            indexValue,
-                            adapter,
+                            (Collection<?>) indexValue,
                             key,
                             index,
                             Keywords.INDEX,
@@ -327,11 +317,11 @@ final class ObjectExpansion1314 {
                                     activeContext,
                                     indexKey,
                                     index,
-                                    JavaAdapter.instance(),
                                     params);
 
                             // 13.8.3.7.2.2.
-                            final var expandedIndexKey = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
+                            final var expandedIndexKey = UriExpansion
+                                    .with(activeContext, params.options().loader(), params.runtime())
                                     .vocab(true)
                                     .expand(indexKey);
 
@@ -352,9 +342,10 @@ final class ObjectExpansion1314 {
                             indexMap.put(expandedIndexKey, indexPropertyValues);
 
                             // 13.8.3.7.2.5.
-                            if (item instanceof Map map
-                                    && JsonLdAdapter.isValueNode(map)
+                            if (item instanceof Map itemMap
+                                    && JsonLdAdapter.isValueNode(itemMap)
                                     && indexMap.size() > 1) {
+//TODO?                                    && indexMap.size() > 1) {
                                 throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT);
                             }
 
@@ -409,7 +400,6 @@ final class ObjectExpansion1314 {
                 expandedValue = Expansion.expand(
                         activeContext,
                         value,
-                        adapter,
                         key,
                         key,
                         expandedProperty,
@@ -502,7 +492,7 @@ final class ObjectExpansion1314 {
 
         // 14.
         if (nest != null && !nest.isEmpty()) {
-            processNest(activeContext, element, adapter);
+            processNest(activeContext, element);
         }
 
     }
@@ -530,7 +520,6 @@ final class ObjectExpansion1314 {
     private void keyword(
             final Context activeContext,
             final Object value,
-            final TreeAdapter adapter,
             final String activeProperty,
             final String key,
             final String expandedProperty) throws JsonLdException {
@@ -561,10 +550,10 @@ final class ObjectExpansion1314 {
             }
 
             if (params.options().isRdfStar()
-                    && adapter.isMap(value)
-                    && !adapter.isEmptyMap(value)) {
+                    && value instanceof Map map
+                    && !map.isEmpty()) {
 
-                expandedValue = Expansion.expand(activeContext, value, adapter, null, key, expandedProperty, params);
+                expandedValue = Expansion.expand(activeContext, map, null, key, expandedProperty, params);
 
                 if (!JsonLdAdapter.isEmbedded(expandedValue)) {
                     throw new JsonLdException(ErrorCode.INVALID_EMBEDDED_NODE);
@@ -572,23 +561,24 @@ final class ObjectExpansion1314 {
 
                 // 13.4.3.1
             } else if (!params.frameExpansion()
-                    && !adapter.isString(value)
+                    && !(value instanceof String)
                     && (!params.options().useNumericId()
-                            || !adapter.isNumber(value))
-                    || params.frameExpansion()
-                            && !adapter.isString(value)
-                            && !adapter.isEmptyMap(value)
-                            && (!adapter.isSequence(value)
-                                    || adapter.elementStream(value)
-                                            .anyMatch(Predicate.not(adapter::isString)))) {
-                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value [" + value + "] was not a string.");
+                            || !(value instanceof Number)
+                            || params.frameExpansion()
+                                    && !(value instanceof String)
+                                    && !(value instanceof Map map && map.isEmpty())
+                                    && (!(value instanceof Collection<?> col)
+                                            || col.stream()
+                                                    .anyMatch(Predicate.not(e -> !(e instanceof String)))))) {
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE,
+                        "An @id entry was encountered whose value [" + value + "] was not a string.");
 
-            } else if (adapter.isString(value)) {
+            } else if (value instanceof String stringValue) {
                 // 13.4.3.2
                 expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(false)
-                        .expand(adapter.stringValue(value));
+                        .expand(stringValue);
 
                 if (params.frameExpansion() && expandedValue != null) {
                     expandedValue = List.of(expandedValue);
@@ -598,12 +588,12 @@ final class ObjectExpansion1314 {
                     return;
                 }
 
-            } else if (adapter.isNumber(value)) {
+            } else if (value instanceof Number numericValue) {
 
                 expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                         .documentRelative(true)
                         .vocab(false)
-                        .expand(adapter.asString(value));
+                        .expand(numericValue.toString());
 
                 if (params.frameExpansion() && expandedValue != null) {
                     expandedValue = List.of(expandedValue);
@@ -613,34 +603,35 @@ final class ObjectExpansion1314 {
                     return;
                 }
 
-            } else if (adapter.isMap(value)) {
+            } else if (value instanceof Map) {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (adapter.isEmptySequence(value)) {
+            } else if (value instanceof Collection<?> col) {
 
                 expandedValue = List.of();
 
-            } else if (adapter.isSequence(value)) {
+                if (!col.isEmpty()) {
+                    List<Object> array = null;
 
-                List<Object> array = null;
+                    for (var item : col) {
 
-                for (var item : adapter.asIterable(value)) {
+                        var expandedStringValue = UriExpansion
+                                .with(activeContext, params.options().loader(), params.runtime())
+                                .documentRelative(true)
+                                .vocab(false)
+                                .expand((String) item);
 
-                    var expandedStringValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
-                            .documentRelative(true)
-                            .vocab(false)
-                            .expand(adapter.stringValue(item));
-
-                    if (expandedStringValue != null) {
-                        if (array == null) {
-                            array = new ArrayList<>();
+                        if (expandedStringValue != null) {
+                            if (array == null) {
+                                array = new ArrayList<>();
+                            }
+                            array.add(expandedStringValue);
                         }
-                        array.add(expandedStringValue);
                     }
-                }
 
-                expandedValue = array != null ? array : value;
+                    expandedValue = array != null ? array : value;
+                }
             }
         }
 
@@ -649,20 +640,18 @@ final class ObjectExpansion1314 {
 
             // 13.4.4.1
             if ((!params.frameExpansion()
-                    && !adapter.isString(value)
-                    && (!adapter.isSequence(value)
-                            || adapter.elementStream(value)
-                                    .anyMatch(Predicate.not(adapter::isString))))
+                    && !(value instanceof String)
+                    && (!(value instanceof Collection<?> col)
+                            || col.stream().anyMatch(Predicate.not(el -> el instanceof String))))
                     || params.frameExpansion()
-                            && !adapter.isString(value)
-                            && !adapter.isEmptyMap(value)
-                            && (!adapter.isSequence(value)
-                                    || adapter.elementStream(value)
-                                            .anyMatch(Predicate.not(adapter::isString)))
-                            && !JsonLdAdapter.isDefault(value, adapter)
-                            && JsonLdAdapter.findDefaultValue(value, adapter)
-                                    .filter(adapter::isString)
-                                    .map(adapter::stringValue)
+                            && !(value instanceof String)
+                            && !(value instanceof Map map && map.isEmpty())
+                            && (!(value instanceof Collection<?> col)
+                                    || col.stream().anyMatch(Predicate.not(el -> el instanceof String)))
+                            && !JsonLdAdapter.isDefault(value)
+                            && JsonLdAdapter.findDefaultValue(value)
+                                    .filter(el -> el instanceof String)
+                                    .map(String.class::cast)
                                     .map(UriUtils::isNotURI)
                                     .orElse(true)) {
 
@@ -670,15 +659,15 @@ final class ObjectExpansion1314 {
             }
 
             // 13.4.4.2
-            if (adapter.isEmptyMap(value)) {
+            if (value instanceof Map map && map.isEmpty()) {
                 expandedValue = Map.of();
 
                 // 13.4.4.3
-            } else if (JsonLdAdapter.isDefault(value, adapter)) {
+            } else if (JsonLdAdapter.isDefault(value)) {
 
-                final var defaultValue = JsonLdAdapter.findDefaultValue(value, adapter);
+                final var defaultValue = JsonLdAdapter.findDefaultValue(value);
 
-                if (defaultValue.filter(adapter::isString).isPresent()) {
+                if (defaultValue.filter(el -> el instanceof String).isPresent()) {
                     expandedValue = Map.of(
                             Keywords.DEFAULT,
                             UriExpansion.with(typeContext, params.options().loader(), params.runtime())
@@ -687,18 +676,18 @@ final class ObjectExpansion1314 {
                                     // deepcode ignore checkIsPresent~Optional: false positive
                                     .expand(
                                             defaultValue
-                                                    .map(adapter::stringValue)
+                                                    .map(String.class::cast)
                                                     .get()));
                 }
 
             } else {
                 // 13.4.4.4
-                if (adapter.isString(value)) {
+                if (value instanceof String valueString) {
 
                     expandedValue = UriExpansion.with(typeContext, params.options().loader(), params.runtime())
                             .vocab(true)
                             .documentRelative(true)
-                            .expand(adapter.stringValue(value));
+                            .expand(valueString);
 
                     if (expandedValue == null) {
                         result.put(Keywords.VALUE, null);
@@ -707,29 +696,28 @@ final class ObjectExpansion1314 {
 
 //                    params.runtime().onTypeMapping(Set.of((String)expandedValue));
 
-                } else if (adapter.isSequence(value)) {
+                } else if (value instanceof Collection col) {
 
                     List<String> expandedItems = null;
 
-                    final var items = adapter.elementStream(value)
-                            .filter(adapter::isString)
-                            .map(adapter::stringValue)
-                            .iterator();
+                    for (var item : col) {
 
-                    while (items.hasNext()) {
+                        if (item instanceof String itemString) {
 
-                        final var item = items.next();
+                            final var expandedStringValue = UriExpansion
+                                    .with(typeContext, params.options().loader(), params.runtime())
+                                    .vocab(true)
+                                    .documentRelative(true)
+                                    .expand(itemString);
 
-                        final var expandedStringValue = UriExpansion.with(typeContext, params.options().loader(), params.runtime())
-                                .vocab(true)
-                                .documentRelative(true)
-                                .expand(item);
-
-                        if (expandedStringValue != null) {
-                            if (expandedItems == null) {
-                                expandedItems = new ArrayList<>();
+                            if (expandedStringValue != null) {
+                                if (expandedItems == null) {
+                                    expandedItems = new ArrayList<>();
+                                }
+                                expandedItems.add(expandedStringValue);
                             }
-                            expandedItems.add(expandedStringValue);
+                        } else {
+                            throw new IllegalStateException("TODO");    //TODO
                         }
                     }
                     expandedValue = expandedItems != null
@@ -769,7 +757,6 @@ final class ObjectExpansion1314 {
                     Expansion.expand(
                             typeContext,
                             value,
-                            adapter,
                             Keywords.GRAPH,
                             key,
                             Keywords.GRAPH,
@@ -789,7 +776,6 @@ final class ObjectExpansion1314 {
                     .expand(
                             activeContext,
                             value,
-                            adapter,
                             null,
                             key,
                             expandedProperty,
@@ -845,32 +831,18 @@ final class ObjectExpansion1314 {
                 if (activeContext.isV10()) {
                     throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE);
                 }
-
-                try {
-                    expandedValue = JavaTree.adapt(value, adapter);
-                    // TODO use new TreeIO(value, adapter);
-
-                } catch (TreeIOException e) {
-                    throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
-                }
+                expandedValue = value;
             }
             // 13.4.7.2
-            else if (adapter.isNull(value)
-                    || adapter.type(value).isScalar()
+            else if (value == null
+                    || JsonLdAdapter.isScalar(value)
                     || params.frameExpansion()
-                            && (adapter.isEmptyMap(value)
-                                    || adapter.isEmptySequence(value)
-                                    || adapter.isSequence(value)
-                                            && adapter.elementStream(value)
-                                                    .map(adapter::type)
-                                                    .allMatch(NodeType::isScalar))) {
+                            && ((value instanceof Map map && map.isEmpty())
+                                    || (value instanceof Collection<?> col
+                                            && (col.isEmpty()
+                                                    || col.stream().allMatch(JsonLdAdapter::isScalar))))) {
 
-                try {
-                    expandedValue = JavaTree.adapt(value, adapter);
-
-                } catch (TreeIOException e) {
-                    throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, e);
-                }
+                expandedValue = value;
 
                 if (params.frameExpansion()) {
                     expandedValue = asList(expandedValue);
@@ -891,35 +863,32 @@ final class ObjectExpansion1314 {
         if (Keywords.LANGUAGE.equals(expandedProperty)) {
 
             // 13.4.8.1
-            if (adapter.isString(value)) {
+            if (value instanceof String valueString) {
 
-                var stringValue = adapter.stringValue(value);
-
-                if (stringValue == null || !LanguageTag.isWellFormed(stringValue)) {
-                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", stringValue);
+                if (valueString == null || !LanguageTag.isWellFormed(valueString)) {
+                    LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.", valueString);
                 }
 
                 // 13.4.8.2
-                expandedValue = stringValue.toLowerCase();
+                expandedValue = valueString.toLowerCase();
 
                 if (params.frameExpansion()) {
                     expandedValue = asList(expandedValue);
                 }
 
-            } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
+            } else if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (params.frameExpansion() && adapter.isEmptySequence(value)) {
+            } else if (params.frameExpansion() && value instanceof Collection col && col.isEmpty()) {
 
                 expandedValue = List.of();
 
-            } else if (params.frameExpansion() && adapter.isSequence(value)
-                    && adapter
-                            .elementStream(value)
-                            .allMatch(adapter::isString)) {
+            } else if (params.frameExpansion()
+                    && value instanceof Collection<?> col
+                    && col.stream().allMatch(el -> el instanceof String)) {
 
-                expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
+                expandedValue = value;
 
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
@@ -935,31 +904,26 @@ final class ObjectExpansion1314 {
             }
 
             // 13.4.9.2.
-            if (adapter.isString(value)
-                    && ("ltr".equals(adapter.stringValue(value))
-                            || "rtl".equals(adapter.stringValue(value)))) {
-
+            if (value instanceof String valueString
+                    && ("ltr".equals(valueString)
+                            || "rtl".equals(valueString))) {
                 // 13.4.9.3.
-                expandedValue = adapter.stringValue(value);
+                expandedValue = valueString;
 
                 if (params.frameExpansion()) {
                     expandedValue = asList(expandedValue);
                 }
 
-            } else if (params.frameExpansion() && adapter.isEmptyMap(value)) {
-
+            } else if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
                 expandedValue = List.of(Map.of());
 
-            } else if (params.frameExpansion() && adapter.isEmptySequence(value)) {
-
+            } else if (params.frameExpansion() && value instanceof Collection col && col.isEmpty()) {
                 expandedValue = List.of();
 
-            } else if (params.frameExpansion() && adapter.isSequence(value)
-                    && adapter
-                            .elementStream(value)
-                            .allMatch(adapter::isString)) {
-
-                expandedValue = adapter.elementStream(value).map(adapter::stringValue).toList();
+            } else if (params.frameExpansion()
+                    && value instanceof Collection<?> col
+                    && col.stream().allMatch(el -> el instanceof String)) {
+                expandedValue = value;
 
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
@@ -970,9 +934,9 @@ final class ObjectExpansion1314 {
         if (Keywords.INDEX.equals(expandedProperty)) {
 
             // 13.4.10.1.
-            if (adapter.isString(value)) {
+            if (value instanceof String) {
                 // 13.4.10.2
-                expandedValue = adapter.stringValue(value);
+                expandedValue = value;
 
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INDEX_VALUE);
@@ -991,7 +955,6 @@ final class ObjectExpansion1314 {
             expandedValue = Expansion.expand(
                     activeContext,
                     value,
-                    adapter,
                     activeProperty,
                     key,
                     expandedProperty,
@@ -1007,7 +970,6 @@ final class ObjectExpansion1314 {
             expandedValue = Expansion.expand(
                     activeContext,
                     value,
-                    adapter,
                     activeProperty,
                     key,
                     expandedProperty,
@@ -1018,7 +980,7 @@ final class ObjectExpansion1314 {
         if (Keywords.REVERSE.equals(expandedProperty)) {
 
             // 13.4.13.1.
-            if (!adapter.isMap(value)) {
+            if (!(value instanceof Map map)) {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_REVERSE_VALUE);
             }
 
@@ -1026,7 +988,6 @@ final class ObjectExpansion1314 {
             expandedValue = Expansion.expand(
                     activeContext,
                     value,
-                    adapter,
                     Keywords.REVERSE,
                     key,
                     expandedProperty,
@@ -1035,10 +996,9 @@ final class ObjectExpansion1314 {
             if (expandedValue instanceof Map expandedValueObject) {
 
                 // 13.4.13.3.
-                if (expandedValueObject.get(Keywords.REVERSE) instanceof Map map) {
+                if (expandedValueObject.get(Keywords.REVERSE) instanceof Map reverseMap) {
 
-                    @SuppressWarnings("unchecked")
-                    final var reverse = (Map<String, Object>) map;
+                    final var reverse = (Map<String, ?>) reverseMap;
 
                     for (var entry : reverse.entrySet()) {
                         // 13.4.13.3.1.
@@ -1068,9 +1028,9 @@ final class ObjectExpansion1314 {
                             for (var item : collection) {
 
                                 // 13.4.13.4.2.1.1
-                                if (item instanceof Map<?, ?> map
-                                        && (JsonLdAdapter.isList(map)
-                                                || JsonLdAdapter.isValueNode(map))) {
+                                if (item instanceof Map<?, ?> itemMap
+                                        && (JsonLdAdapter.isList(itemMap)
+                                                || JsonLdAdapter.isValueNode(itemMap))) {
                                     throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY_VALUE);
                                 }
 
@@ -1115,7 +1075,6 @@ final class ObjectExpansion1314 {
                     Expansion.expand(
                             activeContext,
                             value,
-                            adapter,
                             Keywords.ANNOTATION,
                             key,
                             expandedProperty,
@@ -1131,7 +1090,7 @@ final class ObjectExpansion1314 {
                         || Keywords.REQUIRE_ALL.equals(expandedProperty))) {
 
             expandedValue = Expansion
-                    .expand(activeContext, value, adapter, expandedProperty, null, null, params);
+                    .expand(activeContext, value, expandedProperty, null, null, params);
         }
 
         // 13.4.16
@@ -1160,8 +1119,7 @@ final class ObjectExpansion1314 {
 
     private void recurse(
             final Context context,
-            final Object element,
-            final TreeAdapter adapter,
+            final Map<String, ?> element,
             final String activeProperty,
             final String term) throws JsonLdException {
 
@@ -1193,7 +1151,7 @@ final class ObjectExpansion1314 {
         }
 
         // steps 13-14
-        expand(activeContext, element, adapter, activeProperty, term);
+        expand(activeContext, element, activeProperty, term);
 
         if (activeProperty != null || term != null) {
             params.runtime().fire(EventType.END_MAP, term != null ? term : activeProperty);
@@ -1203,8 +1161,7 @@ final class ObjectExpansion1314 {
 
     private void processNest(
             final Context activeContext,
-            final Object element,
-            final TreeAdapter adapter) throws JsonLdException {
+            final Map<String, ?> element) throws JsonLdException {
 
         final var nestedKeys = params.options().isOrdered()
                 ? nest.keySet().stream().sorted().iterator()
@@ -1214,29 +1171,39 @@ final class ObjectExpansion1314 {
 
             final var nestedKey = nestedKeys.next();
 
-            final var nestedNode = adapter.property(nestedKey, element);
+            final var nestedNode = element.get(nestedKey);
 
-            final var collection = adapter.isSequence(nestedNode);
+            final boolean isCollection;
+            final Collection<?> collection;
+
+            if (nestedNode instanceof Collection<?> col) {
+                isCollection = true;
+                collection = col;
+            } else {
+                isCollection = false;
+                collection = List.of(nestedNode);
+            }
+
             var counter = 0;
 
             // 14.2.
-            for (final var nestValue : adapter.asIterable(nestedNode)) {
+            for (final var nestValue : collection) {
 
                 // 14.2.1
-                if (!adapter.isMap(nestValue)) {
+                if (!(nestValue instanceof Map nestedMap)) {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
                 }
 
-                for (final var nestedValueKey : adapter.keys(nestValue)) {
+                for (final var nestedValueKey : nestedMap.keySet()) {
                     if (Keywords.VALUE.equals(
                             UriExpansion.with(typeContext, params.options().loader(), params.runtime())
                                     .vocab(true)
-                                    .expand(adapter.asString(nestedValueKey)))) {
+                                    .expand((String) nestedValueKey))) {
                         throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
                     }
                 }
 
-                if (collection) {
+                if (isCollection) {
                     params.runtime().fire(EventType.BEGIN_LIST, nestedKey);
                 }
 
@@ -1249,14 +1216,13 @@ final class ObjectExpansion1314 {
                         .nest(new LinkedHashMap<>())
                         .recurse(
                                 activeContext,
-                                nestValue,
-                                adapter,
+                                nestedMap,
                                 nestedKey,
-                                collection
+                                isCollection
                                         ? Integer.toString(counter++)
                                         : nestedKey);
 
-                if (collection) {
+                if (isCollection) {
                     params.runtime().fire(EventType.END_LIST, nestedKey);
                 }
             }

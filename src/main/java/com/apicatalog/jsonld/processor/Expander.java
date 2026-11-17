@@ -30,8 +30,6 @@ import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.expansion.Expansion.Params;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.java.JavaAdapter;
 
 /**
  *
@@ -59,7 +57,7 @@ public final class Expander {
     }
 
     public static final Collection<?> expand(
-            final Tree document,
+            final Map<String, ?> document,
             final Options options,
             final Execution runtime) throws JsonLdException {
 
@@ -71,9 +69,21 @@ public final class Expander {
                 runtime);
     }
 
-    
     public static final Collection<?> expand(
-            final Tree node,
+            final Collection<?> document,
+            final Options options,
+            final Execution runtime) throws JsonLdException {
+
+        return Expander.expand(
+                document,
+                Expander.context(null, null, options, runtime),
+                Expander.baseUrl(null, options),
+                options,
+                runtime);
+    }
+
+    static final Collection<?> expand(
+            final Object node,
             final Context context,
             final URI baseUrl,
             final Options options,
@@ -99,7 +109,7 @@ public final class Expander {
     }
 
     public static final Collection<?> expandFrame(
-            final Tree node,
+            final Object node,
             final Context context,
             final URI baseUrl,
             final Options options,
@@ -142,7 +152,6 @@ public final class Expander {
 
             builder.update(
                     extractExpansionContext(expandContext),
-                    expandContext.adapter(),
                     true,
                     baseUrl);
         }
@@ -151,7 +160,6 @@ public final class Expander {
         if (context != null) {
             builder.update(
                     context.toString(),
-                    JavaAdapter.instance(),
                     true,
                     context);
         }
@@ -166,7 +174,7 @@ public final class Expander {
     }
 
     private static final Collection<?> expand(
-            final Tree node,
+            final Object node,
             final Context context,
             final URI baseUrl,
             boolean frameExpansion,
@@ -176,8 +184,7 @@ public final class Expander {
         // 8.
         var expanded = Expansion.expand(
                 context,
-                node.node(),
-                node.adapter(),
+                node,
                 null,
                 null,
                 null,
@@ -203,33 +210,34 @@ public final class Expander {
         return Set.of(expanded);
     }
 
-    //TODO replace with Context.unwrap?
+    // TODO replace with Context.unwrap?
     @Deprecated
-    private static Object extractExpansionContext(final Tree context) throws JsonLdException {
+    private static Object extractExpansionContext(final Object context) throws JsonLdException {
         // Defensive null check — optional, but safer in utility code
         Objects.requireNonNull(context, "context must not be null");
 
-        // Case 1: Collection
-        if (context.isSequence()) {
-            // Single-element collection: check if it’s a map with @context key
-            if (context.isSingleElement()) {
-                final var element = context.singleElement();
-                final var adapter = context.adapter();
-
-                if (adapter.isMap(element) && adapter.keys(element).contains(Keywords.CONTEXT)) {
-                    return adapter.property(Keywords.CONTEXT, element);
-                }
-            }
-            // Otherwise return the raw node
-            return context.node();
-        }
-
-        // Case 2: Map with @context key
-        if (context.isMap() && context.keys().contains(Keywords.CONTEXT)) {
-            return context.property(Keywords.CONTEXT);
-        }
-
-        return context.node();
+        return context; //FIXME
+//        // Case 1: Collection
+//        if (context.isSequence()) {
+//            // Single-element collection: check if it’s a map with @context key
+//            if (context.isSingleElement()) {
+//                final var element = context.singleElement();
+//                final var adapter = context.adapter();
+//
+//                if (adapter.isMap(element) && adapter.keys(element).contains(Keywords.CONTEXT)) {
+//                    return adapter.property(Keywords.CONTEXT, element);
+//                }
+//            }
+//            // Otherwise return the raw node
+//            return context.node();
+//        }
+//
+//        // Case 2: Map with @context key
+//        if (context.isMap() && context.keys().contains(Keywords.CONTEXT)) {
+//            return context.property(Keywords.CONTEXT);
+//        }
+//
+//        return context.node();
 //        // Case 3: Native adapter — wrap as list
 //        if (NativeAdapter.instance().isCompatibleWith(context.adapter())) {
 //            return List.of(context.node());

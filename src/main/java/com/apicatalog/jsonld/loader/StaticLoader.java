@@ -24,9 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.TreeParser;
+import com.apicatalog.jsonld.Document.ContentReader;
 import com.apicatalog.web.media.MediaType;
 
 /**
@@ -106,8 +104,6 @@ public final class StaticLoader implements DocumentLoader {
         if (loader != null) {
             return loader.loadDocument(url, options);
         }
-
-//TODO?        throw new LoaderException(url, "URL [" + url + "] is not recogized and fallback loader is not set.");
         return null;
     }
 
@@ -124,13 +120,13 @@ public final class StaticLoader implements DocumentLoader {
         private final Map<URI, Document> resources;
         private DocumentLoader loader;
         private MediaType contentType;
-        private TreeParser parser;
+        private Document.ContentReader reader;
 
         Builder(Map<URI, Document> resources, DocumentLoader loader) {
             this.resources = new LinkedHashMap<>(resources);
             this.loader = loader;
             this.contentType = null;
-            this.parser = null;
+            this.reader = null;
         }
 
         /**
@@ -164,7 +160,7 @@ public final class StaticLoader implements DocumentLoader {
          * @param node        the parsed JSON-LD node
          * @return this builder instance
          */
-        Builder node(String url, MediaType contentType, Tree node) {
+        Builder node(String url, MediaType contentType, Object node) {
             return node(URI.create(url), contentType, node);
         }
 
@@ -176,19 +172,19 @@ public final class StaticLoader implements DocumentLoader {
          * @param node        the parsed JSON-LD node
          * @return this builder instance
          */
-        Builder node(URI url, MediaType contentType, Tree node) {
-            resources.put(url, Document.of(node, contentType, url));
+        Builder node(URI url, MediaType contentType, Object node) {
+            resources.put(url, new Document(url, node, contentType, null, null));
             return this;
         }
 
-        public Builder parser(MediaType contentType, TreeParser parser) {
+        public Builder reader(MediaType contentType, ContentReader reader) {
             this.contentType = contentType;
-            this.parser = parser;
+            this.reader = reader;
             return this;
         }
 
-        public Builder parser(TreeParser parser) {
-            this.parser = parser;
+        public Builder reader(ContentReader parser) {
+            this.reader = parser;
             return this;
         }
 
@@ -209,10 +205,11 @@ public final class StaticLoader implements DocumentLoader {
                         contentType != null
                                 ? contentType
                                 : FileLoader.fromFileExtension(resource), // detect media type
-                        parser.parse(is));
+                        reader.read(contentType, is));
 
-            } catch (IOException | TreeIOException e) {
-                LOGGER.log(Level.SEVERE, "An error [{0}] during loading static context [{1}]", new Object[] { e.getMessage(), resource });
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "An error [{0}] during loading static context [{1}]",
+                        new Object[] { e.getMessage(), resource });
             }
             return this;
         }

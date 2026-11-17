@@ -45,9 +45,6 @@ import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
-import com.apicatalog.tree.io.java.JavaAdapter;
 import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.JsonWriter;
@@ -55,14 +52,14 @@ import jakarta.json.JsonWriter;
 class ExecutionTest {
 
     static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
-            .parser(MediaType.JSON_LD, JakartaTestSuite.PARSER)
+            .reader(MediaType.JSON_LD, JakartaTestSuite::parse)
             .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
             .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
             .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
             .build();
 
     @Test
-    void testExpandTimeout() throws JsonLdException, TreeIOException, IOException {
+    void testExpandTimeout() throws JsonLdException, IOException {
 
         var document = read("/com/apicatalog/jsonld/test/vc-utopia.jsonld");
 
@@ -70,8 +67,9 @@ class ExecutionTest {
                 .timeout(Duration.ofNanos(0));
 
         var ex = assertThrows(JsonLdException.class, () -> JsonLd.expand(
-                document,
+                (Map)document,
                 options));
+
         assertEquals(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED, ex.code());
     }
 
@@ -87,7 +85,7 @@ class ExecutionTest {
 
     @ParameterizedTest
     @MethodSource("contextKeysCases")
-    void testContextKeyCollector(String input, String output) throws JsonLdException, TreeIOException, IOException {
+    void testContextKeyCollector(String input, String output) throws JsonLdException, IOException {
 
         var document = read(input);
 
@@ -101,7 +99,7 @@ class ExecutionTest {
             }
         });
 
-        var expanded = Expander.expand(document, options, runtime);
+        var expanded = Expander.expand((Map)document, options, runtime);
 
         assertNotNull(expanded);
 
@@ -113,15 +111,17 @@ class ExecutionTest {
 
         var expected = read(output);
 
-        var match = expected.isIsomorphicTo(Map.of("contextKeys", keys), JavaAdapter.instance());
-                
-                //TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(), expected.node(), expected.adapter());
+//FIXME        var match = expected.isIsomorphicTo(Map.of("contextKeys", keys), JavaAdapter.instance());
+
+        var match = false;
+        // TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(),
+        // expected.node(), expected.adapter());
 
         if (!match) {
             var out = new StringWriter();
 
             try (final JsonWriter jsonWriter = JunitRunner.JSON_WRITER_FACTORY.createWriter(out)) {
-                jsonWriter.write(JakartaMaterializer.node(keys, JavaAdapter.instance()));
+       //FIXME         jsonWriter.write(JakartaMaterializer.node(keys, JavaAdapter.instance()));
             }
             System.out.println(out);
         }
@@ -129,9 +129,9 @@ class ExecutionTest {
         assertTrue(match);
     }
 
-    private final Tree read(final String name) throws JsonLdException, TreeIOException, IOException {
+    private final Object read(final String name) throws JsonLdException, IOException {
         try (final var is = getClass().getResourceAsStream(name)) {
-            return JakartaTestSuite.PARSER.parse(is);
+            return JakartaTestSuite.parse(null, is);
         }
     }
 }

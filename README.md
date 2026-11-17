@@ -4,10 +4,10 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### ✨ Features
 
-- Full conformance with the JSON-LD 1.1 specification  
-- Secure, stable, high-performance implementation with ~3000 tests
-- Minimal external dependencies
-- Simple, easy-to-use API
+- Full conformance with the W3C JSON-LD 1.1 specification  
+- Secure, stable, high-performance implementation backed by ~3,000 automated tests
+- Zero external dependencies
+- Clean, intuitive, and customizable API designed for rapid integration
 
 ### 🚀 Coming in v2.0
 

@@ -16,21 +16,21 @@
 package com.apicatalog.jsonld.test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.apicatalog.jsonld.JakartaTestSuite;
+import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.JsonLd.Version;
-import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.Options.RdfDirection;
-import com.apicatalog.jsonld.tordf.JsonLdToQuads;
-import com.apicatalog.tree.io.TreeAdapter;
-import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.web.media.MediaType;
 import com.apicatalog.web.uri.UriResolver;
 
@@ -64,120 +64,118 @@ public class TestOptions {
         return new TestOptions();
     }
 
-    public static final TestOptions of(Object node, TreeAdapter adapter, String baseUri) {
+    public static final TestOptions create(Map<String, ?> node, String baseUri) {
 
         final TestOptions options = new TestOptions();
 
-        for (final var entry : adapter.entries(node)) {
+        for (final var entry : node.entrySet()) {
 
-            final var key = adapter.stringValue(entry.getKey());
-
-            switch (key) {
+            switch (entry.getKey()) {
             case "specVersion":
-                options.version = Version.of(adapter.stringValue(entry.getValue()));
+                options.version = Version.from((String) entry.getValue());
                 break;
 
             case "base":
-                options.base = adapter.stringValue(entry.getValue());
+                options.base = (String) entry.getValue();
                 break;
 
             case "processingMode":
-                options.processingMode = adapter.stringValue(entry.getValue());
+                options.processingMode = (String) entry.getValue();
                 break;
 
             case "expandContext":
                 options.expandContext = UriResolver.resolve(
                         URI.create(baseUri),
-                        adapter.stringValue(entry.getValue()));
+                        (String) entry.getValue());
                 break;
 
             case "normative":
-                options.normative = adapter.isTrue(entry.getValue());
+                options.normative = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "compactArrays":
-                options.compactArrays = adapter.isTrue(entry.getValue());
+                options.compactArrays = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "compactToRelative":
-                options.compactToRelative = adapter.isTrue(entry.getValue());
+                options.compactToRelative = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "contentType":
-                options.contentType = MediaType.of(adapter.stringValue(entry.getValue()));
+                options.contentType = MediaType.from((String) entry.getValue());
                 break;
 
             case "redirectTo":
-                options.redirectTo = URI.create(baseUri + adapter.stringValue(entry.getValue()));
+                options.redirectTo = URI.create(baseUri + (String) entry.getValue());
                 break;
 
             case "httpStatus":
-                options.httpStatus = adapter.intValue(entry.getValue());
+                options.httpStatus = (int) entry.getValue();
                 break;
 
             case "httpLink":
-                if (adapter.isSequence(entry.getValue())) {
-                    options.httpLink = adapter.elementStream(entry.getValue())
-                            .map(adapter::asString)
+                if (entry.getValue() instanceof Collection<?> col) {
+                    options.httpLink = col.stream()
+                            .map(String.class::cast)
                             .collect(Collectors.toSet());
                 } else {
-                    options.httpLink = Set.of(adapter.stringValue(entry.getValue()));
+                    options.httpLink = Set.of((String) entry.getValue());
                 }
                 break;
 
             case "ordered":
-                options.ordered = adapter.isTrue(entry.getValue());
+                options.ordered = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "omitGraph":
-                options.omitGraph = adapter.isTrue(entry.getValue());
+                options.omitGraph = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "produceGeneralizedRdf":
-                options.produceGeneralizedRdf = adapter.isTrue(entry.getValue());
+                options.produceGeneralizedRdf = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "rdfDirection":
-                options.rdfDirection = adapter.stringValue(entry.getValue());
+                options.rdfDirection = (String)entry.getValue();
                 break;
 
             case "useNativeTypes":
-                options.useNativeTypes = adapter.isTrue(entry.getValue());
+                options.useNativeTypes = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "useRdfType":
-                options.useRdfType = adapter.isTrue(entry.getValue());
+                options.useRdfType = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "useNumericId":
-                options.useNumericId = adapter.isTrue(entry.getValue());
+                options.useNumericId = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "undefinedTermPolicy":
-                options.undefinedTerms = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
+                options.undefinedTerms = ProcessingPolicy.valueOf((String)entry.getValue());
                 break;
 
             case "droppedNodePolicy":
-                options.droppedNodes = ProcessingPolicy.valueOf(adapter.stringValue(entry.getValue()));
+                options.droppedNodes = ProcessingPolicy.valueOf((String)entry.getValue());
                 break;
 
             case "useJCS":
-                options.useJcs = adapter.isTrue(entry.getValue());
+                options.useJcs = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "rdfstar":
-                options.rdfStar = adapter.isTrue(entry.getValue());
+                options.rdfStar = Boolean.TRUE.equals(entry.getValue());
                 break;
 
             case "useInlineContexts":
-                options.useInlineContexts = adapter.isTrue(entry.getValue());
+                options.useInlineContexts = Boolean.TRUE.equals(entry.getValue());
 
             case "processorFeature":
                 // ignore feature declaration
                 break;
 
             default:
-                System.err.println("An unknown test option " + key + " = " + entry.getValue() + ".");
+                System.err.println("An unknown test option " + entry.getKey() + " = " + entry.getValue() + ".");
             }
         }
 
@@ -187,7 +185,7 @@ public class TestOptions {
     public Options setup(Options options) {
 
         Optional.ofNullable(processingMode)
-                .map(Version::of)
+                .map(Version::from)
                 .ifPresent(options::mode);
 
         Optional.ofNullable(base)
@@ -222,19 +220,26 @@ public class TestOptions {
         if (useJcs != null) {
             options.rdfJsonLiteralWriter(
                     useJcs
-                            ? JsonLdToQuads.JCS
-                            : (node, adapter) -> {
-
+                            ? node -> {
                                 var os = new ByteArrayOutputStream();
                                 try {
-                                    JakartaTestSuite.RENDERER.render(
-                                            node,
-                                            adapter,
-                                            os);
-                                    return os.toString();
-                                } catch (TreeIOException e) {
-                                    throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
+                                    Jcs.canonize(node, os);
+                                    return os.toString(StandardCharsets.UTF_8);
+                                } catch (IOException e) {
+                                    throw new UncheckedIOException(e);
                                 }
+                            }
+                            : node -> {
+                                var os = new ByteArrayOutputStream();
+//                                try {
+//                                JakartaTestSuite.RENDERER.render(
+//                                        node,
+//                                        adapter,
+//                                        os);
+                                return os.toString();
+//                                } catch (TreeIOException e) {
+//                                    throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
+//                                }
                             });
         }
 

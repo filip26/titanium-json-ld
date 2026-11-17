@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,8 +30,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -59,15 +58,15 @@ class FramingReversePerformanceTest {
                 new Object[] { 10_000, Duration.ofSeconds(2) });
     }
 
-    private Tree[] buildTestData(final int elementCount) throws JsonLdException, IOException {
+    private Map<String, ?>[] buildTestData(final int elementCount) throws JsonLdException, IOException {
 
-        final var document = new Tree(buildTestDocument(elementCount), JakartaAdapter.instance());
-        final var frame = new Tree(buildTestFrame(), JakartaAdapter.instance());
+        final var document = buildTestDocument(elementCount);
+        final var frame = buildTestFrame();
 
-        return new Tree[] { document, frame };
+        return new JsonObject[] { document, frame };
     }
 
-    private long measureFramingPerformance(Tree[] data) throws JsonLdException, IOException {
+    private long measureFramingPerformance(Map<String, ?>[] data) throws JsonLdException, IOException {
 
         final long startTime = System.currentTimeMillis();
 

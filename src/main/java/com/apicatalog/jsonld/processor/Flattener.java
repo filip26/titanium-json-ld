@@ -17,13 +17,13 @@ package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.flattening.Flattening;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.tree.io.Tree;
 
 /**
  *
@@ -38,7 +38,7 @@ public final class Flattener {
 
     public static Object flatten(
             Document document, 
-            Tree context, 
+            Object context, 
             Options options, 
             Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
@@ -57,10 +57,11 @@ public final class Flattener {
                 options,
                 runtime);
     }
-
+    
+    
     public static Object flatten(
-            Tree document, 
-            Tree context, 
+            Map<String, ?> document, 
+            Object context, 
             Options options, 
             Execution runtime) throws JsonLdException {
 //        if (options.expandContext() == null) {
@@ -94,7 +95,7 @@ public final class Flattener {
     static final Object flatten(
             final Collection<?> expandedInput,
             final URI documentUrl,
-            final Tree context,
+            final Object context,
             final Options options,
             final Execution runtime) throws JsonLdException {
 

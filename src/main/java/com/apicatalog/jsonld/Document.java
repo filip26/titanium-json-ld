@@ -15,112 +15,67 @@
  */
 package com.apicatalog.jsonld;
 
+import java.io.InputStream;
 import java.net.URI;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.LoaderException;
-import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.media.MediaType;
 
 /**
  * A JSON-LD document that can be processed by the processor.
  * 
- * Holds tree alike data structure as a content. Library, serialization format
- * agnostic {@link Tree}.
+ * Holds tree alike data structure as a content.
+ * 
+ * @param url        {@link URI} of the loaded document or <code>null</code> if
+ *                   not available
+ * @param content    {@link Map} or {@link Collection} representing materialized
+ *                   document content
+ * @param contenType The <a href=
+ *                   "https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
+ *                   of the loaded document, exclusive of any optional
+ *                   parameters.
+ * @param profile    The value of any <code>profile</code> parameter retrieved
+ *                   as part of the original {@link #contentType()} or
+ *                   <code>null</code> if not available
+ * @param context    {@link URI} referencing document context which is attached
+ *                   to the HTTP Link header when profile attribute matches
+ *                   <code>http://www.w3.org/ns/json-ld#context</code> or
+ *                   <code>null</code> if not available
  *
  */
-public class Document {
+public record Document(
+        URI url,
+        Object content,
+        MediaType contentType,
+        String profile,
+        URI context) {
 
-    protected final MediaType contentType;
-    protected final String profile;
-    protected final Tree content;
-
-    protected final URI documentUrl;
-    protected final URI contextUrl;
-
-    protected Document(
-            final Tree content,
-            final MediaType contentType,
-            final String profile,
-            final URI documentUrl,
-            final URI contextUrl) {
-        this.content = Objects.requireNonNull(content);
-        this.contentType = contentType;
-        this.profile = profile;
-        this.documentUrl = documentUrl;
-        this.contextUrl = contextUrl;
+    @FunctionalInterface
+    public interface ContentReader {
+        Object read(MediaType type, InputStream is);
     }
 
-    /**
-     * Create a new document from {@link Tree} node. as the content type.
-     *
-     * @param content representing a tree
-     * @return {@link Document} representing a tree content
-     */
-    public static Document of(final Tree content) {
-        return of(content, null, null, null, null);
-    }
-
-    public static Document of(final Tree content, final URI documentUrl) {
-        return of(content, null, null, documentUrl, null);
-    }
-
-    public static Document of(final Tree content, final URI documentUrl, URI contextUrl) {
-        return of(content, null, null, documentUrl, contextUrl);
-    }
-
-    /**
-     * Create a new document from {@link Tree} node.
-     * 
-     * @param content     representing a tree
-     * @param contentType reflecting the provided tree, e.g.
-     *                    {@link MediaType#JSON_LD}
-     * @return {@link Document} representing the tree content
-     */
-    public static Document of(final Tree content, MediaType contentType) {
-        return of(content, contentType, null, null, null);
-    }
-
-    public static Document of(final Tree content, String profile) {
-        return of(content, null, profile, null, null);
-    }
-
-    public static Document of(final Tree content, MediaType contentType, String profile) {
-        return of(content, contentType, profile, null, null);
-    }
-
-    public static Document of(final Tree content, MediaType contentType, URI documentUrl) {
-        return of(content, contentType, null, documentUrl, null);
-    }
-
-    public static Document of(final Tree content, MediaType contentType, URI documentUrl, URI contextUrl) {
-        return of(content, contentType, null, documentUrl, contextUrl);
-    }
-
-    public static Document of(final Tree content, MediaType contentType, String profile, URI documentUrl) {
-        return of(content, contentType, profile, documentUrl, null);
-    }
-
-    public static Document of(final Tree content, MediaType contentType, String profile, URI documentUrl, URI contextUrl) {
-        return new Document(
-                Objects.requireNonNull(content),
-                contentType != null
-                        ? new MediaType(contentType.type(), contentType.subtype())
-                        : null,
-                profile == null && contentType != null
-                        ? contentType.findFirstParameter("profile").orElse(null)
-                        : profile,
-                documentUrl,
-                contextUrl);
+    public Document {
+        content = Objects.requireNonNull(content);
+        profile = profile == null && contentType != null
+                ? contentType.findFirstParameter("profile").orElse(null)
+                : profile;
+        contentType = contentType != null
+                ? new MediaType(contentType.type(), contentType.subtype())
+                : null;
     }
 
     public static final Document load(URI url, DocumentLoader loader) throws JsonLdException {
         return load(url, loader, false);
     }
 
-    public static final Document load(URI url, DocumentLoader loader, boolean extractAllScripts) throws JsonLdException {
+    public static final Document load(URI url, DocumentLoader loader, boolean extractAllScripts)
+            throws JsonLdException {
 
         Objects.requireNonNull(url);
 
@@ -150,56 +105,5 @@ public class Document {
                     ErrorCode.LOADING_DOCUMENT_FAILED,
                     e);
         }
-    }
-
-    /**
-     * The <a href="https://tools.ietf.org/html/rfc2045#section-5">Content-Type</a>
-     * of the loaded document, exclusive of any optional parameters.
-     *
-     * @return <code>Content-Type</code> of the loaded document, never
-     *         <code>null</code>
-     */
-    public MediaType contentType() {
-        return contentType;
-    }
-
-    /**
-     * The value of the HTTP Link header when profile attribute matches
-     * <code>http://www.w3.org/ns/json-ld#context</code>.
-     *
-     * @return attached {@link URI} referencing document context or
-     *         <code>null</code> if not available
-     */
-    public URI context() {
-        return contextUrl;
-    }
-
-    /**
-     * The final {@link URI} of the loaded document.
-     *
-     * @return {@link URI} of the loaded document or <code>null</code> if not
-     *         available
-     */
-    public URI url() {
-        return documentUrl;
-    }
-
-    /**
-     * The value of any <code>profile</code> parameter retrieved as part of the
-     * original {@link #contentType()}.
-     *
-     * @return document profile or <code>null</code> if not available
-     */
-    public String profile() {
-        return profile;
-    }
-
-    /**
-     * Get the document parsed content.
-     *
-     * @return {@link Tree} representing materialized document content
-     */
-    public Tree content() {
-        return content;
     }
 }

@@ -170,7 +170,7 @@ final class LinkHeaderParser {
                 attributes.remove(ANCHOR);
             }
             if (attributes.containsKey(TYPE) && attributes.get(TYPE) != null) {
-                type = MediaType.of(attributes.get(TYPE).get(0).value());
+                type = MediaType.from(attributes.get(TYPE).get(0).value());
                 if (type != null) {
                     attributes.remove(TYPE);
                 }
