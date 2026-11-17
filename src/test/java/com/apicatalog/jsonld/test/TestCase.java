@@ -245,6 +245,7 @@ public final class TestCase {
     }
 
     public Set<RdfQuad> readQuads(byte[] bytes) throws NQuadsReaderException, IOException {
+        System.out.println("readQuads: " + new String(bytes));
         return readQuads(new ByteArrayInputStream(bytes));
     }
 

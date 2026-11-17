@@ -42,17 +42,17 @@ import com.apicatalog.rdf.nquads.NQuadsReaderException;
 import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.provider.QuadEmitter;
 import com.apicatalog.rdf.provider.QuadSetProvider;
+import com.apicatalog.tree.io.Tree;
+import com.apicatalog.tree.io.jakarta.JakartaEmitter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonWriter;
-import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGeneratorFactory;
 
 public class JunitRunner {
 
-    public static final JsonWriterFactory JSON_WRITER_FACTORY = Json.createWriterFactory(
+    public static final JsonGeneratorFactory JSON_GENERATOR_FACTORY = Json.createGeneratorFactory(
             Map.of(JsonGenerator.PRETTY_PRINTING, true));
 
     private final TestCase testCase;
@@ -147,9 +147,10 @@ public class JunitRunner {
                 return false;
             }
 
-            if (result instanceof Set quads) {  //TODO
-                return validateQuads(testCase, options, quads, true);
-            }
+//System.out.println(result.getClass().componentType());
+//            if (result instanceof Set quads && !quads.isEmpty()) {  //TODO
+//                return validateQuads(testCase, options, quads, true);
+//            }
 
             return validateJsonLd(
                     testCase,
@@ -194,9 +195,6 @@ public class JunitRunner {
 //
 //            }
 //            return false;
-        } catch (NQuadsReaderException e) {
-            fail(e);
-            return false;
         }
     }
 
@@ -204,7 +202,7 @@ public class JunitRunner {
             final TestCase testCase,
             final Options options,
             final Object result,
-            final boolean fail) {
+            final boolean fail) throws IOException {
 
         assertNotNull(testCase.expect, "Test case does not define expected output nor expected error code.");
 
@@ -259,17 +257,16 @@ public class JunitRunner {
             final TestCase testCase,
             final Object result,
             final Object expected,
-            final boolean fail) {
+            final boolean fail) throws IOException {
 
         if (Comparison.equals(expected, result)) {
             return true;
         }
 
-//        write(
-//                testCase,
-//                new JakartaEmitter().node(result, resultAdapter),
-//                JakartaMaterializer.node(expected),
-//                null);
+        write(testCase,
+                result,
+                expected,
+                null);
 
         if (fail) {
             fail("Expected " + expected + ", but was" + result);
@@ -277,15 +274,19 @@ public class JunitRunner {
         return false;
     }
 
-    public static void write(final TestCase testCase, final JsonValue result, final JsonValue expected,
+    public static void write(
+            TestCase testCase,
+            Object result,
+            Object expected,
             JsonLdException error) {
-        final StringWriter stringWriter = new StringWriter();
+
+        final var stringWriter = new StringWriter();
 
         try (final var writer = new PrintWriter(stringWriter)) {
             writer.println("Test " + testCase.id + ": " + testCase.name);
 
             if (expected != null) {
-                write(writer, JSON_WRITER_FACTORY, "Expected", expected);
+                write(writer, JSON_GENERATOR_FACTORY, "Expected", expected);
                 writer.println();
 
             } else if (testCase.expectErrorCode != null) {
@@ -293,7 +294,7 @@ public class JunitRunner {
             }
 
             if (result != null) {
-                write(writer, JSON_WRITER_FACTORY, "Actual", result);
+                write(writer, JSON_GENERATOR_FACTORY, "Actual", result);
                 writer.println();
             }
             if (error != null) {
@@ -305,15 +306,21 @@ public class JunitRunner {
         System.out.println(stringWriter.toString());
     }
 
-    public static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name,
-            final JsonValue result) {
+    public static final void write(
+            PrintWriter writer,
+            JsonGeneratorFactory generator,
+            String name,
+            Object result) {
 
         writer.println(name + ":");
 
         final StringWriter out = new StringWriter();
 
-        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
-            jsonWriter.write(result);
+        try (var jsonWriter = new JakartaEmitter(generator.createGenerator(out))) {
+            Tree.write(result, jsonWriter);
+
+        } catch (IOException e) {
+            fail(e);
         }
 
         writer.write(out.toString());

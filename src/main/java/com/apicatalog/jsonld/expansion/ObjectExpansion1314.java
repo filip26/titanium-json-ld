@@ -280,7 +280,7 @@ final class ObjectExpansion1314 {
                     // 13.8.3.6.
                     final var indexValues = Expansion.array(
                             mapContext,
-                            (Collection<?>) indexValue,
+                            JsonLdAdapter.asCollection(indexValue),
                             key,
                             index,
                             Keywords.INDEX,
