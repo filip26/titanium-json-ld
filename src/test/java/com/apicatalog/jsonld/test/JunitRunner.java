@@ -26,7 +26,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.SequencedCollection;
 import java.util.Set;
 
 import com.apicatalog.jcs.Jcs;
@@ -152,11 +151,8 @@ public class JunitRunner {
                 return false;
             }
 
-
-            if (result instanceof SequencedCollection<?> quads 
-                    && !quads.isEmpty()
-                    && quads.getFirst() instanceof RdfQuad) {  //TODO
-                return validateQuads(testCase, options, (Set<RdfQuad>) quads, true);
+            if (testCase.type.contains(TestCase.Type.TO_RDF_TEST)) {
+                return validateQuads(testCase, options, (Set<RdfQuad>) result, true);
             }
 
             return validateJsonLd(

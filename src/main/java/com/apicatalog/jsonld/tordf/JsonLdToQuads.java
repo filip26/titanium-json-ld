@@ -118,7 +118,7 @@ public final class JsonLdToQuads {
         this.nodeMap = nodeMap;
 
         this.produceGeneralizedRdf = false;
-        this.jsonWriter = null;
+        this.jsonWriter = jsonWriter;
         this.rdfDirection = null;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
     }
