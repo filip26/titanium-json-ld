@@ -19,8 +19,6 @@ import com.apicatalog.jsonld.Document.ContentReader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.UriBlocker;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
-import com.apicatalog.tree.io.TreeEmitter;
-import com.apicatalog.tree.io.TreeParser;
 
 public class SuiteEvironment {
 
@@ -29,7 +27,7 @@ public class SuiteEvironment {
 //    public static TreeParser PARSER;
     public static DocumentLoader LOADER;
 
-    static void start(ContentReader reader, TreeEmitter emitter) {
+    static void start(ContentReader reader) {
 //        SuiteEvironment.PARSER = parser;
         SuiteEvironment.LOADER = UriBlocker.newBlacklist(new ZipResourceLoader(reader))
                 .base("http:")

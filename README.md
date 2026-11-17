@@ -6,17 +6,16 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 - Full conformance with the W3C JSON-LD 1.1 specification  
 - Secure, stable, high-performance implementation backed by ~3,000 automated tests
-- Zero external dependencies
-- Clean, intuitive, and customizable API designed for rapid integration
+- Clean, intuitive, and customizable API
 
 ### 🚀 Coming in v2.0
 
 - Processing policies for undefined terms, dropped values, time/space constraints, disallowed keywords, and more
 - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, URI blocker, LRU cache, in-memory
-- Generalized processing via [tree-io](https://github.com/filip26/tree-io)  
-  (Native Java Map/List, Jakarta JSON, Jackson, and others)
+- Generalized processing utilizing native `Map`, `Collection`, `String`, `Number`, `Boolean`. 
 - JSON-LD-Star expansion (experimental)  
 - Generated TypeMap / TermMap (experimental)  
+- Zero external dependenciess
 
 ### 📡 Status
 

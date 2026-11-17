@@ -92,6 +92,38 @@ public final class Flattener {
                 runtime);
     }
 
+    public static Object flatten(
+            Collection<?> document, 
+            Object context, 
+            Options options, 
+            Execution runtime) throws JsonLdException {
+//        if (options.expandContext() == null) {
+//            return flatten(input, (Document) null, options, runtime);
+//        }
+
+        // 4.
+        final var expansionOptions = Options.copyOf(options).ordered(false);
+
+        var expandedInput = Expander.expand(
+                document,
+                Expander.context(
+                        null,
+                        null,
+                        options,
+                        runtime),
+                null,
+                expansionOptions,
+                runtime);
+
+//        final var contextDocument = Context.load(options.loader(), context);
+
+        return flatten(
+                expandedInput,
+                null,
+                context,
+                options,
+                runtime);
+    }
     static final Object flatten(
             final Collection<?> expandedInput,
             final URI documentUrl,

@@ -71,7 +71,7 @@ public class JakartaTestSuite extends SuiteEvironment {
 
     @BeforeSuite
     public static void beforeSuite() {
-//        start(PARSER, RENDERER);
+        start(JakartaTestSuite::parse);
     }
 
     @AfterSuite

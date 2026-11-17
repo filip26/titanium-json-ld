@@ -212,7 +212,7 @@ public final class JsonLd {
                 options,
                 Execution.of(options));
     }
-    
+
     /**
      * Compacts a JSON-LD document provided as a {@link Collection} using a context
      * provided as a {@link Map}.
@@ -360,14 +360,14 @@ public final class JsonLd {
      * @throws JsonLdException if flattening fails
      */
     public static final Object flatten(
-            final Map<String, ?> document,
-            final Map<String, ?> context,
-            final Options options) throws JsonLdException {
-
-        return flatten(
+            Map<String, ?> document,
+            Map<String, ?> context,
+            Options options) throws JsonLdException {
+        return Flattener.flatten(
                 document,
                 context,
-                options);
+                options,
+                Execution.of(options));
     }
 
     /**
@@ -380,11 +380,9 @@ public final class JsonLd {
      * @throws JsonLdException if flattening fails
      */
     public static final Object flatten(
-            final Collection<?> document,
-            final Options options) throws JsonLdException {
-
-        return flatten(
-                document,
+            Collection<?> document,
+            Options options) throws JsonLdException {
+        return flatten(document,
                 null,
                 options);
     }
@@ -404,35 +402,35 @@ public final class JsonLd {
             final Collection<?> document,
             final Map<String, ?> context,
             final Options options) throws JsonLdException {
-
-        return flatten(
-                document,
-                context,
-                options);
-    }
-
-    /**
-     * Flattens a JSON-LD document represented as a {@link Map} node.
-     *
-     * @param document a {@link Map} representation of the JSON-LD document to
-     *                 flatten
-     * @param context  a {@link Map} representation of the context to apply during
-     *                 flattening
-     * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
-     * @throws JsonLdException if flattening fails
-     */
-    public static final Object flatten(
-            final Map<String, ?> document,
-            final Object context,
-            final Options options) throws JsonLdException {
-
         return Flattener.flatten(
                 document,
                 context,
                 options,
                 Execution.of(options));
     }
+
+//    /**
+//     * Flattens a JSON-LD document represented as a {@link Map} node.
+//     *
+//     * @param document a {@link Map} representation of the JSON-LD document to
+//     *                 flatten
+//     * @param context  a {@link Map} representation of the context to apply during
+//     *                 flattening
+//     * @param options  options to configure flattening
+//     * @return the flattened JSON-LD document
+//     * @throws JsonLdException if flattening fails
+//     */
+//    public static final Object flatten(
+//            final Map<String, ?> document,
+//            final Object context,
+//            final Options options) throws JsonLdException {
+//
+//        return Flattener.flatten(
+//                document,
+//                context,
+//                options,
+//                Execution.of(options));
+//    }
 
     /* --- FRAME -- */
 

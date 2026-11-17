@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -30,6 +31,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd;
@@ -75,7 +77,10 @@ class NativeInputTest {
 
         final var set = new LinkedHashSet<RdfQuad>();
 
-        JsonLd.toRdf(JSON_LD, new QuadSetProvider(set)::quad, Options.with(UUID_LOADER));
+        JsonLd.toRdf(JSON_LD,
+                new QuadSetProvider(set)::quad,
+                Options.with(UUID_LOADER)
+                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-0-quads.nq");
         assertNotNull(expected);
@@ -145,7 +150,11 @@ class NativeInputTest {
 
         final var set = new LinkedHashSet<RdfQuad>();
 
-        JsonLd.toRdf(PL_2_COMPACTED, new QuadSetProvider(set)::quad, Options.newOptions());
+        JsonLd.toRdf(
+                PL_2_COMPACTED,
+                new QuadSetProvider(set)::quad,
+                Options.newOptions()
+                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-2-quads.nq");
         assertNotNull(expected);

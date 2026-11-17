@@ -325,7 +325,7 @@ public final class JsonLdException extends Exception {
          * An invalid value for the <code>@value</code> entry of a value object has been
          * detected, i.e., it is neither a scalar nor <code>null</code>.
          */
-        INVALID_VALUE_OBJECT_VALUE("An invalid value for the @value< entry of a value object has been detected"),
+        INVALID_VALUE_OBJECT_VALUE("An invalid value for the @value entry of a value object has been detected"),
 
         /**
          * A value object with disallowed entries has been detected.

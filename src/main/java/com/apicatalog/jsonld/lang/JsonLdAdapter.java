@@ -367,7 +367,6 @@ public class JsonLdAdapter {
     }
 
     public static boolean isScalar(Object node) {
-        // TODO Auto-generated method stub
-        return false;
+        return node == null || node instanceof String || node instanceof Boolean || node instanceof Number;
     }
 }

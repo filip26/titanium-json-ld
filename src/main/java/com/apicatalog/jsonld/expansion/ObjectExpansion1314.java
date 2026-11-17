@@ -849,7 +849,7 @@ final class ObjectExpansion1314 {
                 }
 
             } else {
-                throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE);
+                throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, "An invalid @value=" + value);
             }
 
             // 13.4.7.4
