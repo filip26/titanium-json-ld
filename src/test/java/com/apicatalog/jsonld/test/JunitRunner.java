@@ -110,7 +110,10 @@ public class JunitRunner {
 
                     QuadEmitter.create(toLd::quad).emit(readQuads(testCase, testCase.input));
 
-                } catch (NQuadsReaderException | LoaderException e) {
+                } catch (Exception e) {
+                    if (toLd.error() != null) {
+                        throw toLd.error();
+                    }
                     fail(e);
                 }
 

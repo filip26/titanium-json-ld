@@ -101,6 +101,7 @@ public class QuadsToJsonLd {
     protected GraphMap graphMap;
     protected Map<String, Map<String, Boolean>> compoundLiteralSubjects;
     protected Map<String, Reference> referenceOnce;
+    protected JsonLdException error;
 
     public QuadsToJsonLd() {
         this.graphMap = new GraphMap();
@@ -116,7 +117,8 @@ public class QuadsToJsonLd {
         this.useRdfType = false;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
         this.processingMode = Version.V1_1;
-    }
+        this.error = null;
+    }   
 
     /**
      * Configures whether the output should be ordered.
@@ -568,6 +570,7 @@ public class QuadsToJsonLd {
                     predicate,
                     value));
         }
+    
     }
 
     Map<String, Object> toObject(
@@ -613,24 +616,25 @@ public class QuadsToJsonLd {
                 && processingMode != Version.V1_0
                 && Terms.RDF_JSON.equals(datatype)) {
 
-//            try {
-System.out.println(">>>> " + object + ", " + object.getClass());
+            try {
+
                 convertedValue = jsonReader.read(MediaType.JSON, new StringReader(object));
-                System.out.println(">>>> !!! " + convertedValue);
+
                 if (convertedValue == null) {
                     final var result = new HashMap<String, Object>(2);
                     result.put(Keywords.TYPE, Keywords.JSON);
                     result.put(Keywords.VALUE, null);
-                    return Map.copyOf(result);
+                    return result;
                 }
 
                 return Map.of(
                         Keywords.VALUE, convertedValue,
                         Keywords.TYPE, Keywords.JSON);
 
-//            } catch (Exception e) {
-//                throw new Unchecked new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
-//            }
+            } catch (Exception e) {
+                this.error = new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
+                throw e;
+            }
         }
 
         final var result = new LinkedHashMap<String, Object>(5);
@@ -775,5 +779,9 @@ System.out.println(">>>> " + object + ", " + object.getClass());
      */
     static boolean isBlank(String resource) {
         return resource != null && resource.startsWith("_:");
+    }
+
+    public JsonLdException error() {
+        return error;
     }
 }
