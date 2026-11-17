@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.test.TestManifest;
 
 class CompactBaseTest {
 
-    static DocumentLoader LOADER = new ZipResourceLoader(JakartaTestSuite::parse);
+    static DocumentLoader LOADER = new ZipResourceLoader(JakartaTestSuite::read);
     
     @Test
     void testCompactBase() {

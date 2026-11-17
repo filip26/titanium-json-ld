@@ -16,7 +16,9 @@
 package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -198,7 +200,8 @@ public final class StaticLoader implements DocumentLoader {
          * @return
          */
         public Builder classpath(String url, String resource) {
-            try (final var is = StaticLoader.class.getResourceAsStream(resource)) {
+            try (final var is = new InputStreamReader(StaticLoader.class.getResourceAsStream(resource),
+                    StandardCharsets.UTF_8)) {
 
                 return node(
                         url,

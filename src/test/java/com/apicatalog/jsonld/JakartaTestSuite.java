@@ -16,7 +16,7 @@
 package com.apicatalog.jsonld;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -66,12 +66,12 @@ public class JakartaTestSuite extends SuiteEvironment {
             .build();
 
     public static final HttpLoader HTTP_LOADER = HttpLoader
-            .newLoader(HTTP_CLIENT, JakartaTestSuite::parse)
+            .newLoader(HTTP_CLIENT, JakartaTestSuite::read)
             .timeout(Duration.ofSeconds(5));
 
     @BeforeSuite
     public static void beforeSuite() {
-        start(JakartaTestSuite::parse);
+        start(JakartaTestSuite::read);
     }
 
     @AfterSuite
@@ -79,8 +79,8 @@ public class JakartaTestSuite extends SuiteEvironment {
         stop();
     }
 
-    public static final Object parse(MediaType contentType, InputStream is) {
-        try (var parser = new JakartaParser(Json.createParser(is))) {
+    public static final Object read(MediaType contentType, Reader reader) {
+        try (var parser = new JakartaParser(Json.createParser(reader))) {
             return Tree.read(parser);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

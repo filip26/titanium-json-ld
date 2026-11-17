@@ -16,8 +16,8 @@
 package com.apicatalog.jsonld.loader;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
@@ -103,9 +103,9 @@ public final class FileLoader implements DocumentLoader {
 
         final var contentType = fromFileExtension(file.getName());
 
-        try (final var is = new FileInputStream(file)) {
+        try (final var reader = new FileReader(file)) {
 
-            var node = contentParser.read(contentType, is);
+            var node = contentParser.read(contentType, reader);
 
             return new Document(uri, node, contentType, null, null);
 

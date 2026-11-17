@@ -104,7 +104,7 @@ public class JunitRunner {
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
 
-                final var toLd = JsonLd.fromRdf(options).jsonReader(JakartaTestSuite::parse);
+                final var toLd = JsonLd.fromRdf(options).jsonReader(JakartaTestSuite::read);
 
                 try {
 

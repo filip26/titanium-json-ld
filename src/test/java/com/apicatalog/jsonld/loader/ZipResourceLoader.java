@@ -17,11 +17,12 @@ package com.apicatalog.jsonld.loader;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -66,7 +67,7 @@ public class ZipResourceLoader implements DocumentLoader {
                 return null;
             }
 
-            try (final InputStream is = zip.getInputStream(zipEntry)) {
+            try (final var is = new InputStreamReader(zip.getInputStream(zipEntry), StandardCharsets.UTF_8)) {
 
                 var node = parser.read(null, is);
 

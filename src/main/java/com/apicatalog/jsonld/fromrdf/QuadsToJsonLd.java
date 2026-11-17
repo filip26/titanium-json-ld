@@ -15,8 +15,8 @@
  */
 package com.apicatalog.jsonld.fromrdf;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +74,7 @@ public class QuadsToJsonLd {
 
     @FunctionalInterface
     public interface JsonLiteralReader {
-        Object read(MediaType contentType, InputStream is);
+        Object read(MediaType contentType, Reader reader);
     }
 
     public static final Map<String, Function<String, Object>> DEFAULT_NATIVE_ADAPTERS = Map.of(
@@ -614,9 +614,9 @@ public class QuadsToJsonLd {
                 && Terms.RDF_JSON.equals(datatype)) {
 
 //            try {
-
-                convertedValue = jsonReader.read(MediaType.JSON, new ByteArrayInputStream(object.getBytes()));
-
+System.out.println(">>>> " + object + ", " + object.getClass());
+                convertedValue = jsonReader.read(MediaType.JSON, new StringReader(object));
+                System.out.println(">>>> !!! " + convertedValue);
                 if (convertedValue == null) {
                     final var result = new HashMap<String, Object>(2);
                     result.put(Keywords.TYPE, Keywords.JSON);

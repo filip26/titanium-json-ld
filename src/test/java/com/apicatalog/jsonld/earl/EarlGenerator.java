@@ -49,7 +49,7 @@ public class EarlGenerator {
 
     public static void main(String[] args) throws JsonLdException, IOException {
 
-        SuiteEvironment.LOADER = new ZipResourceLoader(JakartaTestSuite::parse);
+        SuiteEvironment.LOADER = new ZipResourceLoader(JakartaTestSuite::read);
 
         (new EarlGenerator()).generate(Paths.get(FILE_NAME));
     }
@@ -130,7 +130,6 @@ public class EarlGenerator {
     }
 
     public void testFromRdf(PrintWriter writer) {
-
         TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,
@@ -143,7 +142,7 @@ public class EarlGenerator {
 
                             final var toLd = JsonLd
                                     .fromRdf(options)
-                                    .jsonReader(JakartaTestSuite::parse);
+                                    .jsonReader(JakartaTestSuite::read);
 
                             try {
                                 QuadEmitter.create(toLd::quad).emit(

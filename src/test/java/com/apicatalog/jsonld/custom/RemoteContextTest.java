@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -46,7 +47,7 @@ import com.apicatalog.web.media.MediaType;
 
 class RemoteContextTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::parse);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::read);
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
@@ -191,8 +192,8 @@ class RemoteContextTest {
     }
 
     private final Object read(final String name) throws JsonLdException, IOException {
-        try (final var is = getClass().getResourceAsStream(name)) {
-            return JakartaTestSuite.parse(MediaType.JSON, is);
+        try (final var reader = new InputStreamReader(getClass().getResourceAsStream(name), StandardCharsets.UTF_8)) {
+            return JakartaTestSuite.read(MediaType.JSON, reader);
         }
     }
 }

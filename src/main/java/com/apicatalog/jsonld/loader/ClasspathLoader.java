@@ -16,8 +16,10 @@
 package com.apicatalog.jsonld.loader;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
@@ -124,9 +126,9 @@ public final class ClasspathLoader implements DocumentLoader {
 //                            + baseClass.getPackageName());
 //        }
 
-        try (final var is = baseClass.getResourceAsStream(path)) {
+        try (var reader = new InputStreamReader(baseClass.getResourceAsStream(path), StandardCharsets.UTF_8)) {
 
-            var node = contentParser.read(contentType, is);
+            var node = contentParser.read(contentType, reader);
 
             return new Document(
                     uri,

@@ -15,7 +15,7 @@
  */
 package com.apicatalog.jsonld;
 
-import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
@@ -57,7 +57,7 @@ public record Document(
 
     @FunctionalInterface
     public interface ContentReader {
-        Object read(MediaType type, InputStream is);
+        Object read(MediaType type, Reader is);
     }
 
     public Document {

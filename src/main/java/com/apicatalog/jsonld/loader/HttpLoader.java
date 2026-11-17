@@ -18,9 +18,11 @@ package com.apicatalog.jsonld.loader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -391,9 +393,9 @@ public class HttpLoader implements DocumentLoader {
                     """.formatted(contentType, targetUri));
         }
 
-        try (final var is = response.body()) {
+        try (final var reader = new InputStreamReader(response.body(), StandardCharsets.UTF_8)) {
 
-            final var content = parser.read(contentType, is);
+            final var content = parser.read(contentType, reader);
 
             return new Document(targetUri, content, contentType, null, contextUrl);
 

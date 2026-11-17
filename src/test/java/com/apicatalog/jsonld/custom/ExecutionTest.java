@@ -21,7 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,16 +45,12 @@ import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.jsonld.test.JunitRunner;
-import com.apicatalog.tree.io.Tree;
 import com.apicatalog.web.media.MediaType;
-
-import jakarta.json.JsonWriter;
 
 class ExecutionTest {
 
     static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
-            .reader(MediaType.JSON_LD, JakartaTestSuite::parse)
+            .reader(MediaType.JSON_LD, JakartaTestSuite::read)
             .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
             .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
             .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
@@ -67,7 +65,7 @@ class ExecutionTest {
                 .timeout(Duration.ofNanos(0));
 
         var ex = assertThrows(JsonLdException.class, () -> JsonLd.expand(
-                (Map)document,
+                (Map) document,
                 options));
 
         assertEquals(ErrorCode.PROCESSING_TIMEOUT_EXCEEDED, ex.code());
@@ -99,7 +97,7 @@ class ExecutionTest {
             }
         });
 
-        var expanded = Expander.expand((Map)document, options, runtime);
+        var expanded = Expander.expand((Map) document, options, runtime);
 
         assertNotNull(expanded);
 
@@ -130,8 +128,8 @@ class ExecutionTest {
     }
 
     private final Object read(final String name) throws JsonLdException, IOException {
-        try (final var is = getClass().getResourceAsStream(name)) {
-            return JakartaTestSuite.parse(null, is);
+        try (final var reader = new InputStreamReader(getClass().getResourceAsStream(name), StandardCharsets.UTF_8)) {
+            return JakartaTestSuite.read(MediaType.JSON, reader);
         }
     }
 }

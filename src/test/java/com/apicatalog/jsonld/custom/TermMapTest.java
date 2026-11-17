@@ -43,7 +43,7 @@ import com.apicatalog.web.media.MediaType;
 
 class TermMapTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::parse);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::read);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource( "data" )
@@ -56,7 +56,7 @@ class TermMapTest {
             var options = testCase.getOptions();
             
             options.loader( StaticLoader.newBuilder()
-                    .reader(MediaType.JSON_LD, JakartaTestSuite::parse)
+                    .reader(MediaType.JSON_LD, JakartaTestSuite::read)
                     .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
