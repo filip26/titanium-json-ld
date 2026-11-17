@@ -15,8 +15,9 @@
  */
 package com.apicatalog.jsonld.expansion;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -224,21 +225,20 @@ public final class ObjectExpansion {
                 // 11.2
                 var typeValue = element.get(key);
 
-                final Iterator<String> terms;
+                final List<String> terms;
 
                 if (typeValue instanceof Collection<?> typeSet) {
-                    terms = typeSet.stream().map(String.class::cast).sorted().iterator();
+                    terms = new ArrayList<String>((Collection<? extends String>) typeSet);
+                    Collections.sort(terms);
 
                 } else if (typeValue instanceof String typeString) {
-                    terms = List.of(typeString).iterator();
+                    terms = List.of(typeString);
 
                 } else {
-                    terms = List.<String>of().iterator();
+                    terms = List.<String>of();
                 }
 
-                while (terms.hasNext()) {
-
-                    final var term = terms.next();
+                for (var term : terms) {
 
                     final var localContext = typeContext
                             .findTerm(term)

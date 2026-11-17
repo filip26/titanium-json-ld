@@ -110,7 +110,7 @@ public class TestOptions {
                 break;
 
             case "httpStatus":
-                options.httpStatus = (int) entry.getValue();
+                options.httpStatus = ((Number) entry.getValue()).intValue();
                 break;
 
             case "httpLink":
