@@ -222,18 +222,20 @@ public final class ObjectExpansion {
                 }
 
                 // 11.2
-//                var terms = adapter.asStream(element.get(key))
-//                        .filter(adapter::isString
-//                        .map(adapter::stringValue)
-//                        .sorted()
-//                        .iterator();
-
                 var typeValue = element.get(key);
 
-                final Iterator<String> terms = (typeValue instanceof Collection<?> typeSet)
-                        ? typeSet.stream().map(String.class::cast).sorted().iterator()
-                        : List.of((String)typeValue).iterator();
-                
+                final Iterator<String> terms;
+
+                if (typeValue instanceof Collection<?> typeSet) {
+                    terms = typeSet.stream().map(String.class::cast).sorted().iterator();
+
+                } else if (typeValue instanceof String typeString) {
+                    terms = List.of(typeString).iterator();
+
+                } else {
+                    terms = List.<String>of().iterator();
+                }
+
                 while (terms.hasNext()) {
 
                     final var term = terms.next();
