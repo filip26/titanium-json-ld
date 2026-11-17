@@ -24,7 +24,6 @@ import java.util.Set;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.test.TestCase.Type;
-import com.apicatalog.rdf.nquads.NQuadsReaderException;
 
 import jakarta.json.JsonStructure;
 
@@ -82,7 +81,7 @@ public class EarlRunner {
                     false);
 
 
-        } catch (IOException | NQuadsReaderException e) {
+        } catch (IOException e) {
             throw new IllegalStateException(e);
 
         } catch (JsonLdException e) {

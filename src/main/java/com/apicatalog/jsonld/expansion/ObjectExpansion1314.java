@@ -17,6 +17,7 @@ package com.apicatalog.jsonld.expansion;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -134,11 +135,20 @@ final class ObjectExpansion1314 {
                     .filter(Keywords.JSON::equals)
                     .isPresent()) {
 
-                expandedValue = Map.of(
-                        Keywords.TYPE,
-                        Keywords.JSON,
-                        Keywords.VALUE,
-                        value);
+                // FIXME ???
+                if (value == null) {
+                    var valueObject = HashMap.newHashMap(2);
+                    valueObject.put(Keywords.TYPE, Keywords.JSON);
+                    valueObject.put(Keywords.VALUE, value);
+                    expandedValue = valueObject;
+
+                } else {
+                    expandedValue = Map.of(
+                            Keywords.TYPE,
+                            Keywords.JSON,
+                            Keywords.VALUE,
+                            value);
+                }
             }
             // 13.7.
             else if (value instanceof Map map && containerMapping.contains(Keywords.LANGUAGE)) {
@@ -717,7 +727,7 @@ final class ObjectExpansion1314 {
                                 expandedItems.add(expandedStringValue);
                             }
                         } else {
-                            throw new IllegalStateException("TODO");    //TODO
+                            throw new IllegalStateException("TODO"); // TODO
                         }
                     }
                     expandedValue = expandedItems != null

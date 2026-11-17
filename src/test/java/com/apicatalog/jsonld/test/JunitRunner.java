@@ -23,10 +23,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.SequencedCollection;
 import java.util.Set;
 
+import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
@@ -91,6 +94,8 @@ public class JunitRunner {
 
                 final var set = new LinkedHashSet<RdfQuad>();
 
+                options.rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8));
+
                 JsonLd.toRdf(testCase.input, new QuadSetProvider(set)::quad, options);
 
                 return set;
@@ -147,10 +152,12 @@ public class JunitRunner {
                 return false;
             }
 
-//System.out.println(result.getClass().componentType());
-//            if (result instanceof Set quads && !quads.isEmpty()) {  //TODO
-//                return validateQuads(testCase, options, quads, true);
-//            }
+
+            if (result instanceof SequencedCollection<?> quads 
+                    && !quads.isEmpty()
+                    && quads.getFirst() instanceof RdfQuad) {  //TODO
+                return validateQuads(testCase, options, (Set<RdfQuad>) quads, true);
+            }
 
             return validateJsonLd(
                     testCase,
@@ -227,7 +234,7 @@ public class JunitRunner {
             final TestCase testCase,
             final Options options,
             final Set<RdfQuad> result,
-            final boolean fail) throws NQuadsReaderException {
+            final boolean fail) {
 
         // A PositiveSyntaxTest succeeds when no error is found when processing.
         if (testCase.expect == null && testCase.type.contains(Type.POSITIVE_SYNTAX_TEST)) {
@@ -244,7 +251,7 @@ public class JunitRunner {
                     readQuads(testCase, testCase.expect),
                     fail);
 
-        } catch (LoaderException | IOException e) {
+        } catch (LoaderException | NQuadsReaderException | IOException e) {
             if (fail) {
                 fail(e.getMessage());
             }
