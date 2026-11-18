@@ -104,7 +104,7 @@ public final class RdfEmitter {
             final Execution runtime) throws JsonLdException {
 
         if (options.rdfJsonLiteralWriter() == null) {
-            throw new IllegalArgumentException("RDF JSON literal writer must not be null.");
+            throw new IllegalArgumentException("RDF JSON literal writer must be set, e.g. JCS.");
         }
 
         JsonLdToQuads

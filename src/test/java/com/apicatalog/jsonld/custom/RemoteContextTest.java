@@ -31,6 +31,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
@@ -47,7 +48,7 @@ import com.apicatalog.web.media.MediaType;
 
 class RemoteContextTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read, JsonLd.class);
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
@@ -130,9 +131,11 @@ class RemoteContextTest {
         final var result = new LinkedHashSet<RdfQuad>();
 
         JsonLd.toRdf(
-                (Map)document,
+                (Map) document,
                 new QuadSetProvider(result)::quad,
-                Options.with(LOADER));
+                Options
+                        .with(LOADER)
+                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
 
         assertNotNull(result);
 
@@ -174,9 +177,13 @@ class RemoteContextTest {
 
             long start = System.nanoTime();
 
-            final var loader = CacheLoader.of(SuiteConfig.HTTP_LOADER, 256);
+            final var loader = CacheLoader.newInstance(SuiteConfig.HTTP_LOADER, 256);
 
-            final var result = JsonLd.expand((Map) document, Options.with(loader));
+            final var result = JsonLd.expand(
+                    (Map) document, 
+                    Options
+                        .with(loader)
+                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
             System.out.println("Cached documents: " + loader.cache().size());

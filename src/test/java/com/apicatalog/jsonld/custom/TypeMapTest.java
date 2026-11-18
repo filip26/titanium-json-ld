@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
@@ -41,7 +42,7 @@ import com.apicatalog.web.media.MediaType;
 
 class TypeMapTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read, JsonLd.class);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
@@ -55,7 +56,8 @@ class TypeMapTest {
 
             options.loader(StaticLoader.newBuilder()
                     .reader(MediaType.JSON_LD, SuiteConfig::read)
-                    .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
+                    .classpath("https://www.w3.org/ns/credentials/v2",
+                            "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
                     .fallback(options.loader())

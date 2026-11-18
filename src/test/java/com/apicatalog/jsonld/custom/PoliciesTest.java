@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -40,7 +41,7 @@ import com.apicatalog.web.media.MediaType;
 
 class PoliciesTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read, JsonLd.class);
 
     static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
             .reader(MediaType.JSON_LD, SuiteConfig::read)

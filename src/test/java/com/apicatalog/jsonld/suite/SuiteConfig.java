@@ -47,7 +47,7 @@ public class SuiteConfig {
             .build();
 
     public static final HttpLoader HTTP_LOADER = HttpLoader
-            .newLoader(HTTP_CLIENT, SuiteConfig::read)
+            .newInstance(HTTP_CLIENT, SuiteConfig::read)
             .timeout(Duration.ofSeconds(5));
 
 

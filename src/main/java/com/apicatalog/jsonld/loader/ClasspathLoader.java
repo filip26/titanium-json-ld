@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
@@ -72,19 +73,9 @@ public final class ClasspathLoader implements DocumentLoader {
     public static ClasspathLoader newInstance(
             Document.ContentReader contentParser,
             Class<?> base) {
-        return new ClasspathLoader(contentParser, base);
-    }
-
-    /**
-     * Creates a new loader that parses classpath resources using the given content
-     * parser.
-     *
-     * @param contentParser the {@link Document.ContentReader} used to parse the
-     *                      loaded resource (must not be {@code null})
-     * @param base          the class from which relative classpaths are resolved
-     */
-    public static ClasspathLoader newInstance(Document.ContentReader contentParser) {
-        return newInstance(contentParser, null);
+        return new ClasspathLoader(
+                Objects.requireNonNull(contentParser), 
+                Objects.requireNonNull(base));
     }
 
     /**

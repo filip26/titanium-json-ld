@@ -55,7 +55,7 @@ public final class CacheLoader implements DocumentLoader {
      * @param loader  the underlying {@link DocumentLoader} used for cache misses
      * @param maxSize the maximum number of documents to retain in the cache
      */
-    public static final CacheLoader of(DocumentLoader loader, int maxSize) {
+    public static final CacheLoader newInstance(DocumentLoader loader, int maxSize) {
 
         if (maxSize <= 0) {
             throw new IllegalArgumentException("The maximum cache size must be positive integer value, maxsize=" + maxSize);
@@ -72,7 +72,7 @@ public final class CacheLoader implements DocumentLoader {
      * @param loader the underlying {@link DocumentLoader} used for cache misses
      * @param cache  the cache used to store loaded documents
      */
-    public static final CacheLoader of(DocumentLoader loader, Cache<Key, Document> cache) {
+    public static final CacheLoader newInstance(DocumentLoader loader, Cache<Key, Document> cache) {
         return new CacheLoader(
                 Objects.requireNonNull(loader),
                 Objects.requireNonNull(cache));

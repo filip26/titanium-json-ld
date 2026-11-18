@@ -138,8 +138,8 @@ public class HttpLoader implements DocumentLoader {
      *               content
      * @return a new configured {@link HttpLoader}
      */
-    public static HttpLoader newLoader(final Document.ContentReader parser) {
-        return newLoader(
+    public static HttpLoader newInstance(final Document.ContentReader parser) {
+        return newInstance(
                 HttpClient
                         .newBuilder()
                         .followRedirects(Redirect.NEVER)
@@ -156,9 +156,9 @@ public class HttpLoader implements DocumentLoader {
      * @param parsers the content-type to parser mapping table
      * @return a new configured {@link HttpLoader}
      */
-    public static HttpLoader newLoader(final Document.ContentReader parser,
+    public static HttpLoader newInstance(final Document.ContentReader parser,
             Map<MediaType, Document.ContentReader> parsers) {
-        return newLoader(
+        return newInstance(
                 HttpClient
                         .newBuilder()
                         .followRedirects(Redirect.NEVER)
@@ -175,8 +175,8 @@ public class HttpLoader implements DocumentLoader {
      * @param parser the JSON parser used to parse responses
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final HttpClient client, Document.ContentReader parser) {
-        return newLoader(client, parser, Map.of());
+    public static HttpLoader newInstance(final HttpClient client, Document.ContentReader parser) {
+        return newInstance(client, parser, Map.of());
     }
 
     /**
@@ -188,9 +188,9 @@ public class HttpLoader implements DocumentLoader {
      * @param parsers the content-type to parser mapping table
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final HttpClient client, Document.ContentReader parser,
+    public static HttpLoader newInstance(final HttpClient client, Document.ContentReader parser,
             Map<MediaType, Document.ContentReader> parsers) {
-        return newLoader(new JavaHttpClient(client), parser, parsers);
+        return newInstance(new JavaHttpClient(client), parser, parsers);
     }
 
     /**
@@ -200,8 +200,8 @@ public class HttpLoader implements DocumentLoader {
      * @param reader the JSON parser used to parse responses
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final Client client, Document.ContentReader reader) {
-        return newLoader(client, reader, Map.of());
+    public static HttpLoader newInstance(final Client client, Document.ContentReader reader) {
+        return newInstance(client, reader, Map.of());
     }
 
     /**
@@ -212,7 +212,7 @@ public class HttpLoader implements DocumentLoader {
      * @param parsers the content-type to parser mapping table
      * @return a configured {@link HttpLoader} instance
      */
-    public static HttpLoader newLoader(final Client client, Document.ContentReader parser,
+    public static HttpLoader newInstance(final Client client, Document.ContentReader parser,
             Map<MediaType, Document.ContentReader> parsers) {
         return new HttpLoader(client, parser, parsers).headers(VENDOR_HEADERS);
     }

@@ -20,7 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,23 +33,19 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-
 class FramingReversePerformanceTest {
 
     @ParameterizedTest(name = "{0} elemets, {1}")
     @MethodSource("data")
     void testFramingPerformance(int elements, Duration timeout) throws JsonLdException, IOException {
 
-        var data = buildTestData(elements);
+        final var document = buildTestDocument(elements);
+        final var frame = buildTestFrame();
 
         assertTimeout(
                 timeout,
                 () -> {
-                    final long executionTime = measureFramingPerformance(data);
+                    final long executionTime = measureFramingPerformance(document, frame);
                     System.out.println("Framing %d elements took: %d ms.".formatted(elements, executionTime));
                 });
     }
@@ -58,19 +56,11 @@ class FramingReversePerformanceTest {
                 new Object[] { 10_000, Duration.ofSeconds(2) });
     }
 
-    private Map<String, ?>[] buildTestData(final int elementCount) throws JsonLdException, IOException {
-
-        final var document = buildTestDocument(elementCount);
-        final var frame = buildTestFrame();
-
-        return new JsonObject[] { document, frame };
-    }
-
-    private long measureFramingPerformance(Map<String, ?>[] data) throws JsonLdException, IOException {
+    private long measureFramingPerformance(Map<String, ?> document, Map<String, ?> frame) throws JsonLdException, IOException {
 
         final long startTime = System.currentTimeMillis();
 
-        final var framed = JsonLd.frame(data[0], data[1], Options.newOptions());
+        final var framed = JsonLd.frame(document, frame, Options.newOptions());
 
         final long endTime = System.currentTimeMillis();
 
@@ -79,12 +69,9 @@ class FramingReversePerformanceTest {
         return endTime - startTime;
     }
 
-    private JsonObject buildTestDocument(final int elementCount) {
+    private Map<String, Object> buildTestDocument(final int elementCount) {
 
-        final JsonObjectBuilder contextBuilder = Json.createObjectBuilder()
-                .add("@vocab", "http://example.com/vocab#");
-
-        final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+        final var data = new ArrayList<>();
 
         final int departmentCount = Math.max(5, elementCount / 100);
         final int personsPerDepartment = elementCount / departmentCount;
@@ -93,26 +80,26 @@ class FramingReversePerformanceTest {
 
             final String departmentId = "http://example.com/department" + departmentIndex;
 
-            dataBuilder.add(Json.createObjectBuilder()
-                    .add("@id", departmentId)
-                    .add("@type", "Department")
-                    .add("name", "Department " + departmentIndex));
+            data.add(Map.of(
+                    "@id", departmentId,
+                    "@type", "Department",
+                    "name", "Department " + departmentIndex));
 
             for (int personOffset = 0; personOffset < personsPerDepartment; personOffset++) {
 
                 final int personIndex = departmentIndex * personsPerDepartment + personOffset;
-                final JsonObjectBuilder personBuilder = Json.createObjectBuilder()
-                        .add("@id", "http://example.com/person" + personIndex)
-                        .add("@type", "Person")
-                        .add("name", "Person " + personIndex)
-                        .add("memberOf", departmentId);
+                final var personBuilder = new HashMap<String, Object>(Map.of(
+                        "@id", "http://example.com/person" + personIndex,
+                        "@type", "Person",
+                        "name", "Person " + personIndex,
+                        "memberOf", departmentId));
 
                 if (personOffset == 0 && departmentIndex > 0) {
-                    personBuilder.add("manages", departmentId);
+                    personBuilder.put("manages", departmentId);
                 }
 
                 if (personIndex > 0 && personIndex % 3 == 0) {
-                    final JsonArrayBuilder relatedBuilder = Json.createArrayBuilder();
+                    final var relatedBuilder = new ArrayList<>();
                     relatedBuilder.add("http://example.com/person" + (personIndex - 1));
 
                     if (personIndex < elementCount - 1) {
@@ -123,48 +110,42 @@ class FramingReversePerformanceTest {
                         relatedBuilder.add("http://example.com/person" + (personIndex - 5));
                     }
 
-                    personBuilder.add("relatedTo", relatedBuilder);
+                    personBuilder.put("relatedTo", relatedBuilder);
                 }
 
                 final int itemsPerPerson = 3;
                 for (int itemOffset = 0; itemOffset < itemsPerPerson; itemOffset++) {
 
                     final int itemIndex = personIndex * itemsPerPerson + itemOffset;
-                    final JsonObjectBuilder itemBuilder = Json.createObjectBuilder()
-                            .add("@id", "http://example.com/item" + itemIndex)
-                            .add("@type", "Item")
-                            .add("name", "Item " + itemIndex)
-                            .add("parent", "http://example.com/person" + personIndex);
+                    final var itemBuilder = new HashMap<String, Object>(Map.of(
+                            "@id", "http://example.com/item" + itemIndex,
+                            "@type", "Item",
+                            "name", "Item " + itemIndex,
+                            "parent", "http://example.com/person" + personIndex));
 
                     if (itemOffset > 0) {
-                        itemBuilder.add("child", "http://example.com/item" + (itemIndex - 1));
+                        itemBuilder.put("child", "http://example.com/item" + (itemIndex - 1));
                     }
 
-                    dataBuilder.add(itemBuilder);
+                    data.add(itemBuilder);
                 }
 
-                dataBuilder.add(personBuilder);
+                data.add(personBuilder);
             }
         }
 
-        return Json.createObjectBuilder()
-                .add("@context", contextBuilder)
-                .add("@graph", dataBuilder)
-                .build();
+        return Map.of(
+                "@context", Map.of("@vocab", "http://example.com/vocab#"),
+                "@graph", data);
     }
 
-    private JsonObject buildTestFrame() {
-        return Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder()
-                        .add("@vocab", "http://example.com/vocab#"))
-                .add("@type", "Person")
-                .add("@reverse", Json.createObjectBuilder()
-                        .add("memberOf", Json.createObjectBuilder()
-                                .add("@type", "Department"))
-                        .add("parent", Json.createObjectBuilder()
-                                .add("@type", "Item"))
-                        .add("relatedTo", Json.createObjectBuilder()
-                                .add("@type", "Person")))
-                .build();
+    private Map<String, Object> buildTestFrame() {
+        return Map.of(
+                "@context", Map.of("@vocab", "http://example.com/vocab#"),
+                "@type", "Person",
+                "@reverse", Map.of("memberOf", Map.of("@type", "Department")),
+                "parent", Map.of("@type", "Item"),
+                "relatedTo", Map.of("@type", "Person"));
+
     }
 }
