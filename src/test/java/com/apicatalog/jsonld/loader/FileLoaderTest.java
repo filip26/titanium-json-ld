@@ -27,12 +27,12 @@ import java.net.URL;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JakartaTestSuite;
+import com.apicatalog.jsonld.suite.SuiteConfig;
 import com.apicatalog.web.media.MediaType;
 
 class FileLoaderTest {
 
-    public static FileLoader FILE_LOADER = FileLoader.newInstance(JakartaTestSuite::read);
+    public static FileLoader FILE_LOADER = FileLoader.newInstance(SuiteConfig::read);
 
     @Test
     void testLoadJson() throws URISyntaxException, LoaderException {

@@ -30,8 +30,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.suite.SuiteConfig;
 import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestManifest;
 
@@ -60,7 +60,7 @@ class HttpLoaderTest {
 
         server.when("/no-ct", 200, List.of(), readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
-        var remote = JakartaTestSuite.HTTP_LOADER.loadDocument(
+        var remote = SuiteConfig.HTTP_LOADER.loadDocument(
                 URI.create(server.baseUrl() + "/no-ct"),
                 DocumentLoader.defaultOptions());
 
@@ -77,7 +77,7 @@ class HttpLoaderTest {
                 readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
         var ex = assertThrowsExactly(LoaderException.class,
-                () -> JakartaTestSuite.HTTP_LOADER
+                () -> SuiteConfig.HTTP_LOADER
                         .loadDocument(
                                 URI.create(server.baseUrl() + "/text.plain"),
                                 DocumentLoader.defaultOptions()));
@@ -94,14 +94,14 @@ class HttpLoaderTest {
                 List.of(Map.entry("Content-Type", "text/plain")),
                 readBytes("/com/apicatalog/jsonld/loader/document.json"));
 
-        var remote = JakartaTestSuite.HTTP_LOADER
+        var remote = SuiteConfig.HTTP_LOADER
                 .accept(contentType -> true)
                 .loadDocument(
                         URI.create(server.baseUrl() + "/text.plain"),
                         DocumentLoader.defaultOptions());
 
         // reset shared instance state
-        JakartaTestSuite.HTTP_LOADER.accept(HttpLoader.JSON_LD_CONTENT);
+        SuiteConfig.HTTP_LOADER.accept(HttpLoader.JSON_LD_CONTENT);
 
         assertNotNull(remote);
     }
@@ -112,7 +112,7 @@ class HttpLoaderTest {
         server.listen(Duration.ofSeconds(5));
 
         var ex = assertThrowsExactly(LoaderException.class,
-                () -> JakartaTestSuite.HTTP_LOADER
+                () -> SuiteConfig.HTTP_LOADER
                         .timeout(Duration.ofMillis(200))
                         .loadDocument(
                                 URI.create(server.baseUrl() + "/text.plain"),
@@ -121,7 +121,7 @@ class HttpLoaderTest {
         server.hangup();
 
         // reset shared instance state
-        JakartaTestSuite.HTTP_LOADER.timeout(Duration.ofSeconds(5));
+        SuiteConfig.HTTP_LOADER.timeout(Duration.ofSeconds(5));
 
         assertEquals(LoaderException.ErrorCode.TIMEOUT, ex.code());
     }

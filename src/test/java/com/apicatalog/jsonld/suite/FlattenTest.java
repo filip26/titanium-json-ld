@@ -13,32 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.std;
+package com.apicatalog.jsonld.suite;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
-@DisplayName(value = "Flatten")
+@DisplayName(value = "W3C Suite Flatten")
 public class FlattenTest {
 
-    @BeforeAll
-    public static void beforeAll() {
-        assumeTrue(SuiteEvironment.isRunning);
-    }
-    
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "jsonLdApi" })
     void testFlatten(TestCase testCase) {
@@ -50,7 +42,7 @@ public class FlattenTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "flatten-manifest.jsonld",
-                        SuiteEvironment.LOADER)
+                        SuiteConfig.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
         ;

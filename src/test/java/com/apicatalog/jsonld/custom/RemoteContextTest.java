@@ -32,12 +32,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.apicatalog.jsonld.Comparison;
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.CacheLoader;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
+import com.apicatalog.jsonld.suite.SuiteConfig;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.model.RdfQuad;
 import com.apicatalog.rdf.nquads.NQuadsReader;
@@ -47,7 +47,7 @@ import com.apicatalog.web.media.MediaType;
 
 class RemoteContextTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::read);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read);
 
     /**
      * @see <a href="https://github.com/filip26/titanium-json-ld/issues/61">Issue
@@ -174,7 +174,7 @@ class RemoteContextTest {
 
             long start = System.nanoTime();
 
-            final var loader = CacheLoader.of(JakartaTestSuite.HTTP_LOADER, 256);
+            final var loader = CacheLoader.of(SuiteConfig.HTTP_LOADER, 256);
 
             final var result = JsonLd.expand((Map) document, Options.with(loader));
 
@@ -193,7 +193,7 @@ class RemoteContextTest {
 
     private final Object read(final String name) throws JsonLdException, IOException {
         try (final var reader = new InputStreamReader(getClass().getResourceAsStream(name), StandardCharsets.UTF_8)) {
-            return JakartaTestSuite.read(MediaType.JSON, reader);
+            return SuiteConfig.read(MediaType.JSON, reader);
         }
     }
 }

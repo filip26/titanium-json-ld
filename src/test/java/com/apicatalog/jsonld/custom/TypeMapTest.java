@@ -27,13 +27,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.Document;
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.TypeMapCollector;
+import com.apicatalog.jsonld.suite.SuiteConfig;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
@@ -41,7 +41,7 @@ import com.apicatalog.web.media.MediaType;
 
 class TypeMapTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(JakartaTestSuite::read);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
@@ -54,7 +54,7 @@ class TypeMapTest {
             var options = testCase.getOptions();
 
             options.loader(StaticLoader.newBuilder()
-                    .reader(MediaType.JSON_LD, JakartaTestSuite::read)
+                    .reader(MediaType.JSON_LD, SuiteConfig::read)
                     .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")

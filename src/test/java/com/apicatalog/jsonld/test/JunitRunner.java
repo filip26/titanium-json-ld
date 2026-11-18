@@ -30,13 +30,13 @@ import java.util.Set;
 
 import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.Comparison;
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
+import com.apicatalog.jsonld.suite.SuiteConfig;
 import com.apicatalog.jsonld.test.TestCase.Type;
 import com.apicatalog.rdf.RdfComparison;
 import com.apicatalog.rdf.model.RdfQuad;
@@ -104,7 +104,7 @@ public class JunitRunner {
         if (testCase.type.contains(Type.FROM_RDF_TEST)) {
             return execute(options -> {
 
-                final var toLd = JsonLd.fromRdf(options).jsonReader(JakartaTestSuite::read);
+                final var toLd = JsonLd.fromRdf(options).jsonReader(SuiteConfig::read);
 
                 try {
 

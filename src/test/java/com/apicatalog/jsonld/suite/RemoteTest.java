@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.std;
+package com.apicatalog.jsonld.suite;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.jsonld.test.JunitRunner;
@@ -38,13 +36,13 @@ import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
+@DisplayName(value = "W3C Suite Remote")
 public class RemoteTest {
 
     static MockServer server = null;
 
     @BeforeAll
     static void startMockServer() throws JsonLdException {
-        assumeTrue(SuiteEvironment.isRunning);
         server = new MockServer(
                 TestManifest.TESTS_BASE,
                 TestManifest.JSON_LD_API_BASE);
@@ -74,7 +72,7 @@ public class RemoteTest {
                 Options expandOptions = Options.copyOf(options);
 
                 expandOptions.loader(
-                        UriRewriter.newBuilder(JakartaTestSuite.HTTP_LOADER)
+                        UriRewriter.newBuilder(SuiteConfig.HTTP_LOADER)
                                 .rebase(TestManifest.TESTS_BASE, server.baseUrl())
                                 .build());
 
@@ -91,7 +89,7 @@ public class RemoteTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "remote-doc-manifest.jsonld",
-                        SuiteEvironment.LOADER)
+                        SuiteConfig.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
         ;

@@ -35,7 +35,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.JakartaTestSuite;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
@@ -45,12 +44,13 @@ import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
+import com.apicatalog.jsonld.suite.SuiteConfig;
 import com.apicatalog.web.media.MediaType;
 
 class ExecutionTest {
 
     static final DocumentLoader UTOPIA_LOADER = StaticLoader.newBuilder()
-            .reader(MediaType.JSON_LD, JakartaTestSuite::read)
+            .reader(MediaType.JSON_LD, SuiteConfig::read)
             .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
             .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
             .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
@@ -129,7 +129,7 @@ class ExecutionTest {
 
     private final Object read(final String name) throws JsonLdException, IOException {
         try (final var reader = new InputStreamReader(getClass().getResourceAsStream(name), StandardCharsets.UTF_8)) {
-            return JakartaTestSuite.read(MediaType.JSON, reader);
+            return SuiteConfig.read(MediaType.JSON, reader);
         }
     }
 }

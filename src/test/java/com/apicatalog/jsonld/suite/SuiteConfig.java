@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld;
+package com.apicatalog.jsonld.suite;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -22,43 +22,24 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.time.Duration;
 
-import org.junit.platform.suite.api.AfterSuite;
-import org.junit.platform.suite.api.BeforeSuite;
-import org.junit.platform.suite.api.SelectClasses;
-import org.junit.platform.suite.api.Suite;
-import org.junit.platform.suite.api.SuiteDisplayName;
-
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.std.CompactorTest;
-import com.apicatalog.jsonld.std.ExpanderTest;
-import com.apicatalog.jsonld.std.FlattenTest;
-import com.apicatalog.jsonld.std.FramerTest;
-import com.apicatalog.jsonld.std.FromRdfTest;
-import com.apicatalog.jsonld.std.RemoteTest;
-import com.apicatalog.jsonld.std.ToRdfTest;
+import com.apicatalog.jsonld.loader.UriFilter;
+import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.jakarta.JakartaParser;
 import com.apicatalog.web.media.MediaType;
 
 import jakarta.json.Json;
 
-@Suite(failIfNoTests = true)
-@SuiteDisplayName("JSON-LD Suite (Jakarta)")
-@SelectClasses({
-        ExpanderTest.class,
-        FlattenTest.class,
-        CompactorTest.class,
-        FramerTest.class,
-        FromRdfTest.class,
-        ToRdfTest.class,
-        RemoteTest.class
-})
-public class JakartaTestSuite extends SuiteEvironment {
+public class SuiteConfig {
 
-//    public static final TreeParser PARSER = new JakartaParser();
-//
-//    public static final TreeRenderer RENDERER = new JakartaRenderer();
-
+    public static DocumentLoader LOADER = UriFilter.newBlacklist(new ZipResourceLoader(SuiteConfig::read))
+            .base("http:")
+            .base("https:")
+            .build();
+    
+    
     public static final HttpClient HTTP_CLIENT = HttpClient
             .newBuilder()
             .followRedirects(Redirect.NEVER)
@@ -66,18 +47,9 @@ public class JakartaTestSuite extends SuiteEvironment {
             .build();
 
     public static final HttpLoader HTTP_LOADER = HttpLoader
-            .newLoader(HTTP_CLIENT, JakartaTestSuite::read)
+            .newLoader(HTTP_CLIENT, SuiteConfig::read)
             .timeout(Duration.ofSeconds(5));
 
-    @BeforeSuite
-    public static void beforeSuite() {
-        start(JakartaTestSuite::read);
-    }
-
-    @AfterSuite
-    public static void afterSuite() {
-        stop();
-    }
 
     public static final Object read(MediaType contentType, Reader reader) {
         try (var parser = new JakartaParser(Json.createParser(reader))) {
@@ -87,4 +59,8 @@ public class JakartaTestSuite extends SuiteEvironment {
         }
     }
 
+    static void stop() {
+//        isRunning = false;
+        SuiteConfig.LOADER = null;
+    }
 }

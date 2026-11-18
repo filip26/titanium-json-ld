@@ -5,17 +5,17 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 ### ✨ Features
 
 - Full conformance with the W3C JSON-LD 1.1 specification  
-- Secure, stable, high-performance implementation backed by ~3,000 automated tests
+- Secure, stable, high-performance implementation backed by ~1,500 automated tests
 - Clean, intuitive, and customizable API
 
 ### 🚀 Coming in v2.0
 
 - Processing policies for undefined terms, dropped values, time/space constraints, disallowed keywords, and more
-- Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, URI blocker, LRU cache, in-memory
+- Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, URI filter, LRU cache, in-memory
 - Generalized processing utilizing native `Map`, `Collection`, `String`, `Number`, `Boolean`. 
 - JSON-LD-Star expansion (experimental)  
 - Generated TypeMap / TermMap (experimental)  
-- Zero external dependenciess
+- ZERO external dependenciess
 
 ### 📡 Status
 

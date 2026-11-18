@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apicatalog.jsonld.std;
+package com.apicatalog.jsonld.suite;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -31,19 +29,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.SuiteEvironment;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
-@DisplayName(value = "Compactor")
+@DisplayName(value = "W3C Suite Compact")
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class CompactorTest {
-
-    @BeforeAll
-    public static void beforeAll() {
-        assumeTrue(SuiteEvironment.isRunning);
-    }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "jsonLdApi" })
@@ -78,7 +70,7 @@ public class CompactorTest {
                 .load(
                         TestManifest.JSON_LD_API_BASE,
                         "compact-manifest.jsonld",
-                        SuiteEvironment.LOADER)
+                        SuiteConfig.LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
@@ -88,7 +80,7 @@ public class CompactorTest {
                 .load(
                         TestManifest.JSON_LD_STAR_BASE,
                         "compact-manifest.jsonld",
-                        SuiteEvironment.LOADER)
+                        SuiteConfig.LOADER)
                 .stream();
     }
 }

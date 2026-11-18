@@ -22,7 +22,7 @@ import java.util.Set;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.loader.LoaderException.ErrorCode;
 
-public final class UriBlocker implements DocumentLoader {
+public final class UriFilter implements DocumentLoader {
 
     private final Set<URI> uris;
 
@@ -32,7 +32,7 @@ public final class UriBlocker implements DocumentLoader {
 
     private final boolean blacklist;
 
-    private UriBlocker(
+    private UriFilter(
             boolean blacklist,
             Set<URI> uris,
             Set<String> bases,
@@ -106,8 +106,8 @@ public final class UriBlocker implements DocumentLoader {
             return this;
         }
 
-        public UriBlocker build() {
-            return new UriBlocker(
+        public UriFilter build() {
+            return new UriFilter(
                     blacklist,
                     Set.copyOf(uris),
                     Set.copyOf(bases),
