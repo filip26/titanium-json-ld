@@ -25,8 +25,6 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.test.TestCase.Type;
 
-import jakarta.json.JsonStructure;
-
 public class EarlRunner {
 
     private final TestCase testCase;
@@ -62,17 +60,17 @@ public class EarlRunner {
                 return false;
             }
 
-            if (result instanceof Set quads) {
+            if (result instanceof Set quads) {  //FIXME
                 return JunitRunner.validateQuads(testCase, options, quads, false);
             }
-
-            if (result instanceof JsonStructure json) {
-                return JunitRunner.validateJsonLd(
-                        testCase, 
-                        options, 
-                        json, 
-                        false);
-            }
+//
+//            if (result instanceof JsonStructure json) {
+//                return JunitRunner.validateJsonLd(
+//                        testCase, 
+//                        options, 
+//                        json, 
+//                        false);
+//            }
 
             return JunitRunner.validateJsonLd(
                     testCase,

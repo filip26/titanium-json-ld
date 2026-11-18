@@ -27,10 +27,9 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.UriFilter;
 import com.apicatalog.jsonld.loader.ZipResourceLoader;
 import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.jakarta.JakartaParser;
+import com.apicatalog.tree.io.jakcson.Jackson2Parser;
 import com.apicatalog.web.media.MediaType;
-
-import jakarta.json.Json;
+import com.fasterxml.jackson.core.JsonFactory;
 
 public class SuiteConfig {
 
@@ -52,7 +51,11 @@ public class SuiteConfig {
 
 
     public static final Object read(MediaType contentType, Reader reader) {
-        try (var parser = new JakartaParser(Json.createParser(reader))) {
+        try (var parser = new Jackson2Parser(
+                JsonFactory.builder().build().createParser(reader))
+//                Json.createParser(reader))
+                
+                ) {
             return Tree.read(parser);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

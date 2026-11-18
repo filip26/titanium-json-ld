@@ -61,7 +61,7 @@
         <rdfc.version>4.0.0</rdfc.version>
         
         <junit.version>6.1.3</junit.version>
-        <jakarta.json.version>2.0.1</jakarta.json.version>
+<!--        <jakarta.json.version>2.0.1</jakarta.json.version>-->
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -87,12 +87,12 @@
             <version>${rdf.api.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-jakarta</artifactId>
             <version>${tree-io.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-jackson2</artifactId>
@@ -117,12 +117,12 @@
             <version>${rdfc.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
             <version>${jakarta.json.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

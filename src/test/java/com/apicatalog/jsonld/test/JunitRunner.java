@@ -25,7 +25,6 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import com.apicatalog.jcs.Jcs;
@@ -45,17 +44,16 @@ import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.apicatalog.rdf.provider.QuadEmitter;
 import com.apicatalog.rdf.provider.QuadSetProvider;
 import com.apicatalog.tree.io.Tree;
-import com.apicatalog.tree.io.jakarta.JakartaEmitter;
-
-import jakarta.json.Json;
-import jakarta.json.JsonStructure;
-import jakarta.json.stream.JsonGenerator;
-import jakarta.json.stream.JsonGeneratorFactory;
+import com.apicatalog.tree.io.jakcson.Jackson2Emitter;
+import com.fasterxml.jackson.core.JsonFactory;
 
 public class JunitRunner {
 
-    public static final JsonGeneratorFactory JSON_GENERATOR_FACTORY = Json.createGeneratorFactory(
-            Map.of(JsonGenerator.PRETTY_PRINTING, true));
+    public static final JsonFactory JSON_GENERATOR_FACTORY = JsonFactory.builder()
+            .build();
+    
+//    public static final JsonGeneratorFactory JSON_GENERATOR_FACTORY = Json.createGeneratorFactory(
+//            Map.of(JsonGenerator.PRETTY_PRINTING, true));
 
     private final TestCase testCase;
 
@@ -147,8 +145,8 @@ public class JunitRunner {
             assertNotNull(result, "A result is expected but got null");
 
             if (testCase.expectErrorCode != null) {
-                if (result instanceof JsonStructure) {
-                    write(testCase, (JsonStructure) result, null, null);
+                if (result != null) {
+                    write(testCase, result, null, null);
                 }
                 fail("Expected error [" + testCase.expectErrorCode + "] but got " + result + "");
                 return false;
@@ -314,7 +312,7 @@ public class JunitRunner {
 
     public static final void write(
             PrintWriter writer,
-            JsonGeneratorFactory generator,
+            JsonFactory generator,
             String name,
             Object result) {
 
@@ -322,7 +320,10 @@ public class JunitRunner {
 
         final StringWriter out = new StringWriter();
 
-        try (var jsonWriter = new JakartaEmitter(generator.createGenerator(out))) {
+        try (var jsonWriter = new Jackson2Emitter(generator
+                .createGenerator(out)
+                .useDefaultPrettyPrinter()
+                )) {
             Tree.write(result, jsonWriter);
 
         } catch (IOException e) {

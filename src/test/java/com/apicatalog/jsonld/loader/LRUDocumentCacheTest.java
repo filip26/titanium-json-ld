@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader.Options;
 
-import jakarta.json.JsonValue;
-
 public class LRUDocumentCacheTest {
 
     static class Request {
@@ -49,7 +47,7 @@ public class LRUDocumentCacheTest {
         public Document loadDocument(URI url, Options options) {
             requests.add(new Request(url, options));
             // Return empty document.
-            return new Document(null, JsonValue.EMPTY_JSON_ARRAY, null, null, null);
+            return new Document(null, List.of(), null, null, null);
         }
 
     }
