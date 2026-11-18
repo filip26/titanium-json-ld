@@ -210,7 +210,12 @@ public final class TermDefinitionBuilder {
             // 9.
             propertyGetter = name -> map.get(name);
             valueObjectKeys = map.keySet();
-            idValue = map.get(Keywords.ID);
+            if (map.containsKey(Keywords.ID)) {
+                var id = map.get(Keywords.ID);
+                idValue = id != null ? id : false;
+            } else {
+                idValue = null;
+            }
             simpleTerm = false;
 
         } else {
