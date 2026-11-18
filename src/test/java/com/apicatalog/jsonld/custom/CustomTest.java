@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.suite.SuiteConfig;
@@ -31,7 +32,7 @@ import com.apicatalog.jsonld.test.TestManifest;
 
 public class CustomTest {
 
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read, null);
+    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read, JsonLd.class);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")

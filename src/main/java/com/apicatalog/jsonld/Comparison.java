@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -79,9 +81,12 @@ public final class Comparison {
             return false;
         }
 
+        if (value1 instanceof Number n1 && value2 instanceof Number n2) {
+            return toBigDecimal(n1).equals(toBigDecimal(n2));
+        }
+
         if (value1 instanceof Map map1 && value2 instanceof Map map2) {
             return objectEquals(map1, map2);
-
         }
 
         if (value1 instanceof Collection col1 && value2 instanceof Collection col2) {
@@ -89,7 +94,6 @@ public final class Comparison {
         }
 
         if (value1 instanceof String && value2 instanceof String
-                || value1 instanceof Number && value2 instanceof Number
                 || value2 instanceof Boolean && value2 instanceof Boolean) {
             return value1.equals(value2);
         }
@@ -112,6 +116,7 @@ public final class Comparison {
         for (final var entry1 : map1.entrySet()) {
 
             final var prop2 = map2.get(entry1.getKey());
+
             if (!equals(
                     entry1.getValue(),
                     prop2,
@@ -182,4 +187,17 @@ public final class Comparison {
         return remaining.isEmpty();
     }
 
+    private static BigDecimal toBigDecimal(Number number) {
+        return switch (number) {
+        case BigDecimal bd -> bd;
+        case BigInteger bi -> new BigDecimal(bi);
+        case Float f -> BigDecimal.valueOf(f.doubleValue());
+        case Double d -> BigDecimal.valueOf(d);
+        case Long l -> BigDecimal.valueOf(l);
+        case Integer i -> BigDecimal.valueOf(i);
+        case Short s -> BigDecimal.valueOf(s);
+        case Byte b -> BigDecimal.valueOf(b);
+        default -> new BigDecimal(number.toString());
+        };
+    }
 }
