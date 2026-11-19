@@ -17,17 +17,22 @@ package com.apicatalog.jsonld.flattening;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
 public final class NodeMap {
 
+    private static final int DUPLICATE_INDEX_THRESHOLD = 32;
+
     private final Map<String, Map<String, Map<String, Object>>> index;
+    private final Map<String, Map<String, Map<String, Set<Object>>>> valueIndex;
 
     private final BlankNodeIdGenerator generator;
 
@@ -38,6 +43,7 @@ public final class NodeMap {
     public NodeMap(BlankNodeIdGenerator generator) {
         this.index = new LinkedHashMap<>();
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.valueIndex = new LinkedHashMap<>();
         this.generator = generator;
     }
 
@@ -45,6 +51,61 @@ public final class NodeMap {
         index.computeIfAbsent(graphName, x -> new LinkedHashMap<>())
                 .computeIfAbsent(subject, x -> new LinkedHashMap<>())
                 .put(property, value);
+
+        updateExistingValueIndex(graphName, subject, property, value);
+    }
+
+    public boolean appendUnique(String graphName, String subject, String property, Object value) {
+        final var current = get(graphName, subject, property);
+
+        if (current == null) {
+            index.computeIfAbsent(graphName, x -> new LinkedHashMap<>())
+                    .computeIfAbsent(subject, x -> new LinkedHashMap<>())
+                    .put(property, Set.of(value));
+            return true;
+        }
+
+        if (current instanceof Collection<?> collection) {
+
+            if (!hasValueIndex(graphName, subject, property)) {
+                if (collection.contains(value)) {
+                    return false;
+                }
+
+                if (collection.size() < DUPLICATE_INDEX_THRESHOLD) {
+                    return appendValue(graphName, subject, property, current, value);
+                }
+            }
+
+            final var values = valueIndex(graphName, subject, property);
+
+            if (!values.add(value)) {
+                return false;
+            }
+        } else if (current.equals(value)) {
+            return false;
+        }
+
+        return appendValue(graphName, subject, property, current, value);
+    }
+
+    private boolean appendValue(String graphName, String subject, String property, Object current, Object value) {
+        if (current instanceof ArrayList array) {
+            @SuppressWarnings("unchecked")
+            final var typedArray = (List<Object>) array;
+            typedArray.add(value);
+            return true;
+        }
+
+        if (current instanceof Collection<?> collection) {
+            final var updated = new ArrayList<Object>(collection);
+            updated.add(value);
+            index.get(graphName).get(subject).put(property, updated);
+            return true;
+        }
+
+        index.get(graphName).get(subject).put(property, List.of(current, value));
+        return true;
     }
 
     public Optional<Map<String, Map<String, Object>>> find(String graphName) {
@@ -168,6 +229,61 @@ public final class NodeMap {
 
         if (result.index.get(Keywords.MERGED) != null) {
             index.put(Keywords.MERGED, result.index.get(Keywords.MERGED));
+        }
+    }
+
+    private Set<Object> valueIndex(String graphName, String subject, String property) {
+        return valueIndex
+                .computeIfAbsent(graphName, x -> new LinkedHashMap<>())
+                .computeIfAbsent(subject, x -> new LinkedHashMap<>())
+                .computeIfAbsent(property, x -> seedValueIndex(graphName, subject, property));
+    }
+
+    private boolean hasValueIndex(String graphName, String subject, String property) {
+        return Optional.ofNullable(valueIndex.get(graphName))
+                .map(graph -> graph.get(subject))
+                .map(properties -> properties.containsKey(property))
+                .orElse(false);
+    }
+
+    private Set<Object> seedValueIndex(String graphName, String subject, String property) {
+        final var values = new LinkedHashSet<Object>();
+        final var current = get(graphName, subject, property);
+
+        if (current instanceof Collection<?> collection) {
+            values.addAll(collection);
+
+        } else if (current != null) {
+            values.add(current);
+        }
+
+        return values;
+    }
+
+    private void updateExistingValueIndex(String graphName, String subject, String property, Object value) {
+
+        final var graphIndex = valueIndex.get(graphName);
+        if (graphIndex == null) {
+            return;
+        }
+
+        final var subjectIndex = graphIndex.get(subject);
+        if (subjectIndex == null) {
+            return;
+        }
+
+        final var values = subjectIndex.get(property);
+        if (values == null) {
+            return;
+        }
+
+        values.clear();
+
+        if (value instanceof Collection<?> collection) {
+            values.addAll(collection);
+
+        } else if (value != null) {
+            values.add(value);
         }
     }
 }
