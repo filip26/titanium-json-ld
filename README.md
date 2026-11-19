@@ -175,7 +175,7 @@ Convert JSON-LD written in plain Java into RDF using a custom static document lo
 static DocumentLoader loader = StaticLoader.newBuilder()
     .document(
         "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
-        Document.of(Tree.of(Map.of(
+        Document.of(Map.of(
             "@context", Map.of(
                 "name", "http://xmlns.com/foaf/0.1/name",
                 "project", Map.of(
@@ -184,7 +184,7 @@ static DocumentLoader loader = StaticLoader.newBuilder()
                 "Person", "http://xmlns.com/foaf/0.1/Person",
                 "modified", Map.of(
                         "@id", "https://schema.org/dateModified",
-                        "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))))))
+                        "@type", "http://www.w3.org/2001/XMLSchema#dateTime")))))
     .build();
 
 Map<String, String> document = Map.of(
@@ -196,10 +196,12 @@ Map<String, String> document = Map.of(
 
 var writer = new StringWriter();
 
-JsonLd.toRdf(
-    document, 
-    new NQuadsWriter(writer), 
-    Options.with(loader));
+try (var nquadsWriter = new NQuadsWriter(writer)) {
+    JsonLd.toRdf(
+        document, 
+        nquadsWriter, 
+        Options.with(loader));
+}
 
 System.out.println(writer.toString());
 // prints
@@ -207,7 +209,6 @@ System.out.println(writer.toString());
 // _:b0 <http://xmlns.com/foaf/0.1/name> "Filip Kolařík" .
 // _:b0 <http://xmlns.com/foaf/0.1/project> <https://github.com/filip26/titanium-json-ld> .
 // _:b0 <https://schema.org/dateModified> "2025-11-25T01:02:03Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-
 ```
 
 ## ⚙️ Installation
