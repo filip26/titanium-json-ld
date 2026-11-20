@@ -25,7 +25,7 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 #### 🧬 Experimental
 
-- JSON-LD-Star expansion
+- JSON-LD-star expansion
 - Generated type and term maps
 
 ### 🧩 Libraries & Tools
