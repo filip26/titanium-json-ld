@@ -15,55 +15,46 @@
  */
 package com.apicatalog.jsonld.tordf;
 
-import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.tordf.JsonLdToQuads.QuadConsumer;
 
-class RdfQuadEmitter implements RdfTripleConsumer {
+class QuadEmitter implements TripleConsumer {
 
-    protected final QuadConsumer consumer;
-    protected String graph;
+    private final QuadConsumer consumer;
+    private String graph;
 
-    protected RdfQuadEmitter(QuadConsumer consumer) {
+    QuadEmitter(QuadConsumer consumer) {
         this.consumer = consumer;
         this.graph = null;
     }
 
-    public static RdfTripleConsumer newEmitter(QuadConsumer consumer) {
-        return new RdfQuadEmitter(consumer);
-    }
-
     @Override
-    public RdfTripleConsumer defaultGraph() {
+    public void defaultGraph() {
         this.graph = null;
-        return this;
     }
 
     @Override
-    public RdfTripleConsumer namedGraph(String graph) {
+    public void namedGraph(String graph) {
         this.graph = graph;
-        return this;
     }
 
     @Override
-    public RdfTripleConsumer triple(String subject, String predicate, String object) {
+    public void triple(String subject, String predicate, String object) {
         consumer.quad(subject, predicate, object, null, null, null, graph);
-        return this;
     }
 
     @Override
-    public RdfTripleConsumer triple(String subject, String predicate, String literal, String datatype) {
+    public void triple(String subject, String predicate, String literal, String datatype) {
         consumer.quad(subject, predicate, literal, datatype, null, null, graph);
-        return this;
     }
 
     @Override
-    public RdfTripleConsumer triple(String subject, String predicate, String literal, String language,
+    public void triple(
+            String subject,
+            String predicate,
+            String literal,
+            String datatype,
+            String language,
             String direction) {
-        if (direction != null) {
-            consumer.quad(subject, predicate, literal, Terms.RDF_I18N_BASE, language, direction, graph);
-        } else {
-            consumer.quad(subject, predicate, literal, Terms.XSD_STRING, language, direction, graph);
-        }
-        return this;
+        consumer.quad(subject, predicate, literal, datatype, language, direction, graph);
     }
 }

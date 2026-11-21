@@ -140,7 +140,7 @@ public final class JsonLdToQuads {
      *                         document into RDF
      */
     public void emit(QuadConsumer consumer) throws JsonLdException {
-        emit(RdfQuadEmitter.newEmitter(consumer));
+        emit(new QuadEmitter(consumer));
     }
 
     /**
@@ -218,7 +218,7 @@ public final class JsonLdToQuads {
         return this;
     }
 
-    private void emit(RdfTripleConsumer consumer) throws JsonLdException {
+    private void emit(TripleConsumer consumer) throws JsonLdException {
 
         final var graphNames = new ArrayList<>(nodeMap.graphs());
         Collections.sort(graphNames);
@@ -318,7 +318,7 @@ public final class JsonLdToQuads {
      * Object to RDF Conversion</a>
      */
     private void fromObject(
-            final RdfTripleConsumer consumer,
+            final TripleConsumer consumer,
             final Map<String, ?> item,
             final String subject,
             final String predicate) throws JsonLdException {
@@ -426,13 +426,6 @@ public final class JsonLdToQuads {
                 }
 
             }
-
-            // 12.
-        } else if (datatype == null) {
-
-            datatype = item.containsKey(Keywords.LANGUAGE)
-                    ? Terms.RDF_LANG_STRING
-                    : Terms.XSD_STRING;
         }
 
         if (valueString == null) {
@@ -447,72 +440,108 @@ public final class JsonLdToQuads {
         }
 
         // 13.
-        if (item.containsKey(Keywords.DIRECTION) && rdfDirection != null) {
+        if (item.containsKey(Keywords.DIRECTION)) {
 
-            // 13.2.
-            if (RdfDirection.I18N_DATATYPE == rdfDirection) {
+            final var directionValue = item.get(Keywords.DIRECTION);
 
-                final var language = item.get(Keywords.LANGUAGE) instanceof String langString
-                        ? langString.toLowerCase()
-                        : "";
+            if (directionValue instanceof String direction) {
 
+                if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
+
+                    final String blankNodeId = nodeMap.createIdentifier();
+
+                    // 13.3.2.
+                    consumer.triple(
+                            blankNodeId,
+                            Terms.RDF_VALUE,
+                            valueString,
+                            Terms.XSD_STRING);
+
+                    // 13.3.3.
+                    if (item.get(Keywords.LANGUAGE) instanceof String langString) {
+                        consumer.triple(
+                                blankNodeId,
+                                Terms.RDF_LANGUAGE,
+                                langString.toLowerCase(),
+                                Terms.XSD_STRING);
+                    }
+
+                    // 13.3.4.
+                    consumer.triple(
+                            blankNodeId,
+                            Terms.RDF_DIRECTION,
+                            (String) item.get(Keywords.DIRECTION),
+                            Terms.XSD_STRING);
+
+                    consumer.triple(subject, predicate, blankNodeId);
+                    return;
+                }
+
+                if (rdfDirection != null) {
+
+                    final var language = item.get(Keywords.LANGUAGE) instanceof String langString
+                            ? langString.toLowerCase()
+                            : null;
+
+                    if (datatype == null) {
+                        datatype = switch (rdfDirection) {
+                        case I18N_DATATYPE -> Terms.RDF_I18N_BASE;
+                        case DIR_LANG_STRING -> Terms.RDF_DIR_LANG_STRING;
+                        default -> null;
+                        };
+                    }
+
+                    consumer.triple(
+                            subject,
+                            predicate,
+                            valueString,
+                            datatype,
+                            language,
+                            direction);
+                    return;
+                }
+
+                enforcePolicy(
+                        "RDF direction [{0}] has been omitted because RDF direction policy is not set.",
+                        direction);
+
+            } else {
+                enforcePolicy(
+                        "Invalid RDF direction [{0}] has been omitted.",
+                        directionValue);
+            }
+        }
+
+        if (item.containsKey(Keywords.LANGUAGE)) {
+
+            final var langValue = item.get(Keywords.LANGUAGE);
+
+            if (langValue instanceof String langString) {
                 consumer.triple(
                         subject,
                         predicate,
                         valueString,
-                        language,
-                        (String) item.get(Keywords.DIRECTION));
-
-                // 13.3.
-            } else if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
-
-                final String blankNodeId = nodeMap.createIdentifier();
-
-                // 13.3.2.
-                consumer.triple(
-                        blankNodeId,
-                        Terms.RDF_VALUE,
-                        valueString,
-                        Terms.XSD_STRING);
-
-                // 13.3.3.
-                if (item.get(Keywords.LANGUAGE) instanceof String langString) {
-                    consumer.triple(
-                            blankNodeId,
-                            Terms.RDF_LANGUAGE,
-                            langString.toLowerCase(),
-                            Terms.XSD_STRING);
-                }
-
-                // 13.3.4.
-                consumer.triple(
-                        blankNodeId,
-                        Terms.RDF_DIRECTION,
-                        (String) item.get(Keywords.DIRECTION),
-                        Terms.XSD_STRING);
-
-                consumer.triple(subject, predicate, blankNodeId);
+                        datatype != null
+                                ? datatype
+                                : Terms.RDF_LANG_STRING,
+                        langString,
+                        null);
                 return;
             }
 
-            // 14.
-        } else {
-            if (item.get(Keywords.LANGUAGE) instanceof String langString) {
-                consumer.triple(
-                        subject,
-                        predicate,
-                        valueString,
-                        langString,
-                        null);
+            enforcePolicy(
+                    "Invalid RDF language tag [{0}] has been omitted.",
+                    langValue);
 
-            } else {
-                consumer.triple(
-                        subject,
-                        predicate,
-                        valueString,
-                        datatype);
-            }
         }
+
+        consumer.triple(
+                subject,
+                predicate,
+                valueString,
+                datatype != null
+                        ? datatype
+                        : Terms.XSD_STRING);
     }
 
     /*
@@ -520,7 +549,7 @@ public final class JsonLdToQuads {
      * to RDF Conversion</a>
      */
     private void fromList(
-            final RdfTripleConsumer consumer,
+            final TripleConsumer consumer,
             final Collection<Map<String, Object>> list,
             final String subject,
             final String predicate) throws JsonLdException {

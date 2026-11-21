@@ -49,10 +49,6 @@ public final class Terms {
 
     public static final String RDF_JSON = "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON";
 
-    public static final String RDF_LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
-
-    public static final String RDF_DIR_LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString";
-
     public static final String RDF_LIST = "http://www.w3.org/1999/02/22-rdf-syntax-ns#List";
 
     public static final String RDF_VALUE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
@@ -60,6 +56,10 @@ public final class Terms {
     public static final String RDF_LANGUAGE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#language";
 
     public static final String RDF_I18N_BASE = "https://www.w3.org/ns/i18n#";
+
+    public static final String RDF_LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+
+    public static final String RDF_DIR_LANG_STRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString";
 
     /*
      * @see <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">IANA

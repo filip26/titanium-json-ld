@@ -26,15 +26,13 @@ package com.apicatalog.jsonld.tordf;
  * This interface minimizes unnecessary object instantiation, enhancing
  * efficiency in RDF data processing.
  */
-interface RdfTripleConsumer {
+interface TripleConsumer {
 
     /**
      * Sets the default graph as the active scope. This method is invoked when
      * triples belong to the unnamed default graph.
-     * 
-     * @return An instance enabling fluent programming; never {@code null}.
      */
-    RdfTripleConsumer defaultGraph();
+    void defaultGraph();
 
     /**
      * Sets a named graph as the active scope. Ensures that subsequent triples are
@@ -42,10 +40,8 @@ interface RdfTripleConsumer {
      * 
      * @param graph The name of the graph (URI or blank node identifier prefixed
      *              with "_:"); never {@code null}.
-     * 
-     * @return An instance enabling fluent programming; never {@code null}.
      */
-    RdfTripleConsumer namedGraph(String graph);
+    void namedGraph(String graph);
 
     /**
      * Accepts an RDF triple where the object is an URI or a blank node. The triple
@@ -56,10 +52,8 @@ interface RdfTripleConsumer {
      * @param predicate The predicate of the triple (URI); never {@code null}.
      * @param object    The object of the triple (URI or blank node identifier
      *                  prefixed with "_:"); never {@code null}.
-     * 
-     * @return An instance enabling fluent programming; never {@code null}.
      */
-    RdfTripleConsumer triple(
+    void triple(
             String subject,
             String predicate,
             String object);
@@ -74,10 +68,8 @@ interface RdfTripleConsumer {
      * @param predicate The predicate of the triple (URI); never {@code null}.
      * @param literal   The literal value of the object; never {@code null}.
      * @param datatype  The datatype URI of the literal; never {@code null}.
-     * 
-     * @return An instance enabling fluent programming; never {@code null}.
      */
-    RdfTripleConsumer triple(
+    void triple(
             String subject,
             String predicate,
             String literal,
@@ -92,16 +84,17 @@ interface RdfTripleConsumer {
      *                  prefixed with "_:"); never {@code null}.
      * @param predicate The predicate of the triple (URI); never {@code null}.
      * @param literal   The literal value of the object; never {@code null}.
-     * @param language  The language tag of the literal; never {@code null}.
+     * @param datatype  The datatype URI of the literal; never {@code null}.
+     * @param language  The language tag of the literal; (optional, may be
+     *                  {@code null}).
      * @param direction The text direction of the literal (optional, may be
      *                  {@code null}).
-     * 
-     * @return An instance enabling fluent programming; never {@code null}.
      */
-    RdfTripleConsumer triple(
+    void triple(
             String subject,
             String predicate,
             String literal,
+            String datatype,
             String language,
             String direction);
 }

@@ -67,7 +67,9 @@ public final class Options {
         /** Use internationalization datatype representation. */
         I18N_DATATYPE,
         /** Use compound literal representation. */
-        COMPOUND_LITERAL
+        COMPOUND_LITERAL,
+        /** RDF 1.2 {@code rdf:dirLangString} type */
+        DIR_LANG_STRING,
     }
 
     /**
@@ -452,7 +454,7 @@ public final class Options {
      * </p>
      *
      * @param enable {@code true} to enable array compaction; {@code false}
-     *                      otherwise
+     *               otherwise
      * @return this {@link Options} instance, for method chaining
      */
     public Options compactArrays(boolean enable) {
@@ -464,8 +466,8 @@ public final class Options {
      * Sets whether URIs are compacted relative to the base URI or document location
      * during compaction.
      *
-     * @param enable {@code true} to enable relative compaction;
-     *                          {@code false} to disable it
+     * @param enable {@code true} to enable relative compaction; {@code false} to
+     *               disable it
      * @return this {@link Options} instance, for method chaining
      */
     public Options compactToRelative(boolean enable) {
@@ -490,7 +492,7 @@ public final class Options {
      * input.
      *
      * @param enable {@code true} to extract all JSON-LD script elements;
-     *                          {@code false} otherwise
+     *               {@code false} otherwise
      * @return this {@link Options} instance, for method chaining
      */
     public Options extractAllScripts(boolean enable) {
@@ -558,8 +560,7 @@ public final class Options {
      * JSON-LD</strong>, instead of using typed string values (e.g.,
      * {@code "xsd:boolean"} or {@code "xsd:integer"}).
      *
-     * @param enable whether to use native JSON types when converting from
-     *                       RDF
+     * @param enable whether to use native JSON types when converting from RDF
      * @return this {@link Options} instance, for method chaining
      */
     public Options useNativeTypes(boolean enable) {
@@ -572,8 +573,8 @@ public final class Options {
      * {@code @type} instead of generating {@code rdf:type} statements when
      * converting <strong>from RDF to JSON-LD</strong>.
      *
-     * @param enable whether to use {@code rdf:type} instead of {@code @type}
-     *                   when converting from RDF
+     * @param enable whether to use {@code rdf:type} instead of {@code @type} when
+     *               converting from RDF
      * @return this {@link Options} instance, for method chaining
      */
     public Options useRdfType(boolean enable) {
@@ -774,8 +775,8 @@ public final class Options {
      * Sets whether framing output should omit the top-level graph container when
      * only a single node exists.
      *
-     * @param enable {@code true} to omit the graph; {@code false} to include it;
-     *                  or {@code null} to use the default behavior
+     * @param enable {@code true} to omit the graph; {@code false} to include it; or
+     *               {@code null} to use the default behavior
      * @return this {@link Options} instance, for method chaining
      */
     public Options omitGraph(Boolean enable) {
@@ -976,8 +977,8 @@ public final class Options {
     }
 
     /**
-     * Set the processing policy on how proceed with dropped free floating or malformed nodes
-     * during expansion. {@link ProcessingPolicy#Ignore} by default.
+     * Set the processing policy on how proceed with dropped free floating or
+     * malformed nodes during expansion. {@link ProcessingPolicy#Ignore} by default.
      * 
      * @param the policy to apply when free floating nodes to drop appears
      * @return this {@link Options} instance, for method chaining
