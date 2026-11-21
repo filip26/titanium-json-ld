@@ -79,8 +79,7 @@ class NativeInputTest {
 
         JsonLd.toRdf(JSON_LD,
                 new QuadSetProvider(set)::quad,
-                Options.with(UUID_LOADER)
-                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
+                Options.with(UUID_LOADER));
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-0-quads.nq");
         assertNotNull(expected);
@@ -153,8 +152,7 @@ class NativeInputTest {
         JsonLd.toRdf(
                 PL_2_COMPACTED,
                 new QuadSetProvider(set)::quad,
-                Options.newOptions()
-                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
+                Options.newOptions());
 
         final var expected = readNQuads("/com/apicatalog/jsonld/test/pl-2-quads.nq");
         assertNotNull(expected);

@@ -76,10 +76,10 @@ public final class RdfEmitter {
     }
 
     public static final void toRdf(
-            final Map<String, ?> input,
-            final QuadConsumer consumer,
-            final Options options,
-            final Execution runtime) throws JsonLdException {
+            Map<String, ?> input,
+            QuadConsumer consumer,
+            Options options,
+            Execution runtime) throws JsonLdException {
 
         final Options expansionOptions = Options.copyOf(options);
 
@@ -98,20 +98,16 @@ public final class RdfEmitter {
     }
 
     public static final void toRdf(
-            final Collection<?> expanded,
-            final QuadConsumer consumer,
-            final Options options,
-            final Execution runtime) throws JsonLdException {
-
-        if (options.rdfJsonLiteralWriter() == null) {
-            throw new IllegalArgumentException("RDF JSON literal writer must be set, e.g. JCS.");
-        }
-
+            Collection<?> expanded,
+            QuadConsumer consumer,
+            Options options,
+            Execution runtime) throws JsonLdException {
         JsonLdToQuads
-                .with(new NodeMapBuilder(expanded, new NodeMap()).build(), options.rdfJsonLiteralWriter())
-                .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
+                .with(new NodeMapBuilder(expanded, new NodeMap()).build())
+                .generalizedRdf(options.isProduceGeneralizedRdf())
                 .rdfDirection(options.rdfDirection())
                 .uriValidation(options.uriValidation())
-                .provide(consumer);
+                .jsonWriter(options.rdfJsonWriter())
+                .emit(consumer);
     }
 }

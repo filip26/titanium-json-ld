@@ -16,17 +16,17 @@
 package com.apicatalog.jsonld;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.framing.Frame.Embed;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.tordf.JsonLdToQuads;
-import com.apicatalog.jsonld.tordf.JsonLdToQuads.JsonLiteralWriter;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
@@ -136,7 +136,7 @@ public final class Options {
 
     private boolean useRdfType;
 
-    private JsonLiteralWriter rdfJsonLiteralWriter;
+    private Function<Object, String> rdfJsonLiteralWriter;
 
     // Framing https://www.w3.org/TR/json-ld11-framing/#jsonldoptions
 
@@ -151,7 +151,7 @@ public final class Options {
     private boolean requiredAll;
 
     // Extension: JSON-LD-STAR (Experimental) https://json-ld.github.io/json-ld-star
-    private boolean rdfStar;
+    private boolean rdfstar;
 
     // custom
 
@@ -168,6 +168,7 @@ public final class Options {
     // a policy on how proceed with undefined terms during expansion
     private ProcessingPolicy undefinedTerms;
 
+    // a policy on how proceed with dropped nodes during to RDF transformation
     private ProcessingPolicy droppedNodes;
 
     private Options() {
@@ -194,7 +195,7 @@ public final class Options {
         this.requiredAll = false;
 
         // Extension: JSON-LD-STAR (Experimental)
-        this.rdfStar = DEFAULT_RDF_STAR;
+        this.rdfstar = DEFAULT_RDF_STAR;
 
         // custom
         this.useNumericId = DEFAULT_NUMERIC_ID;
@@ -228,7 +229,7 @@ public final class Options {
         this.requiredAll = options.requiredAll;
 
         // Extension: JSON-LD-STAR (Experimental)
-        this.rdfStar = options.rdfStar;
+        this.rdfstar = options.rdfstar;
 
         // custom
         this.useNumericId = options.useNumericId;
@@ -393,12 +394,12 @@ public final class Options {
     }
 
     /**
-     * Returns the {@link JsonLiteralWriter} used when converting {@code @json} type
-     * <strong>to RDF</strong> to serialize JSON as {@code rdf:JSON}.
+     * Returns the writer used when converting {@code @json} type <strong>to
+     * RDF</strong> to serialize JSON as {@code rdf:JSON}.
      *
-     * @return the configured {@link JsonLiteralWriter}, never {@code null}.
+     * @return the configured writer, might be {@code null}.
      */
-    public JsonLiteralWriter rdfJsonLiteralWriter() {
+    public Function<Object, String> rdfJsonWriter() {
         return rdfJsonLiteralWriter;
     }
 
@@ -450,12 +451,12 @@ public final class Options {
      * If {@code false}, all arrays are preserved.
      * </p>
      *
-     * @param compactArrays {@code true} to enable array compaction; {@code false}
+     * @param enable {@code true} to enable array compaction; {@code false}
      *                      otherwise
      * @return this {@link Options} instance, for method chaining
      */
-    public Options compactArrays(boolean compactArrays) {
-        this.compactArrays = compactArrays;
+    public Options compactArrays(boolean enable) {
+        this.compactArrays = enable;
         return this;
     }
 
@@ -463,12 +464,12 @@ public final class Options {
      * Sets whether URIs are compacted relative to the base URI or document location
      * during compaction.
      *
-     * @param compactToRelative {@code true} to enable relative compaction;
+     * @param enable {@code true} to enable relative compaction;
      *                          {@code false} to disable it
      * @return this {@link Options} instance, for method chaining
      */
-    public Options compactToRelative(boolean compactToRelative) {
-        this.compactToRelative = compactToRelative;
+    public Options compactToRelative(boolean enable) {
+        this.compactToRelative = enable;
         return this;
     }
 
@@ -488,12 +489,12 @@ public final class Options {
      * Enables or disables extraction of all JSON-LD script elements from HTML
      * input.
      *
-     * @param extractAllScripts {@code true} to extract all JSON-LD script elements;
+     * @param enable {@code true} to extract all JSON-LD script elements;
      *                          {@code false} otherwise
      * @return this {@link Options} instance, for method chaining
      */
-    public Options extractAllScripts(boolean extractAllScripts) {
-        this.extractAllScripts = extractAllScripts;
+    public Options extractAllScripts(boolean enable) {
+        this.extractAllScripts = enable;
         return this;
     }
 
@@ -531,11 +532,11 @@ public final class Options {
      * specification.
      * </p>
      *
-     * @param produceGeneralizedRdf {@code true} to enable generalized RDF
+     * @param enable {@code true} to enable generalized RDF
      * @return this {@link Options} instance, for method chaining
      */
-    public Options generalizedRdf(boolean produceGeneralizedRdf) {
-        this.generalizedRdf = produceGeneralizedRdf;
+    public Options generalizedRdf(boolean enable) {
+        this.generalizedRdf = enable;
         return this;
     }
 
@@ -543,11 +544,11 @@ public final class Options {
      * Sets the RDF direction handling strategy used when converting to or from RDF
      * literals that include language direction information.
      *
-     * @param rdfDirection the RDF direction strategy to apply
+     * @param direction the RDF direction strategy to apply
      * @return this {@link Options} instance, for method chaining
      */
-    public Options rdfDirection(RdfDirection rdfDirection) {
-        this.rdfDirection = rdfDirection;
+    public Options rdfDirection(RdfDirection direction) {
+        this.rdfDirection = direction;
         return this;
     }
 
@@ -557,12 +558,12 @@ public final class Options {
      * JSON-LD</strong>, instead of using typed string values (e.g.,
      * {@code "xsd:boolean"} or {@code "xsd:integer"}).
      *
-     * @param useNativeTypes whether to use native JSON types when converting from
+     * @param enable whether to use native JSON types when converting from
      *                       RDF
      * @return this {@link Options} instance, for method chaining
      */
-    public Options useNativeTypes(boolean useNativeTypes) {
-        this.useNativeTypes = useNativeTypes;
+    public Options useNativeTypes(boolean enable) {
+        this.useNativeTypes = enable;
         return this;
     }
 
@@ -571,24 +572,44 @@ public final class Options {
      * {@code @type} instead of generating {@code rdf:type} statements when
      * converting <strong>from RDF to JSON-LD</strong>.
      *
-     * @param useRdfType whether to use {@code rdf:type} instead of {@code @type}
+     * @param enable whether to use {@code rdf:type} instead of {@code @type}
      *                   when converting from RDF
      * @return this {@link Options} instance, for method chaining
      */
-    public Options useRdfType(boolean useRdfType) {
-        this.useRdfType = useRdfType;
+    public Options useRdfType(boolean enable) {
+        this.useRdfType = enable;
         return this;
     }
 
     /**
-     * Sets the {@link JsonLiteralWriter} used for serializing {@code @json} type
-     * when converting to {@code rdf:JSON}. {@link JsonLdToQuads#JCS} by default.
+     * Sets the function used to serialize {@code @json} values as {@code rdf:JSON}
+     * literals.
+     * <p>
+     * The JSON-LD specification requires JSON Canonicalization Scheme (JCS)
+     * serialization for {@code rdf:JSON} literals.
      *
-     * @param jsonWriter the JSON literal writer implementation, never {@code null}.
+     * @param writer the JSON literal writer, never {@code null}
      * @return this {@link Options} instance, for method chaining
      */
-    public Options rdfJsonLiteralWriter(JsonLiteralWriter jsonWriter) {
-        this.rdfJsonLiteralWriter = Objects.requireNonNull(jsonWriter);
+    public Options rdfJsonWriter(Function<Object, String> writer) {
+        this.rdfJsonLiteralWriter = Objects.requireNonNull(writer);
+        return this;
+    }
+
+    /**
+     * Sets the function used to canonicalize {@code @json} values before
+     * serializing them as {@code rdf:JSON} literals.
+     * <p>
+     * The JSON-LD specification uses JSON Canonicalization Scheme (JCS) for this
+     * purpose.
+     *
+     * @param canonicalization the JSON canonicalization function, never
+     *                         {@code null}
+     * @return this {@link Options} instance, for method chaining
+     */
+    public Options rdfJsonCanonizer(Function<Object, byte[]> c14n) {
+        Objects.requireNonNull(c14n);
+        this.rdfJsonLiteralWriter = json -> new String(c14n.apply(json), StandardCharsets.UTF_8);
         return this;
     }
 
@@ -710,11 +731,11 @@ public final class Options {
     /**
      * Sets whether framing should include only explicitly defined properties.
      *
-     * @param explicit {@code true} to include only explicitly defined properties
+     * @param enable {@code true} to include only explicitly defined properties
      * @return this {@link Options} instance, for method chaining
      */
-    public Options explicit(boolean explicit) {
-        this.explicit = explicit;
+    public Options explicitOnly(boolean enable) {
+        this.explicit = enable;
         return this;
     }
 
@@ -730,11 +751,11 @@ public final class Options {
     /**
      * Sets whether framing should omit default values from the output.
      *
-     * @param omitDefault {@code true} to omit default values
+     * @param enable {@code true} to omit default values
      * @return this {@link Options} instance, for method chaining
      */
-    public Options omitDefault(boolean omitDefault) {
-        this.omitDefault = omitDefault;
+    public Options omitDefault(boolean enable) {
+        this.omitDefault = enable;
         return this;
     }
 
@@ -753,12 +774,12 @@ public final class Options {
      * Sets whether framing output should omit the top-level graph container when
      * only a single node exists.
      *
-     * @param omitGraph {@code true} to omit the graph; {@code false} to include it;
+     * @param enable {@code true} to omit the graph; {@code false} to include it;
      *                  or {@code null} to use the default behavior
      * @return this {@link Options} instance, for method chaining
      */
-    public Options omitGraph(Boolean omitGraph) {
-        this.omitGraph = omitGraph;
+    public Options omitGraph(Boolean enable) {
+        this.omitGraph = enable;
         return this;
     }
 
@@ -782,11 +803,11 @@ public final class Options {
      * Sets whether framing requires all properties listed in the frame to appear in
      * the matched nodes.
      *
-     * @param requiredAll {@code true} if all properties must be present
+     * @param enable {@code true} if all properties must be present
      * @return this {@link Options} instance, for method chaining
      */
-    public Options requiredAll(boolean requiredAll) {
-        this.requiredAll = requiredAll;
+    public Options requiredAll(boolean enable) {
+        this.requiredAll = enable;
         return this;
     }
 
@@ -794,6 +815,7 @@ public final class Options {
      * Experimental: Enables/Disables numeric @id support.
      *
      * @param enable numeric @id support
+     * @return this {@link Options} instance, for method chaining
      */
     public Options useNumericId(boolean enable) {
         this.useNumericId = enable;
@@ -815,18 +837,20 @@ public final class Options {
      * @return {@code true} if JSON-LD-star is enabled; otherwise {@code false}.
      */
     public boolean isRdfStar() {
-        return rdfStar;
+        return rdfstar;
     }
 
     /**
      * Experimental: Enables JSON-LD-STAR extension. Only expansion is supported.
      * Disabled by default.
      *
-     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-STAR Draft</a>
-     *
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-star Draft</a>
+     * 
+     * @param enable
+     * @return this {@link Options} instance, for method chaining
      */
-    public Options rdfStar(boolean rdfStar) {
-        this.rdfStar = rdfStar;
+    public Options rdfStar(boolean enable) {
+        this.rdfstar = enable;
         return this;
     }
 
@@ -854,12 +878,13 @@ public final class Options {
      * depending on the specified validation rules.
      * </p>
      * 
-     * @param uriValidation the desired URI validation policy
+     * @param policy the desired URI validation policy
+     * @return this {@link Options} instance, for method chaining
      * 
      * @since 1.5.0
      */
-    public Options uriValidation(UriValidationPolicy uriValidation) {
-        this.uriValidation = uriValidation;
+    public Options uriValidation(UriValidationPolicy policy) {
+        this.uriValidation = policy;
         return this;
     }
 
@@ -885,6 +910,7 @@ public final class Options {
      * {@link DocumentLoader}.
      * 
      * @param timeout to limit processing time
+     * @return this {@link Options} instance, for method chaining
      */
     public Options timeout(Duration timeout) {
         this.timeout = timeout;
@@ -905,11 +931,11 @@ public final class Options {
      * Set processing policy on how proceed with an undefined term during expansion.
      * {@link ProcessingPolicy#Ignore} by default.
      * 
-     * @param undefinedTerms the processing policy, never <code>null</code>
-     * 
+     * @param policy the processing policy, never <code>null</code>
+     * @return this {@link Options} instance, for method chaining
      */
-    public Options undefinedTerms(ProcessingPolicy undefinedTerms) {
-        this.undefinedTerms = undefinedTerms;
+    public Options undefinedTerms(ProcessingPolicy policy) {
+        this.undefinedTerms = policy;
         return this;
     }
 
@@ -928,11 +954,12 @@ public final class Options {
      * 
      * <code>true</code> by default.
      * 
+     * @param enable
+     * @return this {@link Options} instance, for method chaining
      * @since 2.0.0
-     * 
      */
-    public Options useInlineContexts(boolean useInlineContext) {
-        this.useInlineContexts = useInlineContext;
+    public Options useInlineContexts(boolean enable) {
+        this.useInlineContexts = enable;
         return this;
     }
 
@@ -949,11 +976,11 @@ public final class Options {
     }
 
     /**
-     * Set the processing policy on how proceed with dropped free floating nodes
+     * Set the processing policy on how proceed with dropped free floating or malformed nodes
      * during expansion. {@link ProcessingPolicy#Ignore} by default.
      * 
      * @param the policy to apply when free floating nodes to drop appears
-     * 
+     * @return this {@link Options} instance, for method chaining
      * @since 2.0.0
      */
     public Options droppedNodes(ProcessingPolicy policy) {

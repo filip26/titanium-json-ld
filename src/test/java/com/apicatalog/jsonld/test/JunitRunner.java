@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
@@ -82,13 +80,8 @@ public class JunitRunner {
 
         if (testCase.type.contains(Type.TO_RDF_TEST)) {
             return execute(options -> {
-
                 final var set = new LinkedHashSet<RdfQuad>();
-
-                options.rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8));
-
                 JsonLd.toRdf(testCase.input, new QuadSetProvider(set)::quad, options);
-
                 return set;
             });
         }

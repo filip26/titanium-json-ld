@@ -18,14 +18,20 @@ package com.apicatalog.jsonld.tordf;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.Options.RdfDirection;
 import com.apicatalog.jsonld.flattening.NodeMap;
 import com.apicatalog.jsonld.lang.JsonLdAdapter;
@@ -90,11 +96,6 @@ public final class JsonLdToQuads {
                 String graph);
     }
 
-    @FunctionalInterface
-    public interface JsonLiteralWriter {
-        String write(Object node) throws JsonLdException;
-    }
-
     private static final Logger LOGGER = Logger.getLogger(JsonLdToQuads.class.getName());
 
     private static final DecimalFormat xsdDecimalFormat = new DecimalFormat("0.0##############E0",
@@ -106,55 +107,123 @@ public final class JsonLdToQuads {
 
     // required
     private final NodeMap nodeMap;
-    private final JsonLiteralWriter jsonWriter;
 
     // optional
-    private boolean produceGeneralizedRdf;
+    private boolean useGeneralizedRdf;
     private RdfDirection rdfDirection;
     private UriValidationPolicy uriValidation;
+    private Function<Object, String> jsonWriter;
+    private ProcessingPolicy statementPolicy;
 
-    private JsonLdToQuads(NodeMap nodeMap, JsonLiteralWriter jsonWriter) {
+    private JsonLdToQuads(NodeMap nodeMap) {
         this.nodeMap = nodeMap;
 
-        this.produceGeneralizedRdf = false;
-        this.jsonWriter = jsonWriter;
+        this.useGeneralizedRdf = false;
         this.rdfDirection = null;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
+        this.jsonWriter = null;
+        this.statementPolicy = ProcessingPolicy.Warn;
     }
 
-    public static final JsonLdToQuads with(NodeMap nodeMap, JsonLiteralWriter jsonWriter) {
-        return new JsonLdToQuads(nodeMap, jsonWriter);
+    public static final JsonLdToQuads with(NodeMap nodeMap) {
+        return new JsonLdToQuads(nodeMap);
     }
 
-    public void provide(QuadConsumer consumer) throws JsonLdException {
-        provide(RdfQuadEmitter.newEmitter(consumer));
+    /**
+     * Emits RDF quads representing this JSON-LD document to the supplied consumer.
+     * The document is transformed into an RDF dataset according to the JSON-LD to
+     * RDF conversion algorithm, and each resulting quad is passed to the consumer
+     * as it is generated.
+     *
+     * @param consumer the consumer that receives the generated RDF quads
+     * @throws JsonLdException if an error occurs while transforming the JSON-LD
+     *                         document into RDF
+     */
+    public void emit(QuadConsumer consumer) throws JsonLdException {
+        emit(RdfQuadEmitter.newEmitter(consumer));
     }
 
-    public JsonLdToQuads produceGeneralizedRdf(boolean enable) {
-        this.produceGeneralizedRdf = enable;
+    /**
+     * Sets whether the processor produces generalized RDF, which allows subjects or
+     * objects that are not URIs or literals (for example, blank nodes as
+     * predicates).
+     * 
+     * <p>
+     * When set to {@code false}, output RDF will conform strictly to the RDF 1.1
+     * specification.
+     * </p>
+     *
+     * @param enable {@code true} to enable generalized RDF
+     * @return this {@link JsonLdToQuads} instance, for method chaining
+     */
+    public JsonLdToQuads generalizedRdf(boolean enable) {
+        this.useGeneralizedRdf = enable;
         return this;
     }
 
+    /**
+     * Sets the RDF direction handling strategy used when converting to or from RDF
+     * literals that include language direction information.
+     *
+     * @param rdfDirection the RDF direction strategy to apply
+     * @return this {@link JsonLdToQuads} instance, for method chaining
+     */
     public JsonLdToQuads rdfDirection(RdfDirection rdfDirection) {
         this.rdfDirection = rdfDirection;
         return this;
     }
 
+    /**
+     * Sets the URI validation policy. By default, the policy is set to
+     * {@code Full}.
+     * 
+     * <p>
+     * Note: Changing this policy may produce unexpected or non-compliant results,
+     * depending on the specified validation rules.
+     * </p>
+     * 
+     * @param uriValidation the desired URI validation policy
+     * @return this {@link JsonLdToQuads} instance, for method chaining
+     */
     public JsonLdToQuads uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }
 
-    protected void provide(RdfTripleConsumer consumer) throws JsonLdException {
+    /**
+     * Sets the function used to serialize {@code @json} values as {@code rdf:JSON}
+     * literals.
+     * <p>
+     * The JSON-LD specification requires JSON Canonicalization Scheme (JCS)
+     * serialization for {@code rdf:JSON} literals.
+     *
+     * @param writer the JSON literal writer
+     * @return this {@link JsonLdToQuads} instance, for method chaining
+     */
+    public JsonLdToQuads jsonWriter(Function<Object, String> jsonWriter) {
+        this.jsonWriter = jsonWriter;
+        return this;
+    }
 
-        final var graphNames = nodeMap.graphs()
-                .stream()
-                .sorted()
-                .iterator();
+    /**
+     * Sets the policy for handling invalid RDF statements, such as statements with
+     * malformed subjects or literals. By default, a warning is issued.
+     *
+     * @param policy the processing policy for invalid statements, must not be
+     *               {@code null}
+     * @return this {@link JsonLdToQuads} instance, for method chaining
+     */
+    public JsonLdToQuads invalidStatementPolicy(ProcessingPolicy policy) {
+        this.statementPolicy = Objects.requireNonNull(policy);
+        return this;
+    }
 
-        while (graphNames.hasNext()) {
+    private void emit(RdfTripleConsumer consumer) throws JsonLdException {
 
-            final var graphName = graphNames.next();
+        final var graphNames = new ArrayList<>(nodeMap.graphs());
+        Collections.sort(graphNames);
+
+        for (final var graphName : graphNames) {
 
             if (Keywords.DEFAULT.equals(graphName)) {
                 consumer.defaultGraph();
@@ -166,33 +235,28 @@ public final class JsonLdToQuads {
                 consumer.namedGraph(graphName);
 
             } else {
-                LOGGER.log(Level.WARNING, "Graph has been skipped because of non well-formed graph name [{0}]",
+                enforcePolicy(
+                        "Graph has been skipped because of non well-formed graph name [{0}]",
                         graphName);
                 continue;
             }
 
-            final var subjects = nodeMap.subjects(graphName)
-                    .stream()
-                    .sorted()
-                    .iterator();
+            final var subjects = new ArrayList<>(nodeMap.subjects(graphName));
+            Collections.sort(subjects);
 
-            while (subjects.hasNext()) {
-
-                final var subject = subjects.next();
+            for (final var subject : subjects) {
 
                 if (!BlankNode.isWellFormed(subject) && UriUtils.isNotAbsoluteUri(subject, uriValidation)) {
-                    LOGGER.log(Level.WARNING, "Non well-formed subject [{0}] has been skipped.", subject);
+                    enforcePolicy(
+                            "Non well-formed subject [{0}] has been skipped.",
+                            subject);
                     continue;
                 }
 
-                final var properties = nodeMap.properties(graphName, subject)
-                        .stream()
-                        .sorted()
-                        .iterator();
+                final var properties = new ArrayList<>(nodeMap.properties(graphName, subject));
+                Collections.sort(properties);
 
-                while (properties.hasNext()) {
-
-                    final var property = properties.next();
+                for (final var property : properties) {
 
                     if (Keywords.TYPE.equals(property)) {
 
@@ -202,7 +266,8 @@ public final class JsonLdToQuads {
 
                                 if (!BlankNode.isWellFormed(typeString)
                                         && UriUtils.isNotAbsoluteUri(typeString, uriValidation)) {
-                                    LOGGER.log(Level.WARNING, "Non well-formed type [{0}] has been skipped.",
+                                    enforcePolicy(
+                                            "Non well-formed type [{0}] has been skipped.",
                                             typeString);
                                     continue;
                                 }
@@ -213,17 +278,21 @@ public final class JsonLdToQuads {
                                         typeString);
 
                             } else {
-                                LOGGER.log(Level.WARNING, "Non well-formed type [{0}] has been skipped.", type);
+                                enforcePolicy(
+                                        "Non well-formed type [{0}] has been skipped.",
+                                        type);
                                 continue;
                             }
-
                         }
 
                     } else if (!Keywords.contains(property)) {
 
                         if ((!BlankNode.isWellFormed(property)
-                                || produceGeneralizedRdf)
+                                || useGeneralizedRdf)
                                 && UriUtils.isNotAbsoluteUri(property, uriValidation)) {
+                            enforcePolicy(
+                                    "Non well-formed property [{0}] has been skipped.",
+                                    property);
                             continue;
                         }
 
@@ -256,7 +325,6 @@ public final class JsonLdToQuads {
 
         // 1. - 2.
         if (JsonLdAdapter.isNode(item)) {
-
             if (item.get(Keywords.ID) instanceof String nodeId
                     && (BlankNode.isWellFormed(nodeId)
                             || UriUtils.isAbsoluteUri(nodeId, uriValidation))) {
@@ -291,7 +359,8 @@ public final class JsonLdToQuads {
         if (datatype != null
                 && !Keywords.JSON.equals(datatype)
                 && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
-            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute URI nor @json and value is skipped.",
+            enforcePolicy(
+                    "Datatype [{0}] is not an absolute URI nor @json and value is skipped.",
                     datatype);
             return;
         }
@@ -300,7 +369,8 @@ public final class JsonLdToQuads {
         if (item.containsKey(Keywords.LANGUAGE)
                 && (!(item.get(Keywords.LANGUAGE) instanceof String langString)
                         || !LanguageTag.isWellFormed(langString))) {
-            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.",
+            enforcePolicy(
+                    "Language tag [{0}] is not well formed string and value is skipped.",
                     item.get(Keywords.LANGUAGE));
             return;
         }
@@ -309,7 +379,8 @@ public final class JsonLdToQuads {
 
         // 8.
         if (Keywords.JSON.equals(datatype)) {
-            valueString = jsonWriter.write(value);
+            Objects.requireNonNull(jsonWriter, "rdf:JSON literal writer is not set but JSON-LD @type has been found.");
+            valueString = jsonWriter.apply(value);
             datatype = Terms.RDF_JSON;
 
             // 9.
@@ -492,7 +563,20 @@ public final class JsonLdToQuads {
         }
     }
 
-    private static final String toXsdDouble(double number) {
+    private static String toXsdDouble(double number) {
         return xsdDecimalFormat.format(number);
+    }
+
+    private void enforcePolicy(String message, Object... params) throws JsonLdException {
+        switch (statementPolicy) {
+        case Warn -> LOGGER.log(
+                Level.WARNING,
+                message,
+                params);
+
+        case Fail -> throw new JsonLdException(ErrorCode.INVALID_STATEMENT);
+        case Ignore -> {
+        }
+        }
     }
 }

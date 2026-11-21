@@ -15,11 +15,7 @@
  */
 package com.apicatalog.jsonld.test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -218,29 +214,7 @@ public class TestOptions {
                 .ifPresent(options::useRdfType);
 
         if (useJcs != null) {
-            options.rdfJsonLiteralWriter(
-                    useJcs
-                            ? node -> {
-                                var os = new ByteArrayOutputStream();
-                                try {
-                                    Jcs.canonize(node, os);
-                                    return os.toString(StandardCharsets.UTF_8);
-                                } catch (IOException e) {
-                                    throw new UncheckedIOException(e);
-                                }
-                            }
-                            : node -> {
-                                var os = new ByteArrayOutputStream();
-//                                try {
-//                                JakartaTestSuite.RENDERER.render(
-//                                        node,
-//                                        adapter,
-//                                        os);
-                                return os.toString();
-//                                } catch (TreeIOException e) {
-//                                    throw new JsonLdException(ErrorCode.UNSPECIFIED, e);
-//                                }
-                            });
+            options.rdfJsonCanonizer(Jcs::canonize);
         }
 
         Optional.ofNullable(omitGraph)

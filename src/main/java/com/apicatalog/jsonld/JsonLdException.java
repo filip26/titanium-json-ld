@@ -429,8 +429,10 @@ public final class JsonLdException extends Exception {
 
         UNSPECIFIED("An unspecified processing error"),
 
-        MISSING_DOCUMENT_LOADER("A document loader is not present")
+        MISSING_DOCUMENT_LOADER("A document loader is not present"),
 
+        INVALID_STATEMENT("")
+        
         ;
 
         private final String description;
