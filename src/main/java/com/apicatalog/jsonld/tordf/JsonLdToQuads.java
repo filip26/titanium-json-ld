@@ -412,7 +412,7 @@ public final class JsonLdToQuads {
                     || (number instanceof Double decimal && decimal >= 1e21)
                     || (number instanceof Float decimal && decimal >= 1e21f)) {
 
-                valueString = toXsdDouble(number.doubleValue());
+                valueString = xsdDecimalFormat.format(number.doubleValue());
 
                 if (datatype == null) {
                     datatype = Terms.XSD_DOUBLE;
@@ -469,7 +469,7 @@ public final class JsonLdToQuads {
                                 Terms.XSD_STRING);
                     } else {
                         enforcePolicy(
-                                "Invalid RDF language tag [{0}] has been omitted for compound literal.",
+                                "Language tag [{0}] is invalid and valie is skipped for compound literal.",
                                 language);
                     }
 
@@ -502,7 +502,7 @@ public final class JsonLdToQuads {
 
                         } else {
                             enforcePolicy(
-                                    "Invalid RDF language tag [{0}] has been omitted for datatype [{1}].",
+                                    "Language tag [{0}] is invalid and value is omitted for datatype [{1}].",
                                     language, datatype);
                         }
                     }
@@ -518,12 +518,12 @@ public final class JsonLdToQuads {
                 }
 
                 enforcePolicy(
-                        "RDF direction [{0}] has been omitted because RDF direction policy is not set.",
+                        "Direction [{0}] has been omitted because RDF direction policy is not set.",
                         direction);
 
             } else {
                 enforcePolicy(
-                        "Invalid RDF direction [{0}] has been omitted.",
+                        "Direction [{0}] is invalid and value is omitted.",
                         directionValue);
             }
         }
@@ -546,7 +546,7 @@ public final class JsonLdToQuads {
             }
 
             enforcePolicy(
-                    "Invalid RDF language tag [{0}] has been omitted.",
+                    "Language tag [{0}] is unknown and value is omitted.",
                     langValue);
 
         }
@@ -606,10 +606,6 @@ public final class JsonLdToQuads {
                 consumer.triple(blankNodeSubject, Terms.RDF_REST, Terms.RDF_NIL);
             }
         }
-    }
-
-    private static String toXsdDouble(double number) {
-        return xsdDecimalFormat.format(number);
     }
 
     private void enforcePolicy(String message, Object... params) throws JsonLdException {
