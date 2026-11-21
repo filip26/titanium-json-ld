@@ -335,7 +335,10 @@ public final class JsonLdToQuads {
                     || Terms.XSD_FLOAT.equals(datatype)
 //                    || (!JavaAdapter.instance().isIntegral(number) && number.doubleValue() % -1 != 0)
                     || (number instanceof BigDecimal decimal
-                            && decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)
+                            && ((decimal.doubleValue() % -1 != 0)
+                                    || (decimal.doubleValue() >= 1e21)
+//                            && (decimal.compareTo(BigDecimal.ONE.movePointRight(21)) >= 0)                            
+                            ))
                     || (number instanceof Double decimal && decimal >= 1e21)
                     || (number instanceof Float decimal && decimal >= 1e21f)) {
 
