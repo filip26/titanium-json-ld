@@ -87,12 +87,6 @@
             <version>${rdf.api.version}</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
-            <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-jakarta</artifactId>
-            <version>${tree-io.version}</version>
-            <scope>test</scope>
-        </dependency>-->
         <dependency>
             <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-jackson2</artifactId>
@@ -117,6 +111,12 @@
             <version>${rdfc.version}</version>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-jakarta</artifactId>
+            <version>${tree-io.version}</version>
+            <scope>test</scope>
+        </dependency>-->        
 <!--        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
@@ -227,7 +227,7 @@
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.10.0</version>
+                        <version>0.12.0</version>
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>

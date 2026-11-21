@@ -36,9 +36,6 @@ public class SuiteConfig {
     public static final JsonFactory JSON_FACTORY = JsonFactory.builder()
             .build();
 
-//    public static final JsonGeneratorFactory JSON_GENERATOR_FACTORY = Json.createGeneratorFactory(
-//            Map.of(JsonGenerator.PRETTY_PRINTING, true));
-
     public static DocumentLoader LOADER = UriFilter.newBlacklist(new ZipResourceLoader(SuiteConfig::read))
             .base("http:")
             .base("https:")
