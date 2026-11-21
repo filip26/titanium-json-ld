@@ -216,28 +216,28 @@ public final class Expander {
         // Defensive null check — optional, but safer in utility code
         Objects.requireNonNull(context, "context must not be null");
 
-        return context; //FIXME
-//        // Case 1: Collection
-//        if (context.isSequence()) {
-//            // Single-element collection: check if it’s a map with @context key
-//            if (context.isSingleElement()) {
-//                final var element = context.singleElement();
-//                final var adapter = context.adapter();
-//
-//                if (adapter.isMap(element) && adapter.keys(element).contains(Keywords.CONTEXT)) {
-//                    return adapter.property(Keywords.CONTEXT, element);
-//                }
-//            }
-//            // Otherwise return the raw node
-//            return context.node();
-//        }
-//
-//        // Case 2: Map with @context key
-//        if (context.isMap() && context.keys().contains(Keywords.CONTEXT)) {
-//            return context.property(Keywords.CONTEXT);
-//        }
-//
-//        return context.node();
+        // Case 1: Collection
+        if (context instanceof Collection col) {
+            // Single-element collection: check if it’s a map with @context key
+            if (col.size() == 1) {
+                final var element = col.iterator().next();
+
+                if (element instanceof Map map
+                        && map.containsKey(Keywords.CONTEXT)) {
+                    return map.get(Keywords.CONTEXT);
+                }
+            }
+            // Otherwise return the raw node
+            return context;
+        }
+
+        // Case 2: Map with @context key
+        if (context instanceof Map map
+                && map.containsKey(Keywords.CONTEXT)) {
+            return map.get(Keywords.CONTEXT);
+        }
+
+        return context;
 //        // Case 3: Native adapter — wrap as list
 //        if (NativeAdapter.instance().isCompatibleWith(context.adapter())) {
 //            return List.of(context.node());

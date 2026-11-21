@@ -66,7 +66,8 @@ class RemoteContextTest {
                 (Map) document,
                 new QuadSetProvider(result)::quad,
                 Options.newOptions()
-                        .expandContext(context));
+                        .expandContext(context)
+                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json))));
 
         try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
@@ -100,7 +101,8 @@ class RemoteContextTest {
         JsonLd.toRdf(
                 (Map) document,
                 new QuadSetProvider(result)::quad,
-                Options.newOptions().expandContext(context));
+                Options.newOptions().expandContext(context)
+                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json))));
 
         try (final var is = getClass().getResourceAsStream("/com/apicatalog/jsonld/test/issue61-out.nq")) {
 
@@ -180,10 +182,10 @@ class RemoteContextTest {
             final var loader = CacheLoader.newInstance(SuiteConfig.HTTP_LOADER, 256);
 
             final var result = JsonLd.expand(
-                    (Map) document, 
+                    (Map) document,
                     Options
-                        .with(loader)
-                        .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
+                            .with(loader)
+                            .rdfJsonLiteralWriter(json -> new String(Jcs.canonize(json), StandardCharsets.UTF_8)));
 
             System.out.println("Time elapsed: " + Duration.ofNanos(System.nanoTime() - start));
             System.out.println("Cached documents: " + loader.cache().size());

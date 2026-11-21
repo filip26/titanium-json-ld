@@ -92,7 +92,6 @@ public final class JsonLdToQuads {
 
     @FunctionalInterface
     public interface JsonLiteralWriter {
-
         String write(Object node) throws JsonLdException;
     }
 
