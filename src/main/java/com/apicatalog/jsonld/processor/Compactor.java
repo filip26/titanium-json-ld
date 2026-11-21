@@ -25,6 +25,7 @@ import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.compaction.UriCompaction;
 import com.apicatalog.jsonld.context.Context;
+import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
 
@@ -185,17 +186,18 @@ public final class Compactor {
             if (col.isEmpty()) {
                 return Map.of();
 
-            } else if (contextSource != null) { //FIXME .isEmptyOrNull()
+            } else if (JsonLdAdapter.isEmptyOrNull(contextSource)) {
+                return Map.of(
+                        UriCompaction.withVocab(context, Keywords.GRAPH, options),
+                        compactedOutput);
+
+            } else {
                 return Map.of(
                         Keywords.CONTEXT,
                         contextSource,
                         UriCompaction.withVocab(context, Keywords.GRAPH, options),
                         compactedOutput);
 
-            } else {
-                return Map.of(
-                        UriCompaction.withVocab(context, Keywords.GRAPH, options),
-                        compactedOutput);
             }
         }
 

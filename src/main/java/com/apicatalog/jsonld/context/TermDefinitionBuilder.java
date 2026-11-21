@@ -90,8 +90,12 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, Map<String, ?> localContext,
-            Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) {
+    private TermDefinitionBuilder(
+            ActiveContext activeContext,
+            Map<String, ?> localContext,
+            Map<String, Boolean> defined,
+            DocumentLoader loader,
+            Execution runtime) {
         this.activeContext = activeContext;
         this.localContext = localContext;
         this.defined = defined;
@@ -226,9 +230,9 @@ public final class TermDefinitionBuilder {
         final var definition = new TermDefinition(false, protectedFlag, false);
 
         // 11.
-        final var protectedValue = propertyGetter.apply(Keywords.PROTECTED);
+        if (valueObjectKeys.contains(Keywords.PROTECTED)) {
 
-        if (protectedValue != null) {
+            final var protectedValue = propertyGetter.apply(Keywords.PROTECTED);
 
             if (activeContext.isV10()) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
@@ -242,9 +246,9 @@ public final class TermDefinitionBuilder {
         }
 
         // 12.
-        final var typeValue = propertyGetter.apply(Keywords.TYPE);
+        if (valueObjectKeys.contains(Keywords.TYPE)) {
 
-        if (typeValue != null) {
+            final var typeValue = propertyGetter.apply(Keywords.TYPE);
 
             if (!(typeValue instanceof String typeString)) {
                 throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
@@ -276,14 +280,13 @@ public final class TermDefinitionBuilder {
         }
 
         // 13.
-        final var reverseValue = propertyGetter.apply(Keywords.REVERSE);
-
-        if (reverseValue != null) {
-
+        if (valueObjectKeys.contains(Keywords.REVERSE)) {
             // 13.1.
             if (valueObjectKeys.contains(Keywords.ID) || valueObjectKeys.contains(Keywords.NEST)) {
                 throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY);
             }
+
+            final var reverseValue = propertyGetter.apply(Keywords.REVERSE);
 
             // 13.2.
             if (!(reverseValue instanceof String reverseString)) {
@@ -317,7 +320,7 @@ public final class TermDefinitionBuilder {
                             || Keywords.INDEX.equals(containerString))) {
                 definition.addContainerMapping(containerString);
 
-            } else if (containerValue != null) {
+            } else if (valueObjectKeys.contains(Keywords.CONTAINER)) {
                 throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY,
                         "The @reverse value=" + containerValue + " is invalid");
             }
@@ -503,24 +506,25 @@ public final class TermDefinitionBuilder {
             }
 
             // 20.2.
-            final var index = propertyGetter.apply(Keywords.INDEX);
+            if (valueObjectKeys.contains(Keywords.INDEX)) {
 
-            if (index instanceof String indexString) {
+                if (propertyGetter.apply(Keywords.INDEX) instanceof String indexString) {
 
-                final var expandedIndex = UriExpansion.with(activeContext, loader, runtime)
-                        .localContext(localContext)
-                        .defined(defined)
-                        .vocab(true)
-                        .expand(indexString);
+                    final var expandedIndex = UriExpansion.with(activeContext, loader, runtime)
+                            .localContext(localContext)
+                            .defined(defined)
+                            .vocab(true)
+                            .expand(indexString);
 
-                if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
+                    if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
+                        throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
+                    }
+
+                    definition.setIndexMapping(indexString);
+
+                } else {
                     throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
                 }
-
-                definition.setIndexMapping(indexString);
-
-            } else {
-                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
         }
 
@@ -600,16 +604,14 @@ public final class TermDefinitionBuilder {
         }
 
         // 24.
-        final var nestValue = propertyGetter.apply(Keywords.NEST);
-
-        if (nestValue != null) {
+        if (valueObjectKeys.contains(Keywords.NEST)) {
 
             // 24.1
             if (activeContext.isV10()) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (nestValue instanceof String nestString) {
+            if (propertyGetter.apply(Keywords.NEST) instanceof String nestString) {
 
                 if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
@@ -622,20 +624,15 @@ public final class TermDefinitionBuilder {
         }
 
         // 25.
-        final var prefixValue = propertyGetter.apply(Keywords.PREFIX);
-
-        if (prefixValue != null) {
+        if (valueObjectKeys.contains(Keywords.PREFIX)) {
 
             // 25.1.
             if (activeContext.isV10() || term.contains(":") || term.contains("/")) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (Boolean.TRUE.equals(prefixValue)) {
-                definition.setPrefix(true);
-
-            } else if (Boolean.FALSE.equals(prefixValue)) {
-                definition.setPrefix(false);
+            if (propertyGetter.apply(Keywords.PREFIX) instanceof Boolean prefix) {
+                definition.setPrefix(prefix);
 
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_PREFIX_VALUE);

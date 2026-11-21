@@ -371,4 +371,8 @@ public class JsonLdAdapter {
     public static boolean isScalar(Object node) {
         return node == null || node instanceof String || node instanceof Boolean || node instanceof Number;
     }
+
+    public static boolean isEmptyOrNull(Object node) {
+        return node == null || node instanceof Collection col && col.isEmpty() || node instanceof Map map && map.isEmpty();
+    }
 }
