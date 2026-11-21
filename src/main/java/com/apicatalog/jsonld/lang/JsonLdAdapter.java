@@ -354,7 +354,9 @@ public class JsonLdAdapter {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Collection<? extends Object> asCollection(Object node) {
         if (node == null) {
-            return List.of();
+            var result = new ArrayList<>(1);
+            result.add(null);
+            return result;
         }
         //TODO isArray, use switch
         if (node instanceof Collection) {

@@ -35,6 +35,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
@@ -109,9 +110,8 @@ class ExecutionTest {
 
         var expected = read(output);
 
-//FIXME        var match = expected.isIsomorphicTo(Map.of("contextKeys", keys), JavaAdapter.instance());
+        var match = Comparison.equals(expected, Map.of("contextKeys", keys));        
 
-        var match = false;
         // TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(),
         // expected.node(), expected.adapter());
 

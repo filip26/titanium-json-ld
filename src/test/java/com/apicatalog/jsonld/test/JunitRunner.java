@@ -49,12 +49,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 
 public class JunitRunner {
 
-    public static final JsonFactory JSON_GENERATOR_FACTORY = JsonFactory.builder()
-            .build();
-    
-//    public static final JsonGeneratorFactory JSON_GENERATOR_FACTORY = Json.createGeneratorFactory(
-//            Map.of(JsonGenerator.PRETTY_PRINTING, true));
-
     private final TestCase testCase;
 
     public JunitRunner(TestCase testCase) {
@@ -290,7 +284,7 @@ public class JunitRunner {
             writer.println("Test " + testCase.id + ": " + testCase.name);
 
             if (expected != null) {
-                write(writer, JSON_GENERATOR_FACTORY, "Expected", expected);
+                write(writer, SuiteConfig.JSON_FACTORY, "Expected", expected);
                 writer.println();
 
             } else if (testCase.expectErrorCode != null) {
@@ -298,7 +292,7 @@ public class JunitRunner {
             }
 
             if (result != null) {
-                write(writer, JSON_GENERATOR_FACTORY, "Actual", result);
+                write(writer, SuiteConfig.JSON_FACTORY, "Actual", result);
                 writer.println();
             }
             if (error != null) {

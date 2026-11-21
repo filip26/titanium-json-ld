@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
@@ -125,6 +126,10 @@ class TermMapTest {
 
     public static final boolean compareJson(final TestCase testCase, final Object result, final Object expected) {
 
+        if (Comparison.equals(result, expected)) {
+            return true;
+        }
+        
 //FIXME        if (expected.isIsomorphicTo(result, resultAdapter)) {
 //            return true;
 //        }

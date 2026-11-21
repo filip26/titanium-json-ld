@@ -84,16 +84,14 @@ public final class ObjectExpansion {
         }
 
         // 9. initialize local context
-        final var contextValue = element.get(Keywords.CONTEXT);
-
-        if (contextValue != null) {
+        if (element.containsKey(Keywords.CONTEXT)) {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .useInline(params.options().useInlineContexts())
                     .collectTerms(params.runtime().hasValuesConsumer()
                             ? params.runtime()::fire
                             : null)
-                    .build(contextValue, params.baseUrl());
+                    .build(element.get(Keywords.CONTEXT), params.baseUrl());
         }
 
         // 10.

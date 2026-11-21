@@ -33,12 +33,17 @@ import com.fasterxml.jackson.core.JsonFactory;
 
 public class SuiteConfig {
 
+    public static final JsonFactory JSON_FACTORY = JsonFactory.builder()
+            .build();
+
+//    public static final JsonGeneratorFactory JSON_GENERATOR_FACTORY = Json.createGeneratorFactory(
+//            Map.of(JsonGenerator.PRETTY_PRINTING, true));
+
     public static DocumentLoader LOADER = UriFilter.newBlacklist(new ZipResourceLoader(SuiteConfig::read))
             .base("http:")
             .base("https:")
             .build();
-    
-    
+
     public static final HttpClient HTTP_CLIENT = HttpClient
             .newBuilder()
             .followRedirects(Redirect.NEVER)
@@ -49,21 +54,12 @@ public class SuiteConfig {
             .newInstance(HTTP_CLIENT, SuiteConfig::read)
             .timeout(Duration.ofSeconds(5));
 
-
     public static final Object read(MediaType contentType, Reader reader) {
-        try (var parser = new Jackson2Parser(
-                JsonFactory.builder().build().createParser(reader))
-//                Json.createParser(reader))
-                
-                ) {
+        try (var parser = new Jackson2Parser(JSON_FACTORY.createParser(reader))) {
             return Tree.read(parser);
+
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    static void stop() {
-//        isRunning = false;
-        SuiteConfig.LOADER = null;
     }
 }
