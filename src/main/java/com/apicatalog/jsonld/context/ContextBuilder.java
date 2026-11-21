@@ -284,17 +284,20 @@ public final class ContextBuilder {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_IMPORT_VALUE, e);
                 }
 
-                var importedNode = importedContent;
+//                final var importedNode = importedContent;
                 Map<String, ?> importedContextMap;
 
-                if (importedNode instanceof Map nodeMap) {
+                if (importedContent instanceof Map nodeMap) {
 
                     var importedContext = nodeMap.get(Keywords.CONTEXT);
 
-                    if (importedContent instanceof Map contextMap
-                            && !contextMap.containsKey(Keywords.IMPORT)) {
+                    if (importedContext instanceof Map contextMap) {
 
-                        importedContextMap = contextMap;
+                        if (!contextMap.containsKey(Keywords.IMPORT)) {
+                            importedContextMap = contextMap;
+                        } else {
+                            throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
+                        }
 
                     } else {
                         throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT);

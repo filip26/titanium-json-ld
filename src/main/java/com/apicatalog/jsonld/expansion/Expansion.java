@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
@@ -92,12 +93,12 @@ public final class Expansion {
         // context, initialize property-scoped context to that local context.
         var propertyContext = activeContext
                 .findTerm(activeProperty)
-                .map(TermDefinition::getLocalContext)
                 .orElse(null);
 
         // Extension: CBOR-LD collector
         if (params.runtime().hasValuesConsumer()
-                && propertyContext instanceof Map propertyContextMap) {
+                && propertyContext != null
+                && propertyContext.getLocalContext() instanceof Map propertyContextMap) {
             params.runtime().fire(
                     EventType.CONTEXT_KEYS,
                     propertyContextMap.keySet());
@@ -164,7 +165,7 @@ public final class Expansion {
     static final Map<String, ?> scalar(
             final Context context,
             final String property,
-            final Object propertyContext,
+            final TermDefinition propertyContext,
             final Object node,
             final Params params) throws JsonLdException {
 
@@ -183,10 +184,10 @@ public final class Expansion {
          * context as local context, and base URL from the term definition for active
          * property in active context.
          */
-        if (propertyContext != null) {
+        if (propertyContext != null && propertyContext.hasLocalContext()) {
             return ValueExpansion.expand(context
                     .newContext(params.options().loader(), params.runtime())
-                    .build(propertyContext,
+                    .build(propertyContext.getLocalContext(),
                             context.findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
                                     .orElse(null)),

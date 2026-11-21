@@ -173,7 +173,7 @@ public class JunitRunner {
             write(testCase, null, null, e);
 
             if (testCase.expectErrorCode != null) {
-                fail("Unexpected error " + e.code() + ", exptected " + testCase.expectErrorCode + ".");
+                fail("Unexpected error " + e.code().name() + ", exptected " + testCase.expectErrorCode.name() + ".");
 
             } else {
                 fail("Unexpected error " + e + ".");

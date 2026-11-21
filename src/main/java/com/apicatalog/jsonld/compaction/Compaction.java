@@ -94,10 +94,10 @@ public final class Compaction {
         }
 
         if (element instanceof Map map) {
-            
+
             @SuppressWarnings("unchecked")
             final var typedMap = (Map<String, ?>) map;
-            
+
             return compactObject(activeProperty, typedMap);
         }
 
@@ -152,7 +152,7 @@ public final class Compaction {
         Context typeContext = context;
         Context activeContext = context;
 
-        final Optional<TermDefinition> activePropertyDefinition = activeContext.findTerm(activeProperty);
+        final var activePropertyDefinition = activeContext.findTerm(activeProperty).orElse(null);
 
         // 5.
         if (activeContext.getPreviousContext() != null
@@ -164,14 +164,14 @@ public final class Compaction {
 
         // 6.
 
-        if (activePropertyDefinition.map(TermDefinition::getLocalContext).isPresent()) {
+        if (activePropertyDefinition != null && activePropertyDefinition.hasLocalContext()) {
 
-            var localContext = activePropertyDefinition.get().getLocalContext();
+            var localContext = activePropertyDefinition.getLocalContext();
 
             activeContext = activeContext
                     .newContext(options.loader(), runtime)
                     .overrideProtected(true)
-                    .build(localContext, activePropertyDefinition.get().getBaseUrl());
+                    .build(localContext, activePropertyDefinition.getBaseUrl());
         }
 
         // 7.
@@ -185,18 +185,16 @@ public final class Compaction {
                     options);
 
             if (result != null && JsonLdAdapter.isScalar(result)
-                    || activePropertyDefinition
-                            .map(TermDefinition::getTypeMapping)
-                            .filter(Keywords.JSON::equals)
-                            .isPresent()) {
-
+                    || (activePropertyDefinition != null
+                            && Keywords.JSON.equals(activePropertyDefinition.getTypeMapping()))) {
                 return result;
             }
         }
 
         // 8.
         if (JsonLdAdapter.isList(object)
-                && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.LIST)).isPresent()) {
+                && activePropertyDefinition != null
+                && activePropertyDefinition.hasContainerMapping(Keywords.LIST)) {
 
             return Compaction
                     .with(activeContext, options, runtime)
@@ -304,7 +302,8 @@ public final class Compaction {
                     compactedValue = compactedArray;
 
                 } else {
-                    throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + expandedValue + "].");
+                    throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE,
+                            "@type value is not valid [" + expandedValue + "].");
                 }
 
                 // 12.2.3.
@@ -313,7 +312,8 @@ public final class Compaction {
                 // 12.2.4.
                 final boolean asArray = !compactArrays
                         || (activeContext.isV11()
-                                && activeContext.findTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET)).isPresent());
+                                && activeContext.findTerm(alias).filter(t -> t.hasContainerMapping(Keywords.SET))
+                                        .isPresent());
 
                 // 12.2.5.
                 JsonLdAdapter.setOrAdd(result, alias, compactedValue, asArray);
@@ -397,7 +397,8 @@ public final class Compaction {
 
             // 12.5.
             if (Keywords.INDEX.equals(expandedProperty)
-                    && activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent()) {
+                    && activePropertyDefinition != null
+                    && activePropertyDefinition.hasContainerMapping(Keywords.INDEX)) {
                 continue;
 
                 // 12.6.
@@ -442,7 +443,8 @@ public final class Compaction {
 
                     // 12.7.2.3.
                     JsonLdAdapter.setOrAdd(
-                            (Map<String, Object>) result.computeIfAbsent(nestTerm, k -> new LinkedHashMap<String, Object>()),
+                            (Map<String, Object>) result.computeIfAbsent(nestTerm,
+                                    k -> new LinkedHashMap<String, Object>()),
                             itemActiveProperty,
                             List.of());
 
@@ -591,7 +593,8 @@ public final class Compaction {
 //                        nestResult.getMapBuilder(itemActiveProperty).add(mapKey, compactedItem, asArray);
 
                         JsonLdAdapter.setOrAdd(
-                                (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
+                                (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty,
+                                        k -> new LinkedHashMap<String, Object>()),
                                 mapKey,
                                 compactedItem,
                                 asArray);
@@ -645,7 +648,8 @@ public final class Compaction {
                                     UriCompaction.withVocab(activeContext, Keywords.GRAPH, options),
                                     compactedItem,
                                     UriCompaction.withVocab(activeContext, Keywords.ID, options),
-                                    UriCompaction.compact(activeContext, (String) expandedItemMap.get(Keywords.ID), options));
+                                    UriCompaction.compact(activeContext, (String) expandedItemMap.get(Keywords.ID),
+                                            options));
 
                         } else {
                             // 12.8.8.4.1.
@@ -888,7 +892,8 @@ public final class Compaction {
 
                     // 12.8.9.10.
                     JsonLdAdapter.setOrAdd(
-                            (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty, k -> new LinkedHashMap<String, Object>()),
+                            (Map<String, Object>) nestResult.computeIfAbsent(itemActiveProperty,
+                                    k -> new LinkedHashMap<String, Object>()),
                             mapKey,
                             compactedItem,
                             asArray);

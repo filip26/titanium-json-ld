@@ -265,7 +265,7 @@ final class ObjectExpansion1314 {
 
                     if (containerMapping.contains(Keywords.TYPE)
                             && indexTermDefinition != null
-                            && indexTermDefinition.getLocalContext() != null) {
+                            && indexTermDefinition.hasLocalContext()) {
 
                         // TODO contextKeys?
 
@@ -1140,18 +1140,17 @@ final class ObjectExpansion1314 {
         var activeContext = context;
 
         // step 3
-        var propertyContext = activeContext
+        var propertyDefinition = activeContext
                 .findTerm(activeProperty)
-                .map(TermDefinition::getLocalContext)
                 .orElse(null);
 
         // step 8
-        if (propertyContext != null) {
+        if (propertyDefinition != null && propertyDefinition.hasLocalContext()) {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
-                            propertyContext,
+                            propertyDefinition.getLocalContext(),
                             activeContext
                                     .findTerm(activeProperty)
                                     .map(TermDefinition::getBaseUrl)

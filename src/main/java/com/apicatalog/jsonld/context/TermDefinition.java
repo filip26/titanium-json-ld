@@ -36,6 +36,7 @@ public final class TermDefinition {
     private URI baseUrl;
 
     private Object localContext;
+    private boolean resetLocalContext;
 
     private Set<String> containerMapping;
 
@@ -54,12 +55,24 @@ public final class TermDefinition {
         this.protectedFlag = protectedFlag;
         this.reversePropertyFlag = reversePropertyFlag;
         this.containerMapping = new HashSet<>();
+        
+        this.localContext = null;
+        this.resetLocalContext = false;
     }
 
     public void setLocalContext(Object context) {
         this.localContext = context;
+        this.resetLocalContext = context == null;
     }
 
+    public boolean hasLocalContext() {
+        return resetLocalContext || localContext != null;
+    }
+
+    public Object getLocalContext() {
+        return localContext;
+    }
+    
     public String getUriMapping() {
         return uriMapping;
     }
@@ -99,10 +112,6 @@ public final class TermDefinition {
     public Collection<String> getContainerMapping() {
         return containerMapping;
     }
-
-    public Object getLocalContext() {
-        return localContext;
-    }
     
     public URI getBaseUrl() {
         return baseUrl;
@@ -111,13 +120,7 @@ public final class TermDefinition {
     protected void setBaseUrl(URI baseUrl) {
         this.baseUrl = baseUrl;
     }
-
-
     
-    public boolean hasLocalContext() {
-        return localContext != null;
-    }
-
     public boolean isReverseProperty() {
         return reversePropertyFlag;
     }

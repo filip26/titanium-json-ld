@@ -461,9 +461,9 @@ public final class TermDefinitionBuilder {
         }
 
         // 19.
-        var containerValue = propertyGetter.apply(Keywords.CONTAINER);
+        if (valueObjectKeys.contains(Keywords.CONTAINER)) {
 
-        if (containerValue != null) {
+            var containerValue = propertyGetter.apply(Keywords.CONTAINER);
 
             if (!validateContainer(containerValue)) {
                 throw new JsonLdException(ErrorCode.INVALID_CONTAINER_MAPPING);
@@ -525,14 +525,14 @@ public final class TermDefinitionBuilder {
         }
 
         // 21.
-        final var contextValue = propertyGetter.apply(Keywords.CONTEXT);
-
-        if (contextValue != null) {
+        if (valueObjectKeys.contains(Keywords.CONTEXT)) {
 
             // 21.1.
             if (activeContext.isV10()) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
+
+            final var contextValue = propertyGetter.apply(Keywords.CONTEXT);
 
             // 21.3.
             try {

@@ -43,16 +43,16 @@ import com.apicatalog.web.uri.UriUtils;
 public final class ObjectExpansion {
 
     private final Map<String, ?> element;
-    private final Object propertyContext;
+    private final TermDefinition propertyContext;
     private final Params params;
 
     private Context activeContext;
     private String term;
 
     public ObjectExpansion(
-            final Object propertyContext,
-            final Map<String, ?> element,
-            final Params params) {
+            TermDefinition propertyContext,
+            Map<String, ?> element,
+            Params params) {
 
         this.propertyContext = propertyContext;
         this.element = element;
@@ -71,12 +71,12 @@ public final class ObjectExpansion {
                 params);
 
         // 8. initialize property context
-        if (propertyContext != null) {
+        if (propertyContext != null && propertyContext.hasLocalContext()) {
             activeContext = activeContext
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
-                            propertyContext,
+                            propertyContext.getLocalContext(),
                             activeContext
                                     .findTerm(property)
                                     .map(TermDefinition::getBaseUrl)
@@ -238,11 +238,11 @@ public final class ObjectExpansion {
 
                 for (var term : terms) {
 
-                    final var localContext = typeContext
+                    final var termDefinition = typeContext
                             .findTerm(term)
-                            .map(TermDefinition::getLocalContext);
+                            .orElse(null);
 
-                    if (localContext.isPresent()) {
+                    if (termDefinition != null && termDefinition.hasLocalContext()) {
 
                         activeContext = activeContext
                                 .newContext(params.options().loader(), params.runtime())
@@ -250,7 +250,7 @@ public final class ObjectExpansion {
                                 .collectTerms(params.runtime().hasValuesConsumer()
                                         ? params.runtime()::fire
                                         : null)
-                                .build(localContext.get(),
+                                .build(termDefinition.getLocalContext(),
                                         activeContext.findTerm(term)
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null));

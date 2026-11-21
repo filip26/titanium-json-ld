@@ -97,7 +97,7 @@ public class JsonLdAdapter {
     public static boolean isNotGraph(Object node) {
         return node == null
                 || !(node instanceof Map map)
-                || !map.keySet().contains(Keywords.GRAPH)
+                || !map.containsKey(Keywords.GRAPH)
                 || !GRAPH_ALLOWED_KEYS.containsAll(map.keySet());
     }
 
