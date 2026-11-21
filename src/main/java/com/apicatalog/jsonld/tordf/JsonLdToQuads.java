@@ -424,17 +424,18 @@ public final class JsonLdToQuads {
                 if (datatype == null) {
                     datatype = Terms.XSD_INTEGER;
                 }
-
             }
         }
 
         if (valueString == null) {
 
             if (value instanceof String valueAsString) {
-
                 valueString = valueAsString;
 
             } else {
+                enforcePolicy(
+                        "Unknown @value [{0}] has been skipped.",
+                        value);
                 return;
             }
         }
@@ -458,12 +459,18 @@ public final class JsonLdToQuads {
                             Terms.XSD_STRING);
 
                     // 13.3.3.
-                    if (item.get(Keywords.LANGUAGE) instanceof String langString) {
+                    final var language = item.get(Keywords.LANGUAGE);
+
+                    if (language instanceof String langString) {
                         consumer.triple(
                                 blankNodeId,
                                 Terms.RDF_LANGUAGE,
                                 langString.toLowerCase(),
                                 Terms.XSD_STRING);
+                    } else {
+                        enforcePolicy(
+                                "Invalid RDF language tag [{0}] has been omitted for compound literal.",
+                                language);
                     }
 
                     // 13.3.4.
@@ -479,16 +486,25 @@ public final class JsonLdToQuads {
 
                 if (rdfDirection != null) {
 
-                    final var language = item.get(Keywords.LANGUAGE) instanceof String langString
-                            ? langString.toLowerCase()
-                            : null;
-
                     if (datatype == null) {
                         datatype = switch (rdfDirection) {
                         case I18N_DATATYPE -> Terms.RDF_I18N_BASE;
                         case DIR_LANG_STRING -> Terms.RDF_DIR_LANG_STRING;
                         default -> null;
                         };
+                    }
+
+                    String language = null;
+
+                    if (item.containsKey(Keywords.LANGUAGE)) {
+                        if (item.get(Keywords.LANGUAGE) instanceof String langString) {
+                            language = langString.toLowerCase();
+
+                        } else {
+                            enforcePolicy(
+                                    "Invalid RDF language tag [{0}] has been omitted for datatype [{1}].",
+                                    language, datatype);
+                        }
                     }
 
                     consumer.triple(
