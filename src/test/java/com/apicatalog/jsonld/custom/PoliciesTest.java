@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
@@ -63,20 +62,21 @@ class PoliciesTest {
 
             options.loader(StaticLoader.newBuilder()
                     .reader(MediaType.JSON_LD, SuiteConfig::read)
-                    .classpath("https://www.w3.org/ns/credentials/v2", "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
+                    .classpath("https://www.w3.org/ns/credentials/v2",
+                            "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
                     .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
                     .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
                     .fallback(options.loader())
                     .build());
 
             Expander.expand(
-                    Document.load(testCase.input, options.loader()),
+                    JsonLd.fetch(testCase.input, options.loader()),
                     options,
                     Execution.of(options).add(termMapper));
 
             if (testCase.expectErrorCode != null) {
                 JunitRunner.write(testCase, null, null, null);
-                fail("Expected error " + testCase.expectErrorCode);                
+                fail("Expected error " + testCase.expectErrorCode);
             }
 
         } catch (JsonLdException e) {

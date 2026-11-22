@@ -26,27 +26,22 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
-import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.TypeMapCollector;
-import com.apicatalog.jsonld.suite.SuiteConfig;
 import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
-import com.apicatalog.web.media.MediaType;
 
 class TypeMapTest {
-
-    static ClasspathLoader LOADER = ClasspathLoader.newInstance(SuiteConfig::read, JsonLd.class);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
     void testTypeMapper(TestCase testCase) throws JsonLdException, IOException {
+
         final var typeMap = new LinkedHashMap<String, Object>();
 
         final var typeMapper = new TypeMapCollector(typeMap::put);
@@ -54,12 +49,7 @@ class TypeMapTest {
         try {
             var options = testCase.getOptions();
 
-            options.loader(StaticLoader.newBuilder()
-                    .reader(MediaType.JSON_LD, SuiteConfig::read)
-                    .classpath("https://www.w3.org/ns/credentials/v2",
-                            "/com/apicatalog/jsonld/loader/credentials-v2.jsonld")
-                    .classpath("https://w3id.org/vc-barcodes/v1", "/com/apicatalog/jsonld/loader/vc-barcodes-v1.jsonld")
-                    .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/jsonld/loader/utopia-v2-context.jsonld")
+            options.loader(StaticLoader.newBuilder(TermMapTest.STATIC_LOADER)
                     .fallback(options.loader())
                     .build());
 
@@ -68,16 +58,17 @@ class TypeMapTest {
                     .add(typeMapper::terms);
 
             var expanded = Expander.expand(
-                    Document.load(testCase.input, options.loader()),
+                    JsonLd.fetch(testCase.input, options.loader()),
                     options,
                     runtime);
 
             assertNotNull(expanded);
 
-            TermMapTest.validateJson(
+            JunitRunner.validateJsonLd(
                     testCase,
                     options,
-                    typeMap);
+                    typeMap,
+                    true);
 
         } catch (JsonLdException e) {
 
@@ -100,7 +91,7 @@ class TypeMapTest {
                 .load(
                         "classpath:/com/apicatalog/jsonld/",
                         "typemap-manifest.jsonld",
-                        LOADER)
+                        TermMapTest.TEST_SUITE_LOADER)
                 .stream()
                 .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }

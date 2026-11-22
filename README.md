@@ -175,7 +175,7 @@ Convert JSON-LD written in plain Java into RDF using a custom static document lo
 static DocumentLoader loader = StaticLoader.newBuilder()
     .document(
         "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
-        Document.of(Map.of(
+        Map.of(
             "@context", Map.of(
                 "name", "http://xmlns.com/foaf/0.1/name",
                 "project", Map.of(
@@ -184,7 +184,7 @@ static DocumentLoader loader = StaticLoader.newBuilder()
                 "Person", "http://xmlns.com/foaf/0.1/Person",
                 "modified", Map.of(
                         "@id", "https://schema.org/dateModified",
-                        "@type", "http://www.w3.org/2001/XMLSchema#dateTime")))))
+                        "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))))
     .build();
 
 Map<String, String> document = Map.of(

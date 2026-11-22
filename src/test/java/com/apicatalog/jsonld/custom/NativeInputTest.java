@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -31,9 +29,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.jcs.Jcs;
 import com.apicatalog.jsonld.Comparison;
-import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
@@ -50,19 +46,16 @@ class NativeInputTest {
     static DocumentLoader UUID_LOADER = StaticLoader.newBuilder()
             .document(
                     "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
-                    new Document(
-                            URI.create("urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99"),
-                            Map.of(
-                                    "@context", Map.of(
-                                            "name", "http://xmlns.com/foaf/0.1/name",
-                                            "project", Map.of(
-                                                    "@id", "http://xmlns.com/foaf/0.1/project",
-                                                    "@type", "@id"),
-                                            "Person", "http://xmlns.com/foaf/0.1/Person",
-                                            "modified", Map.of(
-                                                    "@id", "https://schema.org/dateModified",
-                                                    "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
-                            null, null, null))
+                    Map.of(
+                            "@context", Map.of(
+                                    "name", "http://xmlns.com/foaf/0.1/name",
+                                    "project", Map.of(
+                                            "@id", "http://xmlns.com/foaf/0.1/project",
+                                            "@type", "@id"),
+                                    "Person", "http://xmlns.com/foaf/0.1/Person",
+                                    "modified", Map.of(
+                                            "@id", "https://schema.org/dateModified",
+                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))))
             .build();
 
     static Map<String, String> JSON_LD = Map.of(

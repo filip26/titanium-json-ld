@@ -20,9 +20,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.fromrdf.QuadsToJsonLd;
+import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.processor.Compactor;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.processor.Flattener;
@@ -33,13 +36,13 @@ import com.apicatalog.jsonld.tordf.JsonLdToQuads.QuadConsumer;
 
 /**
  * The {@code JsonLd} class provides high-level static methods to process
- * JSON-LD data according to the
+ * {@code JSON-LD} data according to the
  * <a href="https://www.w3.org/TR/json-ld11-api/">JSON-LD 1.1 Processing
  * API</a>.
  *
  * <p>
  * It supports expansion, compaction, flattening, framing, and conversion
- * between RDF and JSON-LD representations.
+ * between {@code RDF} and {@code JSON-LD} representations.
  * </p>
  *
  * <p>
@@ -49,25 +52,23 @@ import com.apicatalog.jsonld.tordf.JsonLdToQuads.QuadConsumer;
 public final class JsonLd {
 
     private JsonLd() {
+        // protected
     }
 
     /* --- EXPAND -- */
 
     /**
      * Expands the referenced document. DocumentLoader must be set in order to fetch
-     * the referenced document. See JsonLdOptions.loader method.
+     * the referenced document. See {@link Options#loader(DocumentLoader)} method.
      *
      * @param document {@link URI} referencing JSON-LD document to expand
      * @param options  options to configure expansion
      * @return expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(
-            final URI document,
-            final Options options) throws JsonLdException {
-
+    public static final Collection<?> expand(URI document, Options options) throws JsonLdException {
         return Expander.expand(
-                Document.load(
+                fetch(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
@@ -76,17 +77,14 @@ public final class JsonLd {
     }
 
     /**
-     * Expands the provided remote document.
+     * Expands the provided {@code JSON-LD} document.
      *
      * @param document to expand
      * @param options  options to configure expansion
-     * @return expanded JSON-LD document
+     * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(
-            final Document document,
-            final Options options) throws JsonLdException {
-
+    public static final Collection<?> expand(Document document, Options options) throws JsonLdException {
         return Expander.expand(
                 document,
                 options,
@@ -94,7 +92,7 @@ public final class JsonLd {
     }
 
     /**
-     * Expands a JSON-LD document provided as a {@link Map}.
+     * Expands a {@code JSON-LD} document provided as a {@link Map}.
      *
      * @param document a {@link Map} representation of the JSON-LD document to
      *                 expand
@@ -102,10 +100,7 @@ public final class JsonLd {
      * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(
-            final Map<String, ?> document,
-            final Options options) throws JsonLdException {
-
+    public static final Collection<?> expand(Map<String, ?> document, Options options) throws JsonLdException {
         return Expander.expand(
                 document,
                 options,
@@ -121,10 +116,7 @@ public final class JsonLd {
      * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(
-            final Collection<?> document,
-            final Options options) throws JsonLdException {
-
+    public static final Collection<?> expand(Collection<?> document, Options options) throws JsonLdException {
         return Expander.expand(
                 document,
                 options,
@@ -147,7 +139,7 @@ public final class JsonLd {
             final URI context,
             final Options options) throws JsonLdException {
         return compact(
-                Document.load(document, options.loader(), options.isExtractAllScripts()),
+                fetch(document, options.loader(), options.isExtractAllScripts()),
                 Context.load(context, options.loader()),
                 options);
     }
@@ -167,7 +159,7 @@ public final class JsonLd {
             final Document context,
             final Options options) throws JsonLdException {
         return compact(
-                Document.load(document, options.loader(), options.isExtractAllScripts()),
+                fetch(document, options.loader(), options.isExtractAllScripts()),
                 context,
                 options);
     }
@@ -254,7 +246,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return Flattener.flatten(
-                Document.load(
+                fetch(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
@@ -278,7 +270,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return Flattener.flatten(
-                Document.load(
+                fetch(
                         document,
                         options.loader(),
                         options.isExtractAllScripts()),
@@ -449,7 +441,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return frame(
-                Document.load(document, options.loader(), options.isExtractAllScripts()),
+                fetch(document, options.loader(), options.isExtractAllScripts()),
                 frame,
                 options);
     }
@@ -470,7 +462,7 @@ public final class JsonLd {
 
         return frame(
                 document,
-                Document.load(frame, options.loader(), options.isExtractAllScripts()),
+                fetch(frame, options.loader(), options.isExtractAllScripts()),
                 options);
     }
 
@@ -489,7 +481,7 @@ public final class JsonLd {
             final Options options) throws JsonLdException {
 
         return frame(
-                Document.load(document, options.loader(), options.isExtractAllScripts()),
+                fetch(document, options.loader(), options.isExtractAllScripts()),
                 frame,
                 options);
     }
@@ -562,11 +554,10 @@ public final class JsonLd {
             final URI uri,
             QuadConsumer consumer,
             Options options) throws JsonLdException {
-        toRdf(Document
-                .load(
-                        uri,
-                        options.loader(),
-                        options.isExtractAllScripts()),
+        toRdf(fetch(
+                uri,
+                options.loader(),
+                options.isExtractAllScripts()),
                 consumer,
                 options);
     }
@@ -687,6 +678,48 @@ public final class JsonLd {
         return new QuadsToJsonLd().options(options);
     }
 
+    /* --- REMOTE DOCUMENT -- */
+
+    public static final Document fetch(URI url, DocumentLoader loader) throws JsonLdException {
+        return fetch(url, loader, false);
+    }
+
+    public static final Document fetch(URI url, DocumentLoader loader, boolean extractAllScripts)
+            throws JsonLdException {
+
+        Objects.requireNonNull(url);
+
+        if (loader == null) {
+            throw new JsonLdException(
+                    ErrorCode.LOADING_DOCUMENT_FAILED,
+                    "Document loader is null. Cannot fetch [" + url + "].");
+        }
+
+        try {
+            final var document = loader.loadDocument(
+                    url,
+                    new DocumentLoader.Options(
+                            extractAllScripts,
+                            null,
+                            null));
+
+            if (document == null) {
+                throw new JsonLdException(
+                        ErrorCode.LOADING_DOCUMENT_FAILED,
+                        "Returned document is null [" + url + "].");
+            }
+
+            return document;
+
+        } catch (LoaderException e) {
+            throw new JsonLdException(
+                    ErrorCode.LOADING_DOCUMENT_FAILED,
+                    e);
+        }
+    }
+
+    /* --- TYPES --- */
+    
     /**
      * Represents supported JSON-LD versions.
      */

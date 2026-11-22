@@ -2,8 +2,8 @@ package com.apicatalog.jsonld.runtime;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
-import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
+import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
 
 /**
  * A counter that tracks the number of processed nodes and enforces a maximum

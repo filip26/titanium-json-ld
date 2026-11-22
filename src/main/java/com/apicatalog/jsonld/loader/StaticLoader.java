@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.Document.ContentReader;
+import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.web.media.MediaType;
 
 /**
@@ -40,7 +42,7 @@ import com.apicatalog.web.media.MediaType;
  * </p>
  *
  * <p>
- * Each URI is explicitly mapped to a {@link Document} or {@link Tree}. When
+ * Each URI is explicitly mapped to a {@link Document}. When
  * {@link #loadDocument(URI, Options)} is invoked, the loader first checks the
  * internal registry. If no entry exists, it can delegate to an optional
  * fallback {@link DocumentLoader}.
@@ -67,17 +69,17 @@ public final class StaticLoader implements DocumentLoader {
     }
 
     /** Creates a new empty builder. */
-    public static final Builder newBuilder() {
+    public static Builder newBuilder() {
         return newBuilder(Map.of());
     }
 
     /** Creates a builder initialized from an existing {@code StaticLoader}. */
-    public static final Builder copyOf(StaticLoader loader) {
+    public static Builder newBuilder(StaticLoader loader) {
         return new Builder(loader.resources, loader.loader);
     }
 
     /** Creates a builder initialized with a predefined resource map. */
-    public static final Builder newBuilder(Map<URI, Document> resources) {
+    public static Builder newBuilder(Map<URI, Document> resources) {
         return new Builder(Objects.requireNonNull(resources), null);
     }
 
@@ -157,25 +159,46 @@ public final class StaticLoader implements DocumentLoader {
         /**
          * Registers a JSON-LD structure for the given URI (string form).
          *
-         * @param url         the document URI
-         * @param contentType
-         * @param node        the parsed JSON-LD node
+         * @param url  the document URI
+         * @param node the parsed JSON-LD node
          * @return this builder instance
          */
-        Builder node(String url, MediaType contentType, Object node) {
-            return node(URI.create(url), contentType, node);
+        public Builder document(String url, Map<String, ?> node) {
+            return document(URI.create(url), node);
         }
 
         /**
          * Registers a JSON-LD structure for the given URI.
          *
-         * @param url         the document URI
-         * @param contentType
-         * @param node        the parsed JSON-LD node
+         * @param url  the document URI
+         * @param node the parsed JSON-LD node
          * @return this builder instance
          */
-        Builder node(URI url, MediaType contentType, Object node) {
-            resources.put(url, new Document(url, node, contentType, null, null));
+        public Builder document(URI url, Map<String, ?> node) {
+            resources.put(url, new Document(url, node, MediaType.JSON_LD, null, null));
+            return this;
+        }
+
+        /**
+         * Registers a JSON-LD structure for the given URI (string form).
+         *
+         * @param url  the document URI
+         * @param node the parsed JSON-LD node
+         * @return this builder instance
+         */
+        public Builder document(String url, Collection<?> node) {
+            return document(URI.create(url), node);
+        }
+
+        /**
+         * Registers a JSON-LD structure for the given URI.
+         *
+         * @param url  the document URI
+         * @param node the parsed JSON-LD node
+         * @return this builder instance
+         */
+        public Builder document(URI url, Collection<?> node) {
+            resources.put(url, new Document(url, node, MediaType.JSON_LD, null, null));
             return this;
         }
 
@@ -190,6 +213,10 @@ public final class StaticLoader implements DocumentLoader {
             return this;
         }
 
+        public Builder classpath(String url, String resource) {
+            return classpath(url, resource, JsonLd.class);
+        }
+
         /**
          * 
          * Note: a parser must be set with {@code #parser(TreeParser)} method.
@@ -199,16 +226,19 @@ public final class StaticLoader implements DocumentLoader {
          *                 resource
          * @return
          */
-        public Builder classpath(String url, String resource) {
-            try (final var is = new InputStreamReader(StaticLoader.class.getResourceAsStream(resource),
+        public Builder classpath(String url, String resource, Class<?> base) {
+            try (final var is = new InputStreamReader(base.getResourceAsStream(resource),
                     StandardCharsets.UTF_8)) {
 
-                return node(
-                        url,
+                var uri = URI.create(url);
+
+                resources.put(uri, new Document(
+                        uri,
+                        reader.read(contentType, is),
                         contentType != null
                                 ? contentType
                                 : FileLoader.fromFileExtension(resource), // detect media type
-                        reader.read(contentType, is));
+                        null, null));
 
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "An error [{0}] during loading static context [{1}]",
@@ -219,6 +249,11 @@ public final class StaticLoader implements DocumentLoader {
 
         public Builder classpath(Map<String, String> resources) {
             resources.forEach(this::classpath);
+            return this;
+        }
+
+        public Builder classpath(Map<String, String> resources, Class<?> base) {
+            resources.forEach((uri, resource) -> classpath(uri, resource, base));
             return this;
         }
 

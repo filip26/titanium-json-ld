@@ -10,9 +10,9 @@ import java.util.function.BiConsumer;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
 import com.apicatalog.jsonld.runtime.Execution.TermsConsumer;
-import com.apicatalog.jsonld.runtime.Execution.EventType;
 
 public final class TypeMapCollector implements TermValueConsumer, TermsConsumer {
 

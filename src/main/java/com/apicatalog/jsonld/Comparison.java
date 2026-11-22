@@ -29,18 +29,18 @@ import com.apicatalog.jsonld.lang.Keywords;
  * Comparison</a> algorithm.
  * <p>
  * The comparison does not rely on Java {@link Object#equals(Object)}. Instead,
- * it determines whether two nodes represent the same logical JSON-LD value
- * regardless of serialization differences or adapter implementations.
+ * it determines whether two nodes represent the same logical JSON-LD value.
  * </p>
  *
  * <h2>Comparison semantics</h2>
  * <ul>
- * <li><b>Scalars</b> ({@code null}, {@code true}, {@code false}, strings,
- * numbers, binary values) are compared by value.</li>
- * <li><b>Maps</b> are compared recursively by key and value. Key order is
+ * <li>Scalars ({@code null}, {@code true}, {@code false}, and {@link String}
+ * are compared by value.</li>
+ * <li>Numeric scalar values ({@link Number}) are compared as big decimals.</li>
+ * <li>{@link Map} is compared recursively by key and value. Key order is
  * ignored.</li>
- * <li><b>Arrays</b> are compared as unordered collections, except when the
- * array is the value of an {@code @list} property, in which case order
+ * <li>{@link Collection} is compared as an unordered collection, except when
+ * the collection is the value of an {@code @list} property, in which case order
  * matters.</li>
  * </ul>
  *
@@ -57,70 +57,66 @@ public final class Comparison {
     }
 
     /**
-     * Compares two node.
+     * Compares two node for JSON-LD equality.
      *
+     * @param a the first node to be compared
+     * @param b the second node to be compared
      * @return {@code true} if both nodes are JSON-LD equivalent
      */
-    public static final boolean equals(
-            final Object value1,
-            final Object value2) {
-
-        return equals(value1, value2, null);
+    public static final boolean equals(final Object a, final Object b) {
+        return equals(a, b, null);
     }
 
-    private static final boolean equals(
-            final Object value1,
-            final Object value2,
+    private static boolean equals(
+            final Object a,
+            final Object b,
             final Object parentProperty) {
 
-        if (value1 == value2) {
+        if (a == b) {
             return true;
         }
 
-        if (value1 == null || value2 == null) {
+        if (a == null || b == null) {
             return false;
         }
 
-        if (value1 instanceof Number n1 && value2 instanceof Number n2) {
-            return toBigDecimal(n1).equals(toBigDecimal(n2));
+        if (a instanceof Number numberA && b instanceof Number numberB) {
+            return toBigDecimal(numberA).equals(toBigDecimal(numberB));
         }
 
-        if (value1 instanceof Map map1 && value2 instanceof Map map2) {
-            return objectEquals(map1, map2);
+        if (a instanceof Map mapA && b instanceof Map mapB) {
+            return objectEquals(mapA, mapB);
         }
 
-        if (value1 instanceof Collection col1 && value2 instanceof Collection col2) {
-            return arrayEquals(col1, col2, parentProperty);
+        if (a instanceof Collection colA && b instanceof Collection colB) {
+            return arrayEquals(colA, colB, parentProperty);
         }
 
-        if (value1 instanceof String && value2 instanceof String
-                || value2 instanceof Boolean && value2 instanceof Boolean) {
-            return value1.equals(value2);
+        if (a instanceof String && b instanceof String
+                || b instanceof Boolean && b instanceof Boolean) {
+            return a.equals(b);
         }
 
         return false;
     }
 
-    private static final boolean objectEquals(
-            final Map<?, ?> map1,
-            final Map<?, ?> map2) {
+    private static boolean objectEquals(
+            final Map<?, ?> mapA,
+            final Map<?, ?> mapB) {
 
-        if (map1.size() != map2.size()) {
+        if (mapA.size() != mapB.size()) {
             return false;
         }
 
-        if (map1.isEmpty()) {
+        if (mapA.isEmpty()) {
             return true;
         }
 
-        for (final var entry1 : map1.entrySet()) {
-
-            final var prop2 = map2.get(entry1.getKey());
-
+        for (final var entryA : mapA.entrySet()) {
             if (!equals(
-                    entry1.getValue(),
-                    prop2,
-                    entry1.getKey())) {
+                    entryA.getValue(),
+                    mapB.get(entryA.getKey()),
+                    entryA.getKey())) {
                 return false;
             }
         }
@@ -128,53 +124,53 @@ public final class Comparison {
     }
 
     private static final boolean arrayEquals(
-            final Collection<?> array1,
-            final Collection<?> array2,
+            final Collection<?> arrayA,
+            final Collection<?> arrayB,
             final Object parentProperty) {
 
-        if (array1.size() != array2.size()) {
+        if (arrayA.size() != arrayB.size()) {
             return false;
         }
 
-        if (array1.isEmpty()) {
+        if (arrayA.isEmpty()) {
             return true;
         }
 
         // For values of @list, the order of these items is significant
         if (Keywords.LIST.equals(parentProperty)) {
 
-            final var it1 = array1.iterator();
-            final var it2 = array2.iterator();
+            final var itA = arrayA.iterator();
+            final var itB = arrayB.iterator();
 
-            while (it1.hasNext() && it2.hasNext()) {
-                if (!equals(it1.next(), it2.next())) {
+            while (itA.hasNext() && itB.hasNext()) {
+                if (!equals(itA.next(), itB.next())) {
                     return false;
                 }
             }
 
-            return !it1.hasNext() && !it2.hasNext();
+            return !itA.hasNext() && !itB.hasNext();
         }
 
-        return arraysEqualsUnordered(array1, array2);
+        return arraysEqualsUnordered(arrayA, arrayB);
     }
 
     // JSON arrays are generally compared with no regard to order
     private static final boolean arraysEqualsUnordered(
-            final Collection<?> array1,
-            final Collection<?> array2) {
+            final Collection<?> arrayA,
+            final Collection<?> arrayB) {
 
-        final var remaining = new ArrayList<>(array2);
+        final var remaining = new ArrayList<>(arrayB);
 
-        for (final var item1 : array1) {
+        for (final var itemA : arrayA) {
 
             boolean found = false;
 
-            for (final var item2 : remaining) {
+            for (final var itemB : remaining) {
 
-                found = equals(item1, item2);
+                found = equals(itemA, itemB);
 
                 if (found) {
-                    remaining.remove(item2);
+                    remaining.remove(itemB);
                     break;
                 }
             }

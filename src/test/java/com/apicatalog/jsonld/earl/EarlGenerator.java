@@ -76,7 +76,8 @@ public class EarlGenerator {
                 .filter(TestCase.IS_NOT_V1_0) // skip specVersion == 1.0
                 .forEach(testCase -> printResult(writer, testCase.uri,
                         (new EarlRunner(testCase))
-                                .execute(options -> JsonLd.expand(testCase.input, options))));
+                                .execute(options -> JsonLd.expand(
+                                        testCase.input, options))));
     }
 
     public void testCompact(final PrintWriter writer) throws JsonLdException {
@@ -198,7 +199,9 @@ public class EarlGenerator {
                                                         server.baseUrl())
                                                 .build());
 
-                                return JsonLd.expand(testCase.input, expandOptions);
+                                return JsonLd.expand(
+                                        testCase.input, 
+                                        expandOptions);
                             });
 
                         } catch (LoaderException e) {

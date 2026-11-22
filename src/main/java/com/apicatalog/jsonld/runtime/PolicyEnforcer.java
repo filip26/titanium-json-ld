@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
-import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
+import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
 
 public final class PolicyEnforcer implements TermValueConsumer {
 
