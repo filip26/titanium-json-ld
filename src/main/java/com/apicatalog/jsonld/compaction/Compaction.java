@@ -169,7 +169,7 @@ public final class Compaction {
             var localContext = activePropertyDefinition.localContext();
 
             activeContext = activeContext
-                    .newContext(options.loader(), runtime)
+                    .builder(options.loader(), runtime)
                     .overrideProtected(true)
                     .build(localContext, activePropertyDefinition.baseUrl());
         }
@@ -233,7 +233,7 @@ public final class Compaction {
                     final var localContext = termDefinition.localContext();
 
                     activeContext = activeContext
-                            .newContext(options.loader(), runtime)
+                            .builder(options.loader(), runtime)
                             .propagate(false)
                             .build(localContext,
                                     termDefinition.baseUrl());

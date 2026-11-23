@@ -270,7 +270,7 @@ final class ObjectExpansion1314 {
                         // TODO contextKeys?
 
                         mapContext = mapContext
-                                .newContext(params.options().loader(), params.runtime())
+                                .builder(params.options().loader(), params.runtime())
                                 .build(
                                         indexTermDefinition.localContext(),
                                         indexTermDefinition.baseUrl());
@@ -1147,7 +1147,7 @@ final class ObjectExpansion1314 {
         // step 8
         if (propertyDefinition != null && propertyDefinition.hasLocalContext()) {
             activeContext = activeContext
-                    .newContext(params.options().loader(), params.runtime())
+                    .builder(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
                             propertyDefinition.localContext(),

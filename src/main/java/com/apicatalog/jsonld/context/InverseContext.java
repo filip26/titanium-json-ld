@@ -37,7 +37,7 @@ public final class InverseContext {
     private final Set<String> variables;
     private final Map<Key, Map<String, String>> mapping;
 
-    public InverseContext() {
+    private InverseContext() {
         this.variables = new HashSet<>();
         this.mapping = new LinkedHashMap<>();
     }
@@ -46,19 +46,11 @@ public final class InverseContext {
         return variables.contains(variable);
     }
 
-    public boolean contains(final String variable, final String container, final String type) {
+    public boolean contains(String variable, String container, String type) {
         return mapping.containsKey(new Key(variable, container, type));
     }
 
-    public InverseContext setIfAbsent(final String variable, final String container, final String type,
-            final String key, final String value) {
-        variables.add(variable);
-        mapping.computeIfAbsent(new Key(variable, container, type), k -> new LinkedHashMap<>())
-                .putIfAbsent(key, value);
-        return this;
-    }
-
-    public String get(final String variable, final String container, final String type, final String key) {
+    public String get(String variable, String container, String type, String key) {
         var inner = mapping.get(new Key(variable, container, type));
         if (inner != null) {
             return inner.get(key);
@@ -73,7 +65,7 @@ public final class InverseContext {
      *      Context Creation</a>
      *
      */
-    public static InverseContext newContext(ActiveContext activeContext) {
+    static InverseContext newContext(ActiveContext activeContext) {
 
         // 1.
         final InverseContext result = new InverseContext();
@@ -228,5 +220,17 @@ public final class InverseContext {
                     .setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.NONE, termName)
                     .setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.NONE, termName);
         }
+    }
+
+    private InverseContext setIfAbsent(
+            String variable,
+            String container,
+            String type,
+            String key,
+            String value) {
+        variables.add(variable);
+        mapping.computeIfAbsent(new Key(variable, container, type), k -> new LinkedHashMap<>())
+                .putIfAbsent(key, value);
+        return this;
     }
 }

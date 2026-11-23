@@ -185,7 +185,7 @@ public final class Expansion {
          */
         if (propertyContext != null && propertyContext.hasLocalContext()) {
             return ValueExpansion.expand(context
-                    .newContext(params.options().loader(), params.runtime())
+                    .builder(params.options().loader(), params.runtime())
                     .build(propertyContext.localContext(),
                             context.findTerm(property)
                                     .map(TermDefinition::baseUrl)

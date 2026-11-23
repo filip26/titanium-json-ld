@@ -45,7 +45,7 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  *      "https://www.w3.org/TR/json-ld11-api/#create-term-definition">Create
  *      Term Definition</a>
  */
-public final class TermDefinitionBuilder {
+final class TermDefinitionBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TermDefinitionBuilder.class.getName());
 
@@ -419,7 +419,7 @@ public final class TermDefinitionBuilder {
                     && localContext.containsKey(compactUri.prefix())) {
 
                 activeContext
-                        .newTerm(
+                        .addTerm(
                                 compactUri.prefix(),
                                 localContext,
                                 defined,
@@ -544,7 +544,7 @@ public final class TermDefinitionBuilder {
             // 21.3.
             try {
                 activeContext
-                        .newContext(loader, runtime)
+                        .builder(loader, runtime)
                         .overrideProtected(true)
                         .remoteContexts(new ArrayList<>(remoteContexts))
                         .validateScopedContext(false)

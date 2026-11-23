@@ -73,7 +73,7 @@ public final class ObjectExpansion {
         // 8. initialize property context
         if (propertyContext != null && propertyContext.hasLocalContext()) {
             activeContext = activeContext
-                    .newContext(params.options().loader(), params.runtime())
+                    .builder(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
                             propertyContext.localContext(),
@@ -86,7 +86,7 @@ public final class ObjectExpansion {
         // 9. initialize local context
         if (element.containsKey(Keywords.CONTEXT)) {
             activeContext = activeContext
-                    .newContext(params.options().loader(), params.runtime())
+                    .builder(params.options().loader(), params.runtime())
                     .useInline(params.options().useInlineContexts())
                     .collectTerms(params.runtime().hasValuesConsumer()
                             ? params.runtime()::fire
@@ -245,7 +245,7 @@ public final class ObjectExpansion {
                     if (termDefinition != null && termDefinition.hasLocalContext()) {
 
                         activeContext = activeContext
-                                .newContext(params.options().loader(), params.runtime())
+                                .builder(params.options().loader(), params.runtime())
                                 .propagate(false)
                                 .collectTerms(params.runtime().hasValuesConsumer()
                                         ? params.runtime()::fire

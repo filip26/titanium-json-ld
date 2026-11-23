@@ -66,14 +66,14 @@ public interface Context {
 
     Context previousContext();
 
-    void newTerm(
+    void addTerm(
             String term,
             Map<String, ?> localContext,
             Map<String, Boolean> defined,
             DocumentLoader loader,
             final Execution runtime) throws JsonLdException;
 
-    ContextBuilder newContext(DocumentLoader loader, final Execution runtime);
+    ContextBuilder builder(DocumentLoader loader, final Execution runtime);
 
     InverseContext inverseContext();
 
@@ -302,7 +302,7 @@ public interface Context {
 //            this.context = node;
 //            this.adapter = adapter;
 //            this.baseUrl = baseUrl;
-            this.ctx = ctx.newContext(loader, runtime)
+            this.ctx = ctx.builder(loader, runtime)
                     .useInline(acceptInline)
                     .build(node, baseUrl);
             return this;

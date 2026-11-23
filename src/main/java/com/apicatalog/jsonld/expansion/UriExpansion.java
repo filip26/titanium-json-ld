@@ -260,7 +260,7 @@ public final class UriExpansion {
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
                     activeContext
-                            .newTerm(
+                            .addTerm(
                                     value,
                                     localContext,
                                     defined,
@@ -296,7 +296,7 @@ public final class UriExpansion {
                 && localContext.containsKey(prefix)
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
 
-            activeContext.newTerm(prefix, localContext, defined, loader, runtime);
+            activeContext.addTerm(prefix, localContext, defined, loader, runtime);
 
             if (runtime.hasValuesConsumer()) {
                 runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());

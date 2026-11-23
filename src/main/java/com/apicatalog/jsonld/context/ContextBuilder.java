@@ -661,7 +661,7 @@ public final class ContextBuilder {
         // 5.2.6
         try {
             result = result
-                    .newContext(loader, runtime)
+                    .builder(loader, runtime)
                     .remoteContexts(new ArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
                     .collectTerms(collectTerms)

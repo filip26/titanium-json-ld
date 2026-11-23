@@ -88,6 +88,21 @@ public final class ActiveContext implements Context {
         this.version = origin.version;
     }
 
+    @Override
+    public ContextBuilder builder(DocumentLoader loader, Execution runtime) {
+        return ContextBuilder.with(this, loader, runtime);
+    }
+
+    @Override
+    public void addTerm(
+            String term,
+            Map<String, ?> localContext,
+            Map<String, Boolean> defined,
+            DocumentLoader loader,
+            Execution runtime) throws JsonLdException {
+        TermDefinitionBuilder.newInstance(this, localContext, defined, loader, runtime).addTerm(term);
+    }
+
     public void createInverseContext() {
         this.inverseContext = InverseContext.newContext(this);
     }
@@ -106,6 +121,21 @@ public final class ActiveContext implements Context {
 
     TermDefinition removeTerm(String term) {
         return terms.remove(term);
+    }
+
+    public String selectTerm(
+            Collection<String> preferredValues,
+            String variable,
+            Collection<String> containerMapping,
+            String typeLanguage) {
+        return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
+    }
+
+    @Override
+    public String toString() {
+        return "ActiveContext[uri=" + baseUri
+                + ", terms=" + terms
+                + ", previousContext=" + previousContext + "]";
     }
 
     public Direction defaultBaseDirection() {
@@ -150,29 +180,6 @@ public final class ActiveContext implements Context {
         return terms.keySet();
     }
 
-    @Override
-    public ContextBuilder newContext(DocumentLoader loader, Execution runtime) {
-        return ContextBuilder.with(this, loader, runtime);
-    }
-
-    @Override
-    public void newTerm(
-            String term,
-            Map<String, ?> localContext,
-            Map<String, Boolean> defined,
-            DocumentLoader loader,
-            Execution runtime) throws JsonLdException {
-        TermDefinitionBuilder.newInstance(this, localContext, defined, loader, runtime).addTerm(term);
-    }
-
-    public String selectTerm(
-            Collection<String> preferredValues,
-            String variable,
-            Collection<String> containerMapping,
-            String typeLanguage) {
-        return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
-    }
-
     void defaultBaseDirection(Direction defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
     }
@@ -195,13 +202,6 @@ public final class ActiveContext implements Context {
 
     void term(String term, TermDefinition definition) {
         terms.put(term, definition);
-    }
-
-    @Override
-    public String toString() {
-        return "ActiveContext[uri=" + baseUri
-                + ", terms=" + terms
-                + ", previousContext=" + previousContext + "]";
     }
 
     @Override
