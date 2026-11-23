@@ -17,17 +17,31 @@ package com.apicatalog.jsonld.context;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
+ * Selects a matching term from an {@link InverseContext} according to the
+ * JSON-LD 1.1 Term Selection algorithm.
  *
  * @see <a href="https://www.w3.org/TR/json-ld11-api/#term-selection">Term
  *      Selection</a>
- *
  */
 final class TermSelector {
 
-    public static Optional<String> match(
+    /**
+     * Finds the first matching term for the given variable, container mappings, and
+     * type or language preference order.
+     *
+     * @param preferredValues ordered collection of preferred values or types to
+     *                        match
+     * @param activeContext   the active JSON-LD context
+     * @param variable        the property IRI or keyword variable being selected
+     * @param containers      ordered collection of container keywords to check
+     * @param typeLanguage    type mapping IRI, language tag, or keyword used for
+     *                        selection
+     * @return an {@link Optional} containing the first matching term, or empty if
+     *         none matches
+     */
+    public static String match(
             final Collection<String> preferredValues,
             final ActiveContext activeContext,
             final String variable,
@@ -43,16 +57,25 @@ final class TermSelector {
 
         // 2. Initialize inverse context to the value of inverse context in active
         // context.
-        final InverseContext inverseContext = activeContext.getInverseContext();
+        final var inverseContext = activeContext.getInverseContext();
 
         // 4.
-        return containers
-                .stream()
-                .filter(container -> inverseContext.contains(variable, container, typeLanguage))
-                .flatMap(container -> preferredValues
-                        .stream()
-                        .map(item -> inverseContext.get(variable, container, typeLanguage, item)))
-                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
-                .findFirst();
+        for (final var container : containers) {
+
+            if (!inverseContext.contains(variable, container, typeLanguage)) {
+                continue;
+            }
+
+            for (final var item : preferredValues) {
+
+                final var candidate = inverseContext.get(variable, container, typeLanguage, item);
+
+                if (candidate != null) {
+                    return candidate;
+                }
+            }
+        }
+
+        return null;
     }
 }

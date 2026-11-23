@@ -439,11 +439,11 @@ public final class UriCompaction {
             }
 
             // 4.20.
-            final Optional<String> term = context.selectTerm(preferredValues, variable, containers, typeLanguage);
+            final var term = context.selectTerm(preferredValues, variable, containers, typeLanguage);
 
             // 4.21.
-            if (term.isPresent()) {
-                return term.get();
+            if (term != null) {
+                return term;
             }
         }
 

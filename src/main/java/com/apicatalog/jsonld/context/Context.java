@@ -79,7 +79,7 @@ public interface Context {
 
     void createInverseContext();
 
-    Optional<String> selectTerm(
+    String selectTerm(
             final Collection<String> preferredValues,
             final String variable,
             final Collection<String> containerMapping,

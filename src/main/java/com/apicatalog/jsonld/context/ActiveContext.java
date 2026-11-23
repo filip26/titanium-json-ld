@@ -163,11 +163,11 @@ public final class ActiveContext implements Context {
         TermDefinitionBuilder.newInstance(this, localContext, defined, loader, runtime).addTerm(term);
     }
 
-    public Optional<String> selectTerm(
-            final Collection<String> preferredValues,
-            final String variable,
-            final Collection<String> containerMapping,
-            final String typeLanguage) {
+    public String selectTerm(
+            Collection<String> preferredValues,
+            String variable,
+            Collection<String> containerMapping,
+            String typeLanguage) {
         return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
     }
 
