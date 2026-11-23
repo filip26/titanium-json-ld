@@ -17,12 +17,10 @@ package com.apicatalog.jsonld.context;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.SequencedCollection;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,17 +38,18 @@ import com.apicatalog.web.uri.UriUtils;
 import com.apicatalog.web.uri.UriValidationPolicy;
 
 /**
+ * Builds {@link TermDefinition} entries for terms in an {@link ActiveContext}
+ * according to the JSON-LD 1.1 Create Term Definition algorithm.
  *
  * @see <a href=
  *      "https://www.w3.org/TR/json-ld11-api/#create-term-definition">Create
  *      Term Definition</a>
- *
  */
 public final class TermDefinitionBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TermDefinitionBuilder.class.getName());
 
-    private static final Collection<String> CONTAINER_KEYWORDS = Arrays.asList(
+    private static final Collection<String> CONTAINER_KEYWORDS = List.of(
             Keywords.GRAPH,
             Keywords.ID,
             Keywords.INDEX,
@@ -59,7 +58,7 @@ public final class TermDefinitionBuilder {
             Keywords.SET,
             Keywords.TYPE);
 
-    private static final Collection<String> PROTECTED_KEYWORDS = Arrays.asList(
+    private static final Collection<String> PROTECTED_KEYWORDS = List.of(
             Keywords.ID,
             Keywords.REVERSE,
             Keywords.CONTAINER,
@@ -109,7 +108,19 @@ public final class TermDefinitionBuilder {
         this.remoteContexts = new ArrayList<>();
     }
 
-    public static final TermDefinitionBuilder with(
+    /**
+     * Creates a new {@link TermDefinitionBuilder} configured with the required
+     * context and processing state.
+     *
+     * @param activeContext the active context being updated
+     * @param localContext  the local context map containing term definitions
+     * @param defined       tracking map of terms already defined or currently in
+     *                      progress
+     * @param loader        the document loader for resolving remote contexts
+     * @param runtime       the execution environment state
+     * @return a new {@link TermDefinitionBuilder} instance
+     */
+    public static final TermDefinitionBuilder newInstance(
             ActiveContext activeContext,
             Map<String, ?> localContext,
             Map<String, Boolean> defined,
@@ -118,7 +129,15 @@ public final class TermDefinitionBuilder {
         return new TermDefinitionBuilder(activeContext, localContext, defined, loader, runtime);
     }
 
-    public void create(final String term) throws JsonLdException {
+    /**
+     * Creates and registers a {@link TermDefinition} for the given term in the
+     * active context according to the JSON-LD 1.1 Create Term Definition algorithm.
+     *
+     * @param term the term to define
+     * @throws JsonLdException if the term definition is invalid, cyclic, or
+     *                         violates keyword or protection rules
+     */
+    public void addTerm(final String term) throws JsonLdException {
 
         if (term == null || term.isBlank()) {
             throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
@@ -191,146 +210,135 @@ public final class TermDefinitionBuilder {
         // 6.
         final var previousDefinition = activeContext.removeTerm(term).orElse(null);
 
-        final Function<String, ?> propertyGetter;
-        final Collection<String> valueObjectKeys;
-        final boolean simpleTerm;
+        final Map<?, ?> valueObject;
+        final boolean isSimpleTerm;
         final Object idValue;
 
-        // 7.
-        if (value == null) {
-            propertyGetter = x -> null;
-            valueObjectKeys = Set.of();
+        switch (value) {
+        case null -> {
+            valueObject = Map.of();
+            isSimpleTerm = false;
             idValue = false;
-            simpleTerm = false;
-
-        } else if (value instanceof String) {
-            // 8.
-            propertyGetter = x -> null;
-            valueObjectKeys = Set.of();
-            idValue = value;
-            simpleTerm = true;
-
-        } else if (value instanceof Map map) {
-            // 9.
-            propertyGetter = name -> map.get(name);
-            valueObjectKeys = map.keySet();
-            if (map.containsKey(Keywords.ID)) {
-                var id = map.get(Keywords.ID);
-                idValue = id != null ? id : false;
-            } else {
-                idValue = null;
-            }
-            simpleTerm = false;
-
-        } else {
-            throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
+        }
+        case String s -> {
+            valueObject = Map.of();
+            isSimpleTerm = true;
+            idValue = s;
+        }
+        case Map<?, ?> map -> {
+            valueObject = map;
+            isSimpleTerm = false;
+            idValue = map.containsKey(Keywords.ID)
+                    ? (map.get(Keywords.ID) != null ? map.get(Keywords.ID) : false)
+                    : null;
+        }
+        default -> throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
         }
 
         // 10.
         final var definition = new TermDefinition(false, protectedFlag, false);
 
         // 11.
-        if (valueObjectKeys.contains(Keywords.PROTECTED)) {
-
-            final var protectedValue = propertyGetter.apply(Keywords.PROTECTED);
+        if (valueObject.containsKey(Keywords.PROTECTED)) {
 
             if (activeContext.isV10()) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (!(protectedValue instanceof Boolean protectedBool)) {
+            if (valueObject.get(Keywords.PROTECTED) instanceof Boolean protectedBool) {
+                definition.setProtected(protectedBool);
+
+            } else {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_PROTECTED_VALUE);
             }
-
-            definition.setProtected(protectedBool);
         }
 
         // 12.
-        if (valueObjectKeys.contains(Keywords.TYPE)) {
+        if (valueObject.containsKey(Keywords.TYPE)) {
 
-            final var typeValue = propertyGetter.apply(Keywords.TYPE);
+            if (valueObject.get(Keywords.TYPE) instanceof String typeString) {
 
-            if (!(typeValue instanceof String typeString)) {
+                // 12.2.
+                final var expandedTypeString = UriExpansion.with(activeContext, loader, runtime)
+                        .localContext(localContext)
+                        .defined(defined)
+                        .vocab(true)
+                        .expand(typeString);
+
+                if (expandedTypeString == null) {
+                    throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
+                }
+
+                // 12.3.
+                if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
+                        && activeContext.isV10())
+                        // 12.4.
+                        || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE,
+                                Keywords.VOCAB)
+                                && UriUtils.isNotAbsoluteUri(expandedTypeString, UriValidationPolicy.Full))) {
+                    throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
+                }
+
+                // 12.5.
+                definition.setTypeMapping(expandedTypeString);
+
+            } else {
                 throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
             }
-
-            // 12.2.
-            final String expandedTypeString = UriExpansion.with(activeContext, loader, runtime)
-                    .localContext(localContext)
-                    .defined(defined)
-                    .vocab(true)
-                    .expand(typeString);
-
-            if (expandedTypeString == null) {
-                throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
-            }
-
-            // 12.3.
-            if (((Keywords.JSON.equals(expandedTypeString) || Keywords.NONE.equals(expandedTypeString))
-                    && activeContext.isV10())
-                    // 12.4.
-                    || (Keywords.noneMatch(expandedTypeString, Keywords.ID, Keywords.JSON, Keywords.NONE,
-                            Keywords.VOCAB)
-                            && UriUtils.isNotAbsoluteUri(expandedTypeString, UriValidationPolicy.Full))) {
-                throw new JsonLdException(ErrorCode.INVALID_TYPE_MAPPING);
-            }
-
-            // 12.5.
-            definition.setTypeMapping(expandedTypeString);
         }
 
         // 13.
-        if (valueObjectKeys.contains(Keywords.REVERSE)) {
+        if (valueObject.containsKey(Keywords.REVERSE)) {
             // 13.1.
-            if (valueObjectKeys.contains(Keywords.ID) || valueObjectKeys.contains(Keywords.NEST)) {
+            if (valueObject.containsKey(Keywords.ID) || valueObject.containsKey(Keywords.NEST)) {
                 throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY);
             }
 
-            final var reverseValue = propertyGetter.apply(Keywords.REVERSE);
-
             // 13.2.
-            if (!(reverseValue instanceof String reverseString)) {
+            if (valueObject.get(Keywords.REVERSE) instanceof String reverseString) {
+
+                // 13.3.
+                if (Keywords.matchForm(reverseString)) {
+                    LOGGER.log(Level.WARNING, "The value [{0}] associated with @reverse cannot have form of a keyword.",
+                            reverseString);
+                    return;
+                }
+
+                // 13.4.
+                definition.setUriMapping(
+                        UriExpansion.with(activeContext, loader, runtime)
+                                .localContext(localContext)
+                                .defined(defined)
+                                .vocab(true)
+                                .expand(reverseString));
+
+                if (UriUtils.isNotURI(definition.getUriMapping())) {
+                    throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
+                }
+
+                // 13.5.
+                final var containerValue = valueObject.get(Keywords.CONTAINER);
+
+                if (containerValue instanceof String containerString
+                        && (Keywords.SET.equals(containerString)
+                                || Keywords.INDEX.equals(containerString))) {
+                    definition.addContainerMapping(containerString);
+
+                } else if (valueObject.containsKey(Keywords.CONTAINER)) {
+                    throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY,
+                            "The @reverse value=" + containerValue + " is invalid");
+                }
+
+                // 13.6.
+                definition.setReverseProperty(true);
+
+                // 13.7.
+                activeContext.setTerm(term, definition);
+                defined.put(term, Boolean.TRUE);
+
+            } else {
                 throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
             }
-
-            // 13.3.
-            if (Keywords.matchForm(reverseString)) {
-                LOGGER.log(Level.WARNING, "The value [{0}] associated with @reverse cannot have form of a keyword.",
-                        reverseString);
-                return;
-            }
-
-            // 13.4.
-            definition.setUriMapping(
-                    UriExpansion.with(activeContext, loader, runtime)
-                            .localContext(localContext)
-                            .defined(defined)
-                            .vocab(true)
-                            .expand(reverseString));
-
-            if (UriUtils.isNotURI(definition.getUriMapping())) {
-                throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
-            }
-
-            // 13.5.
-            final var containerValue = propertyGetter.apply(Keywords.CONTAINER);
-
-            if (containerValue instanceof String containerString
-                    && (Keywords.SET.equals(containerString)
-                            || Keywords.INDEX.equals(containerString))) {
-                definition.addContainerMapping(containerString);
-
-            } else if (valueObjectKeys.contains(Keywords.CONTAINER)) {
-                throw new JsonLdException(ErrorCode.INVALID_REVERSE_PROPERTY,
-                        "The @reverse value=" + containerValue + " is invalid");
-            }
-
-            // 13.6.
-            definition.setReverseProperty(true);
-
-            // 13.7.
-            activeContext.setTerm(term, definition);
-            defined.put(term, Boolean.TRUE);
 
             // 14.
         } else if (idValue != null
@@ -393,7 +401,7 @@ public final class TermDefinitionBuilder {
                 if (definition.isNotPrefix()) {
                     definition.setPrefix(!term.contains(":")
                             && !term.contains("/")
-                            && simpleTerm
+                            && isSimpleTerm
                             && (definition.getUriMapping() != null
                                     && ((UriUtils.endsWithGenDelim(definition.getUriMapping())
                                             && UriUtils.isURI(definition.getUriMapping().substring(0,
@@ -464,9 +472,9 @@ public final class TermDefinitionBuilder {
         }
 
         // 19.
-        if (valueObjectKeys.contains(Keywords.CONTAINER)) {
+        if (valueObject.containsKey(Keywords.CONTAINER)) {
 
-            var containerValue = propertyGetter.apply(Keywords.CONTAINER);
+            var containerValue = valueObject.get(Keywords.CONTAINER);
 
             if (!validateContainer(containerValue)) {
                 throw new JsonLdException(ErrorCode.INVALID_CONTAINER_MAPPING);
@@ -498,7 +506,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 20.
-        if (valueObjectKeys.contains(Keywords.INDEX)) {
+        if (valueObject.containsKey(Keywords.INDEX)) {
 
             // 20.1.
             if (activeContext.isV10() || !definition.getContainerMapping().contains(Keywords.INDEX)) {
@@ -506,37 +514,34 @@ public final class TermDefinitionBuilder {
             }
 
             // 20.2.
-            if (valueObjectKeys.contains(Keywords.INDEX)) {
+            if (valueObject.get(Keywords.INDEX) instanceof String indexString) {
 
-                if (propertyGetter.apply(Keywords.INDEX) instanceof String indexString) {
+                final var expandedIndex = UriExpansion.with(activeContext, loader, runtime)
+                        .localContext(localContext)
+                        .defined(defined)
+                        .vocab(true)
+                        .expand(indexString);
 
-                    final var expandedIndex = UriExpansion.with(activeContext, loader, runtime)
-                            .localContext(localContext)
-                            .defined(defined)
-                            .vocab(true)
-                            .expand(indexString);
-
-                    if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
-                        throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
-                    }
-
-                    definition.setIndexMapping(indexString);
-
-                } else {
+                if (expandedIndex == null || UriUtils.isNotURI(expandedIndex)) {
                     throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
                 }
+
+                definition.setIndexMapping(indexString);
+
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
         }
 
         // 21.
-        if (valueObjectKeys.contains(Keywords.CONTEXT)) {
+        if (valueObject.containsKey(Keywords.CONTEXT)) {
 
             // 21.1.
             if (activeContext.isV10()) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            final var contextValue = propertyGetter.apply(Keywords.CONTEXT);
+            final var contextValue = valueObject.get(Keywords.CONTEXT);
 
             // 21.3.
             try {
@@ -557,9 +562,9 @@ public final class TermDefinitionBuilder {
         }
 
         // 22.
-        if (valueObjectKeys.contains(Keywords.LANGUAGE) && !valueObjectKeys.contains(Keywords.TYPE)) {
+        if (valueObject.containsKey(Keywords.LANGUAGE) && !valueObject.containsKey(Keywords.TYPE)) {
 
-            final var languageValue = propertyGetter.apply(Keywords.LANGUAGE);
+            final var languageValue = valueObject.get(Keywords.LANGUAGE);
 
             if (languageValue == null) {
                 definition.setLanguageMapping(Keywords.NULL);
@@ -578,60 +583,48 @@ public final class TermDefinitionBuilder {
         }
 
         // 23.
-
-        if (valueObjectKeys.contains(Keywords.DIRECTION) && !valueObjectKeys.contains(Keywords.TYPE)) {
-
-            final var directionValue = propertyGetter.apply(Keywords.DIRECTION);
-
-            if (directionValue == null) {
-                definition.setDirectionMapping(Direction.NULL);
-
-            } else if (directionValue instanceof String directionString) {
-
-                if ("ltr".equals(directionString)) {
-                    definition.setDirectionMapping(Direction.LTR);
-
-                } else if ("rtl".equals(directionString)) {
-                    definition.setDirectionMapping(Direction.RTL);
-
-                } else {
-                    throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
-                }
-
-            } else {
-                throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
+        if (valueObject.containsKey(Keywords.DIRECTION) && !valueObject.containsKey(Keywords.TYPE)) {
+            switch (valueObject.get(Keywords.DIRECTION)) {
+            case null -> definition.setDirectionMapping(Direction.NULL);
+            case String directionValue -> definition.setDirectionMapping(switch (directionValue) {
+            case "ltr" -> Direction.LTR;
+            case "rtl" -> Direction.RTL;
+            default -> throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
+            });
+            default -> throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
             }
         }
 
         // 24.
-        if (valueObjectKeys.contains(Keywords.NEST)) {
+        if (valueObject.containsKey(Keywords.NEST)) {
 
             // 24.1
             if (activeContext.isV10()) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (propertyGetter.apply(Keywords.NEST) instanceof String nestString) {
+            if (valueObject.get(Keywords.NEST) instanceof String nestString) {
 
                 if (Keywords.contains(nestString) && !Keywords.NEST.equals(nestString)) {
                     throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
                 }
 
                 definition.setNestValue(nestString);
+
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_NEST_VALUE);
             }
         }
 
         // 25.
-        if (valueObjectKeys.contains(Keywords.PREFIX)) {
+        if (valueObject.containsKey(Keywords.PREFIX)) {
 
             // 25.1.
             if (activeContext.isV10() || term.contains(":") || term.contains("/")) {
                 throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
             }
 
-            if (propertyGetter.apply(Keywords.PREFIX) instanceof Boolean prefix) {
+            if (valueObject.get(Keywords.PREFIX) instanceof Boolean prefix) {
                 definition.setPrefix(prefix);
 
             } else {
@@ -645,7 +638,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 26.
-        if (!PROTECTED_KEYWORDS.containsAll(valueObjectKeys)) {
+        if (!PROTECTED_KEYWORDS.containsAll(valueObject.keySet())) {
             throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
         }
 
@@ -667,27 +660,59 @@ public final class TermDefinitionBuilder {
         defined.put(term, true);
     }
 
+    /**
+     * Sets the base URL used when resolving scoped contexts.
+     *
+     * @param baseUrl the base {@link URI}
+     * @return this builder instance
+     */
     public TermDefinitionBuilder baseUrl(URI baseUrl) {
         this.baseUrl = baseUrl;
         return this;
     }
 
+    /**
+     * Sets the default protected flag applied to newly created term definitions.
+     *
+     * @param protectedFlag {@code true} if terms should be protected by default
+     * @return this builder instance
+     */
     public TermDefinitionBuilder protectedFlag(boolean protectedFlag) {
         this.protectedFlag = protectedFlag;
         return this;
     }
 
-    public TermDefinitionBuilder overrideProtectedFlag(boolean overrideProtectedFlag) {
-        this.overrideProtectedFlag = overrideProtectedFlag;
+    /**
+     * Sets whether protected term definitions may be overridden.
+     *
+     * @param enable {@code true} to allow overriding protected terms
+     * @return this builder instance
+     */
+    public TermDefinitionBuilder overrideProtectedFlag(boolean enable) {
+        this.overrideProtectedFlag = enable;
         return this;
     }
 
+    /**
+     * Sets the collection of remote context IRIs already loaded for cycle
+     * detection.
+     *
+     * @param remoteContexts collection of remote context IRIs
+     * @return this builder instance
+     */
     public TermDefinitionBuilder remoteContexts(Collection<String> remoteContexts) {
         this.remoteContexts = remoteContexts;
         return this;
     }
 
-    private final boolean validateContainer(final Object value) {
+    /**
+     * Validates a {@code @container} mapping value against the active JSON-LD
+     * context.
+     *
+     * @param value the container value to validate
+     * @return {@code true} if the container value is valid, {@code false} otherwise
+     */
+    private boolean validateContainer(final Object value) {
 
         if (value == null) {
             return false;
@@ -717,7 +742,14 @@ public final class TermDefinitionBuilder {
                 && validateContainerArray(col);
     }
 
-    private static final boolean validateContainerArray(final Collection<String> containers) {
+    /**
+     * Validates a collection of {@code @container} keywords for JSON-LD 1.1.
+     *
+     * @param containers the collection of container keywords
+     * @return {@code true} if the container keyword combination is valid,
+     *         {@code false} otherwise
+     */
+    private static boolean validateContainerArray(final Collection<?> containers) {
 
         if (containers.size() > 3) {
             return false;

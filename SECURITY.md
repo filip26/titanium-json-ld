@@ -5,6 +5,7 @@
 
 | Version | Supported          |
 | ------- |:------------------:|
+| 2.x.x   | ❌ Not supported |
 | 1.7.x   | ✅ Supported |
 | 1.x.x   | ❌ Not supported |
 | 0.x.x   | ❌ Not supported |

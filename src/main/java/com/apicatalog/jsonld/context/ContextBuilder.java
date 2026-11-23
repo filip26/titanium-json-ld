@@ -481,7 +481,7 @@ public final class ContextBuilder {
             }
 
             final var termBuilder = TermDefinitionBuilder
-                    .with(result, contextDefinition, new HashMap<>(), loader, runtime)
+                    .newInstance(result, contextDefinition, new HashMap<>(), loader, runtime)
                     .baseUrl(baseUrl)
                     .overrideProtectedFlag(overrideProtected);
 
@@ -496,7 +496,7 @@ public final class ContextBuilder {
                     termBuilder
                             .protectedFlag(Boolean.TRUE.equals(contextDefinition.get(Keywords.PROTECTED)))
                             .remoteContexts(new ArrayList<>(remoteContexts))
-                            .create(key);
+                            .addTerm(key);
                 }
             }
         }

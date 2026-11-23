@@ -160,7 +160,7 @@ public final class ActiveContext implements Context {
 
     @Override
     public void newTerm(final String term, final Map<String, ?> localContext, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) throws JsonLdException {
-        TermDefinitionBuilder.with(this, localContext, defined, loader, runtime).create(term);
+        TermDefinitionBuilder.newInstance(this, localContext, defined, loader, runtime).addTerm(term);
     }
 
     public Optional<String> selectTerm(
