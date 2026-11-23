@@ -76,10 +76,10 @@ public final class ObjectExpansion {
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
-                            propertyContext.getLocalContext(),
+                            propertyContext.localContext(),
                             activeContext
                                     .findTerm(property)
-                                    .map(TermDefinition::getBaseUrl)
+                                    .map(TermDefinition::baseUrl)
                                     .orElse(null));
         }
 
@@ -250,9 +250,9 @@ public final class ObjectExpansion {
                                 .collectTerms(params.runtime().hasValuesConsumer()
                                         ? params.runtime()::fire
                                         : null)
-                                .build(termDefinition.getLocalContext(),
+                                .build(termDefinition.localContext(),
                                         activeContext.findTerm(term)
-                                                .map(TermDefinition::getBaseUrl)
+                                                .map(TermDefinition::baseUrl)
                                                 .orElse(null));
                     }
                 }

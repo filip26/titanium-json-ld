@@ -134,14 +134,14 @@ public final class UriExpansion {
         initLocalContext(value);
 
         final var definition = activeContext.findTerm(value)
-                .filter(term -> vocab || Keywords.contains(term.getUriMapping()));
+                .filter(term -> vocab || Keywords.contains(term.uriMapping()));
 
         // 4. if active context has a term definition for value,
         // and the associated URI mapping is a keyword, return that keyword.
         // 5. If vocab is true and the active context has a term definition for value,
         // return the associated URI mapping
         if (definition.isPresent()) {
-            return definition.get().getUriMapping();
+            return definition.get().uriMapping();
         }
 
         String result = value;
@@ -308,7 +308,7 @@ public final class UriExpansion {
         // URI mapping.
         return activeContext.findTerm(prefix)
                 .filter(TermDefinition::isPrefix)
-                .map(TermDefinition::getUriMapping)
+                .map(TermDefinition::uriMapping)
                 .map(uriMapping -> uriMapping.concat(suffix))
                 .orElse(result);
     }

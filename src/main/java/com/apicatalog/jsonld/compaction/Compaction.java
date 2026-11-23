@@ -166,12 +166,12 @@ public final class Compaction {
 
         if (activePropertyDefinition != null && activePropertyDefinition.hasLocalContext()) {
 
-            var localContext = activePropertyDefinition.getLocalContext();
+            var localContext = activePropertyDefinition.localContext();
 
             activeContext = activeContext
                     .newContext(options.loader(), runtime)
                     .overrideProtected(true)
-                    .build(localContext, activePropertyDefinition.getBaseUrl());
+                    .build(localContext, activePropertyDefinition.baseUrl());
         }
 
         // 7.
@@ -186,7 +186,7 @@ public final class Compaction {
 
             if (result != null && JsonLdAdapter.isScalar(result)
                     || (activePropertyDefinition != null
-                            && Keywords.JSON.equals(activePropertyDefinition.getTypeMapping()))) {
+                            && Keywords.JSON.equals(activePropertyDefinition.typeMapping()))) {
                 return result;
             }
         }
@@ -228,15 +228,15 @@ public final class Compaction {
                 final var termDefinition = typeContext.findTerm(term).orElse(null);
 
                 // 11.1.
-                if (termDefinition != null && termDefinition.getLocalContext() != null) {
+                if (termDefinition != null && termDefinition.localContext() != null) {
 
-                    final var localContext = termDefinition.getLocalContext();
+                    final var localContext = termDefinition.localContext();
 
                     activeContext = activeContext
                             .newContext(options.loader(), runtime)
                             .propagate(false)
                             .build(localContext,
-                                    termDefinition.getBaseUrl());
+                                    termDefinition.baseUrl());
                 }
             }
         }
@@ -426,7 +426,7 @@ public final class Compaction {
                 // 12.7.2.
                 final Optional<String> nestProperty = activeContext
                         .findTerm(itemActiveProperty)
-                        .map(TermDefinition::getNestValue);
+                        .map(TermDefinition::nestValue);
 
                 if (nestProperty.isPresent()) {
 
@@ -474,7 +474,7 @@ public final class Compaction {
                 // 12.8.2.
                 final Optional<String> nestProperty = activeContext
                         .findTerm(itemActiveProperty)
-                        .map(TermDefinition::getNestValue);
+                        .map(TermDefinition::nestValue);
 
                 if (nestProperty.isPresent()) {
 
@@ -503,7 +503,7 @@ public final class Compaction {
                 // 12.8.4.
                 final Collection<String> container = activeContext
                         .findTerm(itemActiveProperty)
-                        .map(TermDefinition::getContainerMapping)
+                        .map(TermDefinition::containerMapping)
                         .orElse(List.of());
 
                 // 12.8.5.
@@ -702,7 +702,7 @@ public final class Compaction {
                     // 12.8.9.3.
                     final var indexKey = activeContext
                             .findTerm(itemActiveProperty)
-                            .map(TermDefinition::getIndexMapping)
+                            .map(TermDefinition::indexMapping)
                             .orElse(Keywords.INDEX);
 
                     String mapKey = null;

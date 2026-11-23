@@ -57,8 +57,8 @@ public final class ValueCompaction {
         Direction direction = null;
 
         if (activePropertyDefinition.isPresent()) {
-            language = activePropertyDefinition.get().getLanguageMapping();
-            direction = activePropertyDefinition.get().getDirectionMapping();
+            language = activePropertyDefinition.get().languageMapping();
+            direction = activePropertyDefinition.get().directionMapping();
         }
 
         if (language == null) {
@@ -76,7 +76,7 @@ public final class ValueCompaction {
 
             // 6.1.
             if (activePropertyDefinition
-                    .map(TermDefinition::getTypeMapping)
+                    .map(TermDefinition::typeMapping)
                     .filter(Keywords.ID::equals)
                     .isPresent()) {
 
@@ -84,7 +84,7 @@ public final class ValueCompaction {
 
                 // 6.2.
             } else if (activePropertyDefinition
-                    .map(TermDefinition::getTypeMapping)
+                    .map(TermDefinition::typeMapping)
                     .filter(Keywords.VOCAB::equals)
                     .isPresent()) {
 
@@ -93,11 +93,11 @@ public final class ValueCompaction {
             // 7.
         } else if ((value.get(Keywords.TYPE) instanceof String type
                 && activePropertyDefinition
-                        .map(TermDefinition::getTypeMapping)
+                        .map(TermDefinition::typeMapping)
                         .filter(type::equals).isPresent())
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
                         && activePropertyDefinition
-                                .map(TermDefinition::getTypeMapping)
+                                .map(TermDefinition::typeMapping)
                                 .filter(types::contains)
                                 .isPresent())) {
 
@@ -105,17 +105,17 @@ public final class ValueCompaction {
 
             // 8.
         } else if (activePropertyDefinition
-                .map(TermDefinition::getTypeMapping)
+                .map(TermDefinition::typeMapping)
                 .filter(Keywords.NONE::equals)
                 .isPresent()
                 || (value.get(Keywords.TYPE) instanceof String type
                         && (activePropertyDefinition
-                                .map(TermDefinition::getTypeMapping)
+                                .map(TermDefinition::typeMapping)
                                 .map(d -> !type.equals(d))
                                 .orElse(true)))
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
                         && (activePropertyDefinition
-                                .map(TermDefinition::getTypeMapping)
+                                .map(TermDefinition::typeMapping)
                                 .map(d -> !types.contains(d))
                                 .orElse(true)))) {
 

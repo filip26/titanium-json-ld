@@ -97,7 +97,7 @@ public final class Expansion {
         // Extension: CBOR-LD collector
         if (params.runtime().hasValuesConsumer()
                 && propertyContext != null
-                && propertyContext.getLocalContext() instanceof Map propertyContextMap) {
+                && propertyContext.localContext() instanceof Map propertyContextMap) {
             params.runtime().fire(
                     EventType.CONTEXT_KEYS,
                     propertyContextMap.keySet());
@@ -186,9 +186,9 @@ public final class Expansion {
         if (propertyContext != null && propertyContext.hasLocalContext()) {
             return ValueExpansion.expand(context
                     .newContext(params.options().loader(), params.runtime())
-                    .build(propertyContext.getLocalContext(),
+                    .build(propertyContext.localContext(),
                             context.findTerm(property)
-                                    .map(TermDefinition::getBaseUrl)
+                                    .map(TermDefinition::baseUrl)
                                     .orElse(null)),
                     property,
                     node,
@@ -272,7 +272,7 @@ public final class Expansion {
             // 5.2.2
             if (expanded instanceof Collection<?> list
                     && context.findTerm(property)
-                            .map(TermDefinition::getContainerMapping)
+                            .map(TermDefinition::containerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
                 expanded = JsonLdAdapter.toList(list);

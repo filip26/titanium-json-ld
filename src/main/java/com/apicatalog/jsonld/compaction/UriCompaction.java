@@ -391,7 +391,7 @@ public final class UriCompaction {
                     final var compactedIdValueTermDefinition = context.findTerm(compactedIdValue);
 
                     if (compactedIdValueTermDefinition
-                            .map(TermDefinition::getUriMapping)
+                            .map(TermDefinition::uriMapping)
                             .filter(idString::equals)
                             .isPresent()) {
                         preferredValues.add(Keywords.VOCAB);
@@ -468,9 +468,9 @@ public final class UriCompaction {
             final var termDefinition = termEntry.getValue();
 
             // 7.1.
-            if (termDefinition.getUriMapping() == null
-                    || variable.equals(termDefinition.getUriMapping())
-                    || !variable.startsWith(termDefinition.getUriMapping())
+            if (termDefinition.uriMapping() == null
+                    || variable.equals(termDefinition.uriMapping())
+                    || !variable.startsWith(termDefinition.uriMapping())
                     || termDefinition.isNotPrefix()) {
                 continue;
             }
@@ -478,14 +478,14 @@ public final class UriCompaction {
             // 7.2.
             final var compactUriCandidate = termEntry.getKey()
                     .concat(":")
-                    .concat(variable.substring(termDefinition.getUriMapping().length()));
+                    .concat(variable.substring(termDefinition.uriMapping().length()));
 
             // 7.3.
             if (((compactUri == null || (compactUriCandidate.compareTo(compactUri) < 0))
                     && !context.containsTerm(compactUriCandidate))
                     || (context
                             .findTerm(compactUriCandidate)
-                            .map(TermDefinition::getUriMapping)
+                            .map(TermDefinition::uriMapping)
                             .filter(u -> u.equals(variable))
                             .isPresent()
                             && node == null)) {

@@ -63,7 +63,7 @@ public final class ValueExpansion {
         final var definition = context.findTerm(property);
 
         final var typeMapping = definition
-                .map(TermDefinition::getTypeMapping)
+                .map(TermDefinition::typeMapping)
                 .orElse(Keywords.NONE);
 
         switch (typeMapping) {
@@ -119,7 +119,7 @@ public final class ValueExpansion {
 
             // 5.1.
             var language = definition
-                    .map(TermDefinition::getLanguageMapping)
+                    .map(TermDefinition::languageMapping)
                     .orElseGet(context::getDefaultLanguage);
 
             // 5.3.
@@ -129,7 +129,7 @@ public final class ValueExpansion {
 
             // 5.2.
             var direction = definition
-                    .map(TermDefinition::getDirectionMapping)
+                    .map(TermDefinition::directionMapping)
                     .orElseGet(context::getDefaultBaseDirection);
 
             // 5.4.

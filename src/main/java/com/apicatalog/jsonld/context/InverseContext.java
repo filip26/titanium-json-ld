@@ -87,7 +87,7 @@ public final class InverseContext {
                 .stream()
                 .filter(termName -> activeContext
                         .findTerm(termName)
-                        .map(TermDefinition::getUriMapping)
+                        .map(TermDefinition::uriMapping)
                         .isPresent())
                 .sorted()
                 .forEach(termName -> processTerm(
@@ -96,7 +96,7 @@ public final class InverseContext {
                         result,
                         activeContext
                                 .findTerm(termName)
-                                .map(TermDefinition::getUriMapping)
+                                .map(TermDefinition::uriMapping)
                                 .get(),
                         defaultLanguage));
 
@@ -114,7 +114,7 @@ public final class InverseContext {
         // 3.2.
         final String container = activeContext
                 .findTerm(termName)
-                .map(TermDefinition::getContainerMapping)
+                .map(TermDefinition::containerMapping)
                 .filter(collection -> !collection.isEmpty())
                 .orElseGet(() -> Arrays.asList(Keywords.NONE))
                 .stream()
@@ -131,7 +131,7 @@ public final class InverseContext {
             return;
         }
 
-        final Optional<String> typeMapping = activeContext.findTerm(termName).map(TermDefinition::getTypeMapping);
+        final Optional<String> typeMapping = activeContext.findTerm(termName).map(TermDefinition::typeMapping);
 
         // 3.11.
         if (typeMapping.filter(Keywords.NONE::equals).isPresent()) {
@@ -151,11 +151,11 @@ public final class InverseContext {
 
         final var languageMapping = activeContext
                 .findTerm(termName)
-                .map(TermDefinition::getLanguageMapping);
+                .map(TermDefinition::languageMapping);
 
         final var directionMapping = activeContext
                 .findTerm(termName)
-                .map(TermDefinition::getDirectionMapping);
+                .map(TermDefinition::directionMapping);
 
         if (languageMapping.isPresent()) {
 

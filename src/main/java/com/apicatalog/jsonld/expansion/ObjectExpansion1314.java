@@ -116,14 +116,14 @@ final class ObjectExpansion1314 {
             // 13.5.
             final var keyTermDefinition = activeContext.findTerm(key);
 
-            final var typeMapping = keyTermDefinition.map(TermDefinition::getTypeMapping).orElse(null);
+            final var typeMapping = keyTermDefinition.map(TermDefinition::typeMapping).orElse(null);
 
             if (typeMapping != null) {
                 params.runtime().fire(EventType.TYPE_KEY, key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition
-                    .map(TermDefinition::getContainerMapping)
+                    .map(TermDefinition::containerMapping)
                     .orElse(List.of());
 
             final var value = element.get(key);
@@ -131,7 +131,7 @@ final class ObjectExpansion1314 {
 
             // 13.6.
             if (keyTermDefinition
-                    .map(TermDefinition::getTypeMapping)
+                    .map(TermDefinition::typeMapping)
                     .filter(Keywords.JSON::equals)
                     .isPresent()) {
 
@@ -158,7 +158,7 @@ final class ObjectExpansion1314 {
 
                 // 13.7.2.
                 final var direction = keyTermDefinition
-                        .map(TermDefinition::getDirectionMapping)
+                        .map(TermDefinition::directionMapping)
                         .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
                 // 13.7.4.
@@ -231,7 +231,7 @@ final class ObjectExpansion1314 {
 
                 // 13.8.2.
                 final var indexKey = keyTermDefinition
-                        .map(TermDefinition::getIndexMapping)
+                        .map(TermDefinition::indexMapping)
                         .orElse(Keywords.INDEX);
 
                 final var valueKeys = params.options().isOrdered()
@@ -272,8 +272,8 @@ final class ObjectExpansion1314 {
                         mapContext = mapContext
                                 .newContext(params.options().loader(), params.runtime())
                                 .build(
-                                        indexTermDefinition.getLocalContext(),
-                                        indexTermDefinition.getBaseUrl());
+                                        indexTermDefinition.localContext(),
+                                        indexTermDefinition.baseUrl());
                     }
 
                     // 13.8.3.3.
@@ -1150,10 +1150,10 @@ final class ObjectExpansion1314 {
                     .newContext(params.options().loader(), params.runtime())
                     .overrideProtected(true)
                     .build(
-                            propertyDefinition.getLocalContext(),
+                            propertyDefinition.localContext(),
                             activeContext
                                     .findTerm(activeProperty)
-                                    .map(TermDefinition::getBaseUrl)
+                                    .map(TermDefinition::baseUrl)
                                     .orElse(null));
 
             // TODO contextKeys?
