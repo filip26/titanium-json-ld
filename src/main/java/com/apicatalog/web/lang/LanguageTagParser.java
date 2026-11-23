@@ -26,10 +26,11 @@ import java.util.regex.Pattern;
 import com.apicatalog.web.lang.LanguageTag.Extension;
 
 /**
- * Language tags are used to help identify languages and are defined by
- * <code>RFC 5646</code>.
+ * Parses and validates language tags defined by
+ * <a href="https://datatracker.ietf.org/doc/html/rfc5646">RFC 5646</a>.
  *
- * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646">RFC 5643</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC
+ *      5646 - 2.1 Syntax</a>
  */
 final class LanguageTagParser {
 
@@ -57,6 +58,15 @@ final class LanguageTagParser {
     private Collection<String> variants;
     private Collection<String> privateUse;
 
+    /**
+     * Creates a parser instance from pre-split subtags.
+     *
+     * @param languageTag  the raw input language tag string
+     * @param tags         the hyphen-delimited subtags, or {@code null} if
+     *                     pre-validation failed
+     * @param verifierMode {@code true} to validate without building a
+     *                     {@link LanguageTag} instance
+     */
     LanguageTagParser(final String languageTag, final String[] tags, final boolean verifierMode) {
         this.languageTag = languageTag;
         this.tags = tags;
@@ -65,15 +75,23 @@ final class LanguageTagParser {
     }
 
     /**
-     * Creates a new {@link LanguageTagParser} instance.
+     * Creates a new {@link LanguageTagParser} instance in parsing mode.
      *
-     * @param languageTag used to initialize the parser
-     * @return a new instance
+     * @param languageTag the language tag string used to initialize the parser
+     * @return a new {@link LanguageTagParser} instance
+     * @throws IllegalArgumentException if {@code languageTag} is {@code null}
      */
     public static final LanguageTagParser create(final String languageTag) {
         return create(languageTag, false);
     }
 
+    /**
+     * Checks whether the given string is a well-formed RFC 5646 language tag.
+     *
+     * @param languageTag the language tag string to validate
+     * @return {@code true} if {@code languageTag} is well-formed, {@code false}
+     *         otherwise
+     */
     public static final boolean isWellFormed(final String languageTag) {
 
         try {
@@ -115,11 +133,11 @@ final class LanguageTagParser {
     }
 
     /**
-     * Parses the language tag.
+     * Parses the language tag according to RFC 5646 syntax rules.
      *
+     * @return the parsed {@link LanguageTag}, or {@code null} when
+     *         {@code verifierMode} is enabled
      * @throws IllegalArgumentException if the language tag is not well-formed
-     *
-     * @return the language tag
      */
     LanguageTag parse() throws IllegalArgumentException {
 

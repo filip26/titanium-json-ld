@@ -28,11 +28,8 @@ import java.util.Optional;
 public final class JsonLdException extends Exception {
 
     private static final long serialVersionUID = 6891343596565067450L;
-    
+
     private final ErrorCode code;
-    
-    // a node that caused the exception, if any
-    //TODO private final TreeIO value;
 
     /**
      * Creates a new {@code JsonLdException} with the specified error code.
@@ -199,7 +196,8 @@ public final class JsonLdException extends Exception {
          * <code>@language</code>, <code>@index</code>, <code>@id</code>,
          * <code>@graph</code>, or <code>@type</code>.
          */
-        INVALID_CONTAINER_MAPPING("An @container entry was encountered whose value was not one of the following strings: @list, @set, @language, @index, @id, @graph, or @type"),
+        INVALID_CONTAINER_MAPPING(
+                "An @container entry was encountered whose value was not one of the following strings: @list, @set, @language, @index, @id, @graph, or @type"),
 
         /**
          * An entry in a context is invalid due to processing mode incompatibility.
@@ -237,13 +235,15 @@ public final class JsonLdException extends Exception {
          * An invalid value in a language map has been detected. It MUST be a string or
          * an array of strings.
          */
-        INVALID_LANGUAGE_MAP_VALUE("An invalid value in a language map has been detected. It MUST be a string or an array of strings"),
+        INVALID_LANGUAGE_MAP_VALUE(
+                "An invalid value in a language map has been detected. It MUST be a string or an array of strings"),
 
         /**
          * An <code>@language</code> entry in a term definition was encountered whose
          * value was neither a string nor null and thus invalid.
          */
-        INVALID_LANGUAGE_MAPPING("An @language entry in a term definition was encountered whose value was neither a string nor null and thus invalid"),
+        INVALID_LANGUAGE_MAPPING(
+                "An @language entry in a term definition was encountered whose value was neither a string nor null and thus invalid"),
 
         /**
          * A language-tagged string with an invalid language value was detected.
@@ -275,13 +275,15 @@ public final class JsonLdException extends Exception {
          * An invalid reverse property map has been detected. No keywords apart from
          * <code>@context</code> are allowed in reverse property maps.
          */
-        INVALID_REVERSE_PROPERTY_VALUE("An invalid reverse property map has been detected. No keywords apart from @context are allowed in reverse property maps"),
+        INVALID_REVERSE_PROPERTY_VALUE(
+                "An invalid reverse property map has been detected. No keywords apart from @context are allowed in reverse property maps"),
 
         /**
          * An invalid value for a reverse property has been detected. The value of an
          * inverse property must be a node object.
          */
-        INVALID_REVERSE_PROPERTY("An invalid value for a reverse property has been detected. The value of an inverse property must be a node object"),
+        INVALID_REVERSE_PROPERTY(
+                "An invalid value for a reverse property has been detected. The value of an inverse property must be a node object"),
 
         /**
          * The local context defined within a term definition is invalid.
@@ -292,7 +294,8 @@ public final class JsonLdException extends Exception {
          * A script element in HTML input which is the target of a fragment identifier
          * does not have an appropriate type attribute.
          */
-        INVALID_SCRIPT_ELEMENT("A script element in HTML input which is the target of a fragment identifier does not have an appropriate type attribute"),
+        INVALID_SCRIPT_ELEMENT(
+                "A script element in HTML input which is the target of a fragment identifier does not have an appropriate type attribute"),
 
         /**
          * A set object or list object with disallowed entries has been detected.
@@ -308,7 +311,8 @@ public final class JsonLdException extends Exception {
          * An <code>@type</code> entry in a term definition was encountered whose value
          * could not be expanded to an URI.
          */
-        INVALID_TYPE_MAPPING("An @type entry in a term definition was encountered whose value could not be expanded to an URI"),
+        INVALID_TYPE_MAPPING(
+                "An @type entry in a term definition was encountered whose value could not be expanded to an URI"),
 
         /**
          * An invalid value for an <code>@type</code> entry has been detected, i.e., the
@@ -343,7 +347,8 @@ public final class JsonLdException extends Exception {
          * compact URI (because its URI scheme matches a term definition and it has no
          * URI authority).
          */
-        IRI_CONFUSED_WITH_PREFIX("When compacting an URI would result in an URI which could be confused with a compact URI"),
+        IRI_CONFUSED_WITH_PREFIX(
+                "When compacting an URI would result in an URI which could be confused with a compact URI"),
 
         /**
          * A keyword redefinition has been detected.
@@ -364,13 +369,15 @@ public final class JsonLdException extends Exception {
          * Multiple HTTP Link Headers [RFC8288] using the
          * http://www.w3.org/ns/json-ld#context link relation have been detected.
          */
-        MULTIPLE_CONTEXT_LINK_HEADERS("Multiple HTTP Link Headers [RFC8288] using the http://www.w3.org/ns/json-ld#context link relation have been detected"),
+        MULTIPLE_CONTEXT_LINK_HEADERS(
+                "Multiple HTTP Link Headers [RFC8288] using the http://www.w3.org/ns/json-ld#context link relation have been detected"),
 
         /**
          * An attempt was made to change the processing mode which is incompatible with
          * the previous specified version.
          */
-        PROCESSING_MODE_CONFLICT("An attempt was made to change the processing mode which is incompatible with the previous specified version"),
+        PROCESSING_MODE_CONFLICT(
+                "An attempt was made to change the processing mode which is incompatible with the previous specified version"),
 
         /**
          * An attempt was made to redefine a protected term.
@@ -414,25 +421,47 @@ public final class JsonLdException extends Exception {
         INVALID_ANNOTATION("An invalid annotation has been detected"),
 
         // Custom
+
+        /**
+         * A response has not been received within a specified time period.
+         */
         LOADING_DOCUMENT_TIMEOUT("A response has not been received within a specified time period"),
 
+        /**
+         * Processing has exceeded a defined timeout.
+         */
         PROCESSING_TIMEOUT_EXCEEDED("A processing has exceeded a defined timeout"),
 
         /**
-         * An undefined term has been detected during expansion
+         * An undefined term has been detected during expansion.
          */
         UNDEFINED_TERM("An undefined term has been found. Set policy to ignore to pass"),
 
-        DROPPED_NODE(""),
-        
+        /**
+         * A node was dropped during processing.
+         */
+        DROPPED_NODE("A node has been dropped during processing"),
+
+        /**
+         * An inline context was encountered where inline contexts are disallowed.
+         */
         INLINE_CONTEXT_IS_NOT_ALLOWED("Inline contexts are not allowed"),
 
+        /**
+         * An unspecified processing error occurred.
+         */
         UNSPECIFIED("An unspecified processing error"),
 
+        /**
+         * No document loader is configured or available.
+         */
         MISSING_DOCUMENT_LOADER("A document loader is not present"),
 
-        INVALID_STATEMENT("")
-        
+        /**
+         * An invalid RDF statement or quad was encountered.
+         */
+        INVALID_STATEMENT("An invalid statement has been encountered")
+
         ;
 
         private final String description;

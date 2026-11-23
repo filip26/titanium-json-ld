@@ -19,6 +19,30 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a structured language tag as defined by RFC 5646.
+ *
+ * <p>
+ * Collection components are normalized to empty lists when {@code null} and
+ * defensively copied to preserve immutability.
+ *
+ * @param language           the primary language subtag (shortest ISO 639 code,
+ *                           reserved code for future use, or registered
+ *                           language subtag)
+ * @param languageExtensions a collection of extended language subtags (ISO 639
+ *                           extension codes)
+ * @param script             the ISO 15924 script subtag, or {@code null} if
+ *                           absent
+ * @param region             the ISO 3166-1 or UN M.49 region subtag, or
+ *                           {@code null} if absent
+ * @param extensions         a collection of {@link Extension} subtag groups
+ * @param variants           a collection of registered variant subtags
+ * @param privateUse         a collection of private-use subtags following the
+ *                           {@code x-} singleton
+ * 
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646">RFC 5646 - Tags
+ *      for Identifying Languages</a>
+ */
 public record LanguageTag(
         String language,
         Collection<String> languageExtensions,
@@ -29,6 +53,10 @@ public record LanguageTag(
         Collection<String> variants,
         Collection<String> privateUse) {
 
+    /**
+     * Constructs a {@code LanguageTag} with defensive immutable copies for
+     * collection components.
+     */
     public LanguageTag {
         // Defensive copies to preserve immutability
         languageExtensions = languageExtensions == null ? List.of() : List.copyOf(languageExtensions);
@@ -38,15 +66,15 @@ public record LanguageTag(
     }
 
     /**
-     * Language tags are used to help identify languages and are defined by
-     * <code>RFC 5646</code>
+     * Checks whether the given string is a well-formed RFC 5646 language tag.
      *
+     * @param languageTag the string to validate
+     * @return {@code true} if {@code languageTag} is well-formed, {@code false}
+     *         otherwise
+     * @throws NullPointerException if {@code languageTag} is {@code null}
+     * 
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC
-     *      5643 - 2.1 Syntax</a>
-     *
-     * @param languageTag to check
-     * @return <code>true</code> if the provided value is well-formed language tag
-     *
+     *      5646 - 2.1 Syntax</a>
      */
     public static boolean isWellFormed(final String languageTag) {
         return LanguageTagParser.isWellFormed(
@@ -56,14 +84,15 @@ public record LanguageTag(
     }
 
     /**
-     * Creates a language tag by parsing the given string as defined by
-     * RFC&nbsp;5646.
+     * Parses a well-formed RFC 5646 language tag string into a {@code LanguageTag}.
      *
-     * @param languageTag the string to be parsed into a language tag
-     * @return The new language tag
-     *
-     * @throws IllegalArgumentException if the given string is not well-formed
+     * @param languageTag the string to parse
+     * @return the parsed {@code LanguageTag}
+     * @throws IllegalArgumentException if {@code languageTag} is not a well-formed
      *                                  language tag
+     * 
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc5646#section-2.1">RFC
+     *      5646 - 2.1 Syntax</a>
      */
     public static LanguageTag of(final String languageTag) {
         return LanguageTagParser.create(
@@ -74,69 +103,10 @@ public record LanguageTag(
     }
 
     /**
-     * Language as shortest ISO 639 code or reserved code for future use or
-     * registered language subtag code.
+     * Formats this language tag according to RFC 5646 subtag ordering.
      *
-     * @return the language code
+     * @return the formatted language tag string
      */
-    public String language() {
-        return language;
-    }
-
-    /**
-     * Collection of ISO 639 codes.
-     *
-     * @return the extension codes
-     */
-    public Collection<String> languageExtensions() {
-        return languageExtensions;
-    }
-
-    /**
-     * Script as ISO 15924 code.
-     *
-     * @return the script name code
-     */
-    public String script() {
-        return script;
-    }
-
-    /**
-     * Region as ISO 3166-1 or UN M.49 code
-     *
-     * @return the region code
-     */
-    public String region() {
-        return region;
-    }
-
-    /**
-     * Collection of registered variant codes.
-     *
-     * @return the variant codes
-     */
-    public Collection<String> variants() {
-        return variants;
-    }
-
-    /**
-     * Collection of extension sub-tags.
-     *
-     * @return a collection of sub-tags
-     */
-    public Collection<Extension> extensions() {
-        return extensions;
-    }
-
-    /**
-     * Collection of private sub-tags.
-     *
-     * @return a collection of private sub-tags
-     */
-    public Collection<String> privateUse() {
-        return privateUse;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -171,10 +141,28 @@ public record LanguageTag(
         return sb.toString();
     }
 
+    /**
+     * Represents an RFC 5646 extension consisting of a single-character singleton
+     * code and associated subtags.
+     *
+     * @param code the single-character extension identifier
+     * @param tags the extension subtags; copied into an unmodifiable list on
+     *             construction
+     * 
+     * @see <a href=
+     *      "https://datatracker.ietf.org/doc/html/rfc5646#section-2.2.6">RFC 5646 -
+     *      2.2.6 Extensions</a>
+     */
     public static record Extension(
             char code,
             Collection<String> tags) {
 
+        /**
+         * Constructs an {@code Extension} with a non-null tag collection copied into an
+         * unmodifiable list.
+         *
+         * @throws NullPointerException if {@code tags} is {@code null}
+         */
         public Extension {
             Objects.requireNonNull(code, "The parameter 'code' must not be null");
 
@@ -184,6 +172,11 @@ public record LanguageTag(
                     "The parameter 'tags' must not be null"));
         }
 
+        /**
+         * Formats this extension as {@code <code>-<tag1>-<tag2>...}.
+         *
+         * @return the formatted extension string
+         */
         @Override
         public String toString() {
             final var sb = new StringBuilder().append(code);

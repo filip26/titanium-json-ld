@@ -842,13 +842,13 @@ public final class Options {
     }
 
     /**
-     * Experimental: Enables JSON-LD-STAR extension. Only expansion is supported.
-     * Disabled by default.
+     * Experimental: Enables or disables JSON-LD-star support. Only expansion is
+     * supported. Disabled by default.
      *
-     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-star Draft</a>
-     * 
-     * @param enable
+     * @param enable {@code true} to enable JSON-LD-star; {@code false} to disable
+     *               it
      * @return this {@link Options} instance, for method chaining
+     * @see <a href="https://json-ld.github.io/json-ld-star">JSON-LD-star Draft</a>
      */
     public Options rdfStar(boolean enable) {
         this.rdfstar = enable;
@@ -890,27 +890,28 @@ public final class Options {
     }
 
     /**
-     * A processing timeout. An exception is thrown when a processing time exceeds
-     * the duration, if set. There is no currency that processing gets terminated
-     * immediately, but eventually.
-     * 
-     * Please note, the timeout does not affect time consumed by
-     * {@link DocumentLoader}.
-     * 
-     * @return a duration after which a processing is prematurely terminated.
+     * Returns a processing timeout duration. Processing throws an exception if
+     * execution time exceeds this duration, if set. Termination is not guaranteed
+     * to be immediate.
+     *
+     * <p>
+     * The timeout does not include time spent in {@link DocumentLoader}.
+     *
+     * @return the timeout duration, or {@code null} if no timeout is set
      */
     public Duration timeout() {
         return timeout;
     }
 
     /**
-     * Set a pressing timeout. A processing is eventually terminated after the
-     * specified duration. Set <code>null</code> for no timeout.
-     * 
-     * Please note, the timeout does not affect time consumed by
-     * {@link DocumentLoader}.
-     * 
-     * @param timeout to limit processing time
+     * Sets a processing timeout duration. Processing is terminated after the
+     * specified duration, or never if {@code null}.
+     *
+     * <p>
+     * The timeout does not include time spent in {@link DocumentLoader}.
+     *
+     * @param timeout the duration to limit processing time, or {@code null} for no
+     *                timeout
      * @return this {@link Options} instance, for method chaining
      */
     public Options timeout(Duration timeout) {
@@ -941,21 +942,22 @@ public final class Options {
     }
 
     /**
-     * 
-     * <code>true</code> by default.
-     * 
+     * Returns whether inline contexts are allowed during processing. Enabled
+     * ({@code true}) by default.
+     *
+     * @return {@code true} if inline contexts are allowed; {@code false} otherwise
      * @since 2.0.0
-     * 
      */
     public boolean useInlineContexts() {
         return useInlineContexts;
     }
 
     /**
-     * 
-     * <code>true</code> by default.
-     * 
-     * @param enable
+     * Enables or disables inline contexts during processing. Enabled ({@code true})
+     * by default.
+     *
+     * @param enable {@code true} to allow inline contexts; {@code false} to
+     *               disallow them
      * @return this {@link Options} instance, for method chaining
      * @since 2.0.0
      */
@@ -977,10 +979,10 @@ public final class Options {
     }
 
     /**
-     * Set the processing policy on how proceed with dropped free floating or
-     * malformed nodes during expansion. {@link ProcessingPolicy#Ignore} by default.
-     * 
-     * @param the policy to apply when free floating nodes to drop appears
+     * Sets the processing policy for dropped free-floating or malformed nodes
+     * during expansion. Defaults to {@link ProcessingPolicy#Ignore}.
+     *
+     * @param policy the processing policy to apply when nodes are dropped
      * @return this {@link Options} instance, for method chaining
      * @since 2.0.0
      */

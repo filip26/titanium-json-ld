@@ -54,12 +54,12 @@
 
         <!-- test resources -->
         <jcs.version>3.0.0</jcs.version>
-        <tree-io.version>1.0.0-M2</tree-io.version>
         <rdf.api.version>2.1.1</rdf.api.version>
         <nquads.version>2.2.0</nquads.version>
         <rdf.primitives.version>2.0.0</rdf.primitives.version>
         <rdfc.version>4.1.1</rdfc.version>
-        
+        <tree-io.version>1.0.0-M2</tree-io.version>
+
         <junit.version>6.1.3</junit.version>
         <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
         <sonar.organization>apicatalog</sonar.organization>
@@ -110,13 +110,13 @@
             <version>${rdfc.version}</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-jakarta</artifactId>
             <version>${tree-io.version}</version>
             <scope>test</scope>
-        </dependency>-->        
-<!--        <dependency>
+        </dependency>-->
+        <!--        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
             <version>${jakarta.json.version}</version>
