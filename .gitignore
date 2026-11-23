@@ -59,3 +59,4 @@ local.properties
 META-INF
 .flattened-pom.xml
 /titanium-json-ld-earl.ttl
+/update-copyright.sh

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2020-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 package com.apicatalog.jsonld.context;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.lang.Keywords;
@@ -31,7 +32,7 @@ import com.apicatalog.jsonld.lang.Keywords;
  */
 public final class InverseContext {
 
-    private record Key(String variable, String container, String type) {
+    private static record Key(String variable, String container, String type) {
     }
 
     private final Set<String> variables;
@@ -68,10 +69,10 @@ public final class InverseContext {
     static InverseContext newContext(ActiveContext activeContext) {
 
         // 1.
-        final InverseContext result = new InverseContext();
+        final var result = new InverseContext();
 
         // 2.
-        final String defaultLanguage = activeContext.defaultLanguage() != null
+        final var defaultLanguage = activeContext.defaultLanguage() != null
                 ? activeContext.defaultLanguage().toLowerCase()
                 : Keywords.NONE;
         // 3
@@ -104,10 +105,10 @@ public final class InverseContext {
             final String defaultLanguage) {
 
         // 3.2.
-        final String container = activeContext
+        final var container = activeContext
                 .findTerm(termName)
                 .map(TermDefinition::containerMapping)
-                .filter(collection -> !collection.isEmpty())
+                .filter(Predicate.not(Collection::isEmpty))
                 .orElseGet(() -> Arrays.asList(Keywords.NONE))
                 .stream()
                 .sorted()
@@ -123,11 +124,12 @@ public final class InverseContext {
             return;
         }
 
-        final Optional<String> typeMapping = activeContext.findTerm(termName).map(TermDefinition::typeMapping);
+        final var typeMapping = activeContext
+                .findTerm(termName)
+                .map(TermDefinition::typeMapping);
 
         // 3.11.
         if (typeMapping.filter(Keywords.NONE::equals).isPresent()) {
-
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, Keywords.ANY, termName)
                     .setIfAbsent(variableValue, container, Keywords.TYPE, Keywords.ANY, termName);
             return;
@@ -135,7 +137,6 @@ public final class InverseContext {
 
         // 3.12.
         if (typeMapping.isPresent()) {
-
             // 3.12.1
             result.setIfAbsent(variableValue, container, Keywords.TYPE, typeMapping.get(), termName);
             return;
@@ -154,7 +155,7 @@ public final class InverseContext {
             // 3.13.1.
             final String langDir;
 
-            final String language = languageMapping.get();
+            final var language = languageMapping.get();
 
             // 3.13.
             if (directionMapping.isPresent()) {
@@ -165,20 +166,16 @@ public final class InverseContext {
                 if (language != null) {
 
                     if (direction != Direction.NULL) {
+                        langDir = (language + "_" + direction.name()).toLowerCase();
 
-                        langDir = language
-                                .concat("_")
-                                .concat(direction.name())
-                                .toLowerCase();
-                        // 3.13.3.
                     } else {
+                        // 3.13.3.
                         langDir = language.toLowerCase();
                     }
 
-                    // 3.13.4.
                 } else if (direction != Direction.NULL) {
-
-                    langDir = "_".concat(direction.name().toLowerCase());
+                    // 3.13.4.
+                    langDir = "_" + direction.name().toLowerCase();
 
                 } else {
                     langDir = Keywords.NULL;
@@ -193,26 +190,25 @@ public final class InverseContext {
             // 3.13.5.
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, langDir, termName);
 
-            // 3.15.
         } else if (directionMapping.isPresent()) {
 
             // 3.15.1.
-            final String direction = directionMapping
+            final var direction = directionMapping
                     .filter(d -> d != Direction.NULL)
-                    .map(d -> "_".concat(d.name().toLowerCase()))
+                    .map(d -> "_" + d.name().toLowerCase())
                     .orElse(Keywords.NONE);
 
             // 3.15.2.
             result.setIfAbsent(variableValue, container, Keywords.LANGUAGE, direction, termName);
 
-            // 3.16.
         } else {
-            final String langDir = activeContext.defaultBaseDirection() != null
-                    ? (activeContext.defaultLanguage() != null
+            // 3.16.
+            final var langDir = activeContext.defaultBaseDirection() != null
+                    ? ((activeContext.defaultLanguage() != null
                             ? activeContext.defaultLanguage()
                             : "")
-                            .concat("_")
-                            .concat(activeContext.defaultBaseDirection().name())
+                            + "_"
+                            + activeContext.defaultBaseDirection().name())
                             .toLowerCase()
                     : defaultLanguage;
 
