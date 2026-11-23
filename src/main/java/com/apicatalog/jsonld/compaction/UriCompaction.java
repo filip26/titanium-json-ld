@@ -77,12 +77,12 @@ public final class UriCompaction {
         }
 
         // 2.
-        if (context.getInverseContext() == null) {
+        if (context.inverseContext() == null) {
             context.createInverseContext();
         }
 
         // 3.
-        var inverseContext = context.getInverseContext();
+        var inverseContext = context.inverseContext();
 
         var node = value;
 
@@ -92,16 +92,16 @@ public final class UriCompaction {
             // 4.1.
             String defaultLanguage = Keywords.NONE;
 
-            if (context.getDefaultLanguage() != null) {
+            if (context.defaultLanguage() != null) {
 
-                defaultLanguage = context.getDefaultLanguage().toLowerCase();
+                defaultLanguage = context.defaultLanguage().toLowerCase();
 
-                if (context.getDefaultBaseDirection() != null) {
-                    defaultLanguage += "_".concat(context.getDefaultBaseDirection().name().toLowerCase());
+                if (context.defaultBaseDirection() != null) {
+                    defaultLanguage += "_".concat(context.defaultBaseDirection().name().toLowerCase());
                 }
 
-            } else if (context.getDefaultBaseDirection() != null) {
-                defaultLanguage = "_".concat(context.getDefaultBaseDirection().name().toLowerCase());
+            } else if (context.defaultBaseDirection() != null) {
+                defaultLanguage = "_".concat(context.defaultBaseDirection().name().toLowerCase());
             }
 
             // 4.2.
@@ -448,11 +448,11 @@ public final class UriCompaction {
         }
 
         // 5., 5.1.
-        if ((vocab && context.getVocabularyMapping() != null)
-                && (variable.startsWith(context.getVocabularyMapping())
-                        && variable.length() > context.getVocabularyMapping().length())) {
+        if ((vocab && context.vocabularyMapping() != null)
+                && (variable.startsWith(context.vocabularyMapping())
+                        && variable.length() > context.vocabularyMapping().length())) {
 
-            String suffix = variable.substring(context.getVocabularyMapping().length());
+            String suffix = variable.substring(context.vocabularyMapping().length());
 
             if (!context.containsTerm(suffix)) {
                 return suffix;
@@ -463,7 +463,7 @@ public final class UriCompaction {
         String compactUri = null;
 
         // 7.
-        for (final var termEntry : context.getTermsMapping().entrySet()) {
+        for (final var termEntry : context.termsMapping().entrySet()) {
 
             final var termDefinition = termEntry.getValue();
 
@@ -514,10 +514,10 @@ public final class UriCompaction {
 
         // 10.
         if (!vocab
-                && context.getBaseUri() != null
+                && context.baseUri() != null
                 && !BlankNode.hasPrefix(variable)) {
 
-            final var relativeUri = UriRelativizer.relativize(context.getBaseUri(), variable);
+            final var relativeUri = UriRelativizer.relativize(context.baseUri(), variable);
 
             return Keywords.matchForm(relativeUri) ? "./".concat(relativeUri) : relativeUri;
         }

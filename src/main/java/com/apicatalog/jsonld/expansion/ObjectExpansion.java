@@ -155,7 +155,7 @@ public final class ObjectExpansion {
         // set active context to previous context from active context,
         // as the scope of a term-scoped context does not apply when processing new node
         // objects.
-        if (context.getPreviousContext() != null && !params.fromMap()) {
+        if (context.previousContext() != null && !params.fromMap()) {
 
             boolean revert = true;
 
@@ -183,7 +183,7 @@ public final class ObjectExpansion {
             }
 
             if (revert) {
-                return context.getPreviousContext();
+                return context.previousContext();
             }
         }
         return context;

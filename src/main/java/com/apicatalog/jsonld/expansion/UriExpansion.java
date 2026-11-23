@@ -269,7 +269,7 @@ public final class UriExpansion {
 
                     // CBOR-LD collector
                     if (runtime.hasValuesConsumer()) {
-                        runtime.fire(EventType.CONTEXT_KEYS, activeContext.getTermsMapping().keySet());
+                        runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());
                     }
                 }
             }
@@ -299,7 +299,7 @@ public final class UriExpansion {
             activeContext.newTerm(prefix, localContext, defined, loader, runtime);
 
             if (runtime.hasValuesConsumer()) {
-                runtime.fire(EventType.CONTEXT_KEYS, activeContext.getTermsMapping().keySet());
+                runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());
             }
 
         }
@@ -323,12 +323,12 @@ public final class UriExpansion {
     private String expandResult(final String result) {
         // 7. If vocab is true, and active context has a vocabulary mapping,
         // return the result of concatenating the vocabulary mapping with value.
-        if (vocab && activeContext.getVocabularyMapping() != null) {
-            return activeContext.getVocabularyMapping().concat(result);
+        if (vocab && activeContext.vocabularyMapping() != null) {
+            return activeContext.vocabularyMapping().concat(result);
 
         } else if (documentRelative) {
             // 8. If documentRelative is true, resolve the result against the base URI.
-            return UriResolver.resolve(activeContext.getBaseUri(), result);
+            return UriResolver.resolve(activeContext.baseUri(), result);
         }
 
         // 9. Return the result as is.

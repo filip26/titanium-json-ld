@@ -56,15 +56,15 @@ public interface Context {
 
     Optional<TermDefinition> findTerm(final String value);
 
-    Direction getDefaultBaseDirection();
+    Direction defaultBaseDirection();
 
-    String getDefaultLanguage();
+    String defaultLanguage();
 
-    URI getBaseUri();
+    URI baseUri();
 
-    String getVocabularyMapping();
+    String vocabularyMapping();
 
-    Context getPreviousContext();
+    Context previousContext();
 
     void newTerm(
             String term,
@@ -75,7 +75,7 @@ public interface Context {
 
     ContextBuilder newContext(DocumentLoader loader, final Execution runtime);
 
-    InverseContext getInverseContext();
+    InverseContext inverseContext();
 
     void createInverseContext();
 
@@ -87,7 +87,7 @@ public interface Context {
 
     boolean containsTerm(final String term);
 
-    Map<String, TermDefinition> getTermsMapping();
+    Map<String, TermDefinition> termsMapping();
 
     // ---
 
@@ -278,12 +278,12 @@ public interface Context {
         }
 
         public Builder baseUri(URI base) {
-            ctx.setBaseUri(base);
+            ctx.baseUri(base);
             return this;
         }
 
         public URI baseUri() {
-            return ctx.getBaseUri();
+            return ctx.baseUri();
         }
 
         // TODO better
@@ -354,5 +354,5 @@ public interface Context {
     }
 
     @Deprecated
-    void setBaseUri(URI base);
+    void baseUri(URI base);
 }

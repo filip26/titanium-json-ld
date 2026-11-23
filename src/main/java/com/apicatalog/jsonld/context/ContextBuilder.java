@@ -108,7 +108,7 @@ public final class ContextBuilder {
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
         result = new ActiveContext(activeContext);
-        result.setInverseContext(null);
+        result.inverseContext(null);
         // TODO better
 //        result.setVersion(activeContext.runtime().version());
 
@@ -135,8 +135,8 @@ public final class ContextBuilder {
 
         // 3. If propagate is false, and result does not have a previous context, set
         // previous context in result to active context.
-        if (!propagate && result.getPreviousContext() == null) {
-            result.setPreviousContext(activeContext);
+        if (!propagate && result.previousContext() == null) {
+            result.previousContext(activeContext);
         }
 
         // 5. For each item context in local context:
@@ -157,13 +157,13 @@ public final class ContextBuilder {
                 // context, and, if propagate is false, previous context in result to the
                 // previous value of result.
                 result = propagate
-                        ? new ActiveContext(activeContext.getBaseUrl(),
-                                activeContext.getBaseUrl(),
+                        ? new ActiveContext(activeContext.baseUrl(),
+                                activeContext.baseUrl(),
                                 activeContext.version())
 
-                        : new ActiveContext(activeContext.getBaseUrl(),
-                                activeContext.getBaseUrl(),
-                                result.getPreviousContext(),
+                        : new ActiveContext(activeContext.baseUrl(),
+                                activeContext.baseUrl(),
+                                result.previousContext(),
                                 activeContext.version());
 
                 // 5.1.3. Continue with the next context
@@ -219,7 +219,7 @@ public final class ContextBuilder {
                     throw new JsonLdException(ErrorCode.PROCESSING_MODE_CONFLICT);
                 }
 
-                result.setVersion(Version.V1_1);
+                result.version(Version.V1_1);
             }
 
             // 5.6. If context has an @import
@@ -326,7 +326,7 @@ public final class ContextBuilder {
 
                 // 5.7.2.
                 if (baseValue == null) {
-                    result.setBaseUri(null);
+                    result.baseUri(null);
 
                 } else if (baseValue instanceof String valueString) {
 
@@ -338,11 +338,11 @@ public final class ContextBuilder {
 
                         // 5.7.3
                         if (valueUri.isAbsolute()) {
-                            result.setBaseUri(valueUri);
+                            result.baseUri(valueUri);
 
                             // 5.7.4
-                        } else if (result.getBaseUri() != null) {
-                            result.setBaseUri(UriResolver.resolveAsUri(result.getBaseUri(), valueUri));
+                        } else if (result.baseUri() != null) {
+                            result.baseUri(UriResolver.resolveAsUri(result.baseUri(), valueUri));
 
                         } else {
                             LOGGER.log(Level.FINE,
@@ -372,7 +372,7 @@ public final class ContextBuilder {
 
                 // 5.8.2.
                 if (vocabValue == null) {
-                    result.setVocabularyMapping(null);
+                    result.vocabularyMapping(null);
 
                     // 5.8.3
                 } else if (vocabValue instanceof String valueString) {
@@ -388,7 +388,7 @@ public final class ContextBuilder {
                                 .expand(valueString);
 
                         if (BlankNode.hasPrefix(valueString) || UriUtils.isURI(vocabularyMapping)) {
-                            result.setVocabularyMapping(vocabularyMapping);
+                            result.vocabularyMapping(vocabularyMapping);
 
                         } else {
                             throw new JsonLdException(ErrorCode.INVALID_VOCAB_MAPPING,
@@ -413,16 +413,16 @@ public final class ContextBuilder {
 
                 // 5.9.2.
                 if (langValue == null) {
-                    result.setDefaultLanguage(null);
+                    result.defaultLanguage(null);
 
                     // 5.9.3
                 } else if (langValue instanceof String langString) {
 
-                    result.setDefaultLanguage(langString);
+                    result.defaultLanguage(langString);
 
-                    if (!LanguageTag.isWellFormed(result.getDefaultLanguage())) {
+                    if (!LanguageTag.isWellFormed(result.defaultLanguage())) {
                         LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed.",
-                                result.getDefaultLanguage());
+                                result.defaultLanguage());
                     }
 
                 } else {
@@ -443,16 +443,16 @@ public final class ContextBuilder {
 
                 // 5.10.3.
                 if (dirValue == null) {
-                    result.setDefaultBaseDirection(Direction.NULL);
+                    result.defaultBaseDirection(Direction.NULL);
 
                     // 5.10.4.
                 } else if (dirValue instanceof String direction) {
 
                     if ("ltr".equalsIgnoreCase(direction)) {
-                        result.setDefaultBaseDirection(Direction.LTR);
+                        result.defaultBaseDirection(Direction.LTR);
 
                     } else if ("rtl".equalsIgnoreCase(direction)) {
-                        result.setDefaultBaseDirection(Direction.RTL);
+                        result.defaultBaseDirection(Direction.RTL);
 
                     } else {
                         throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);

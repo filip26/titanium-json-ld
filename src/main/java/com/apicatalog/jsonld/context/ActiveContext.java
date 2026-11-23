@@ -59,15 +59,15 @@ public final class ActiveContext implements Context {
     // an optional default base direction ("ltr" or "rtl")
     private Direction defaultBaseDirection;
 
-    ActiveContext(final Version version) {
+    ActiveContext(Version version) {
         this(null, null, null, version);
     }
 
-    ActiveContext(final URI baseUri, final URI baseUrl, Version version) {
+    ActiveContext(URI baseUri, URI baseUrl, Version version) {
         this(baseUri, baseUrl, null, version);
     }
 
-    ActiveContext(final URI baseUri, final URI baseUrl, final ActiveContext previousContext, final Version version) {
+    ActiveContext(URI baseUri, URI baseUrl, ActiveContext previousContext, Version version) {
         this.baseUri = baseUri;
         this.baseUrl = baseUrl;
         this.previousContext = previousContext;
@@ -76,7 +76,7 @@ public final class ActiveContext implements Context {
     }
 
     // copy constructor
-    ActiveContext(final ActiveContext origin) {
+    ActiveContext(ActiveContext origin) {
         this.terms = new LinkedHashMap<>(origin.terms);
         this.baseUri = origin.baseUri;
         this.baseUrl = origin.baseUrl;
@@ -96,70 +96,72 @@ public final class ActiveContext implements Context {
         return terms.values().stream().anyMatch(TermDefinition::isProtected);
     }
 
-    public boolean containsTerm(final String term) {
+    public boolean containsTerm(String term) {
         return terms.containsKey(term);
     }
 
-    public Optional<TermDefinition> findTerm(final String value) {
+    public Optional<TermDefinition> findTerm(String value) {
         return Optional.ofNullable(terms.get(value));
     }
 
-    protected Optional<TermDefinition> removeTerm(final String term) {
-        if (terms.containsKey(term)) {
-            return Optional.of(terms.remove(term));
-        }
-        return Optional.empty();
+    TermDefinition removeTerm(String term) {
+        return terms.remove(term);
     }
 
-    public Direction getDefaultBaseDirection() {
+    public Direction defaultBaseDirection() {
         return defaultBaseDirection;
     }
 
     @Override
-    public String getDefaultLanguage() {
+    public String defaultLanguage() {
         return defaultLanguage;
     }
 
     @Override
-    public URI getBaseUri() {
+    public URI baseUri() {
         return baseUri;
     }
 
-    public String getVocabularyMapping() {
+    public String vocabularyMapping() {
         return vocabularyMapping;
     }
 
-    public ActiveContext getPreviousContext() {
+    public ActiveContext previousContext() {
         return previousContext;
     }
 
-    public URI getBaseUrl() {
+    public URI baseUrl() {
         return baseUrl;
     }
 
-    public void setBaseUri(final URI baseUri) {
+    public void baseUri(URI baseUri) {
         this.baseUri = baseUri;
     }
 
-    public InverseContext getInverseContext() {
+    public InverseContext inverseContext() {
         return inverseContext;
     }
 
-    public Map<String, TermDefinition> getTermsMapping() {
+    public Map<String, TermDefinition> termsMapping() {
         return terms;
     }
 
-    public Collection<String> getTerms() {
+    public Collection<String> terms() {
         return terms.keySet();
     }
 
     @Override
-    public ContextBuilder newContext(DocumentLoader loader, final Execution runtime) {
+    public ContextBuilder newContext(DocumentLoader loader, Execution runtime) {
         return ContextBuilder.with(this, loader, runtime);
     }
 
     @Override
-    public void newTerm(final String term, final Map<String, ?> localContext, final Map<String, Boolean> defined, DocumentLoader loader, final Execution runtime) throws JsonLdException {
+    public void newTerm(
+            String term,
+            Map<String, ?> localContext,
+            Map<String, Boolean> defined,
+            DocumentLoader loader,
+            Execution runtime) throws JsonLdException {
         TermDefinitionBuilder.newInstance(this, localContext, defined, loader, runtime).addTerm(term);
     }
 
@@ -171,27 +173,27 @@ public final class ActiveContext implements Context {
         return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
     }
 
-    protected void setDefaultBaseDirection(final Direction defaultBaseDirection) {
+    void defaultBaseDirection(Direction defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
     }
 
-    protected void setDefaultLanguage(final String defaultLanguage) {
+    void defaultLanguage(String defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
     }
 
-    protected void setVocabularyMapping(final String vocabularyMapping) {
+    void vocabularyMapping(String vocabularyMapping) {
         this.vocabularyMapping = vocabularyMapping;
     }
 
-    protected void setPreviousContext(final ActiveContext previousContext) {
+    void previousContext(ActiveContext previousContext) {
         this.previousContext = previousContext;
     }
 
-    protected void setInverseContext(final InverseContext inverseContext) {
+    void inverseContext(InverseContext inverseContext) {
         this.inverseContext = inverseContext;
     }
 
-    protected void setTerm(final String term, final TermDefinition definition) {
+    void term(String term, TermDefinition definition) {
         terms.put(term, definition);
     }
 
@@ -207,7 +209,7 @@ public final class ActiveContext implements Context {
         return version;
     }
 
-    public void setVersion(Version version) {
+    public void version(Version version) {
         this.version = version;
     }
 }

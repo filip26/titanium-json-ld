@@ -208,7 +208,7 @@ public final class TermDefinitionBuilder {
         }
 
         // 6.
-        final var previousDefinition = activeContext.removeTerm(term).orElse(null);
+        final var previousDefinition = activeContext.removeTerm(term);
 
         final Map<?, ?> valueObject;
         final boolean isSimpleTerm;
@@ -218,7 +218,7 @@ public final class TermDefinitionBuilder {
         case null -> {
             valueObject = Map.of();
             isSimpleTerm = false;
-            idValue = false;
+            idValue =  Keywords.NULL;
         }
         case String s -> {
             valueObject = Map.of();
@@ -229,7 +229,7 @@ public final class TermDefinitionBuilder {
             valueObject = map;
             isSimpleTerm = false;
             idValue = map.containsKey(Keywords.ID)
-                    ? (map.get(Keywords.ID) != null ? map.get(Keywords.ID) : false)
+                    ? (map.get(Keywords.ID) != null ? map.get(Keywords.ID) : Keywords.NULL)
                     : null;
         }
         default -> throw new JsonLdException(ErrorCode.INVALID_TERM_DEFINITION);
@@ -333,7 +333,7 @@ public final class TermDefinitionBuilder {
                 definition.reverseProperty(true);
 
                 // 13.7.
-                activeContext.setTerm(term, definition);
+                activeContext.term(term, definition);
                 defined.put(term, Boolean.TRUE);
 
             } else {
@@ -341,12 +341,10 @@ public final class TermDefinitionBuilder {
             }
 
             // 14.
-        } else if (idValue != null
-                && (!(idValue instanceof String idString)
-                        || !term.equals(idString))) {
+        } else if (idValue != null && !term.equals(idValue)) {
 
             // 14.1.
-            if (idValue != null && !Boolean.FALSE.equals(idValue)) {
+            if (!Keywords.NULL.equals(idValue)) {
 
                 if (idValue instanceof String idValueString) {
 
@@ -464,11 +462,11 @@ public final class TermDefinitionBuilder {
             definition.uriMapping(Keywords.TYPE);
 
             // 18.
-        } else if (activeContext.getVocabularyMapping() == null) {
+        } else if (activeContext.vocabularyMapping() == null) {
             throw new JsonLdException(ErrorCode.INVALID_IRI_MAPPING);
 
         } else {
-            definition.uriMapping(activeContext.getVocabularyMapping().concat(term));
+            definition.uriMapping(activeContext.vocabularyMapping().concat(term));
         }
 
         // 19.
@@ -651,10 +649,10 @@ public final class TermDefinitionBuilder {
             }
 
             // 27.2.
-            activeContext.setTerm(term, previousDefinition);
+            activeContext.term(term, previousDefinition);
 
         } else {
-            activeContext.setTerm(term, definition);
+            activeContext.term(term, definition);
         }
 
         defined.put(term, true);

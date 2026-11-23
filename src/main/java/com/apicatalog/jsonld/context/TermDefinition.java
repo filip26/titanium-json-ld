@@ -64,7 +64,7 @@ public final class TermDefinition {
      * @param reversePropertyFlag {@code true} if the term defines a reverse
      *                            property
      */
-    public TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
+    TermDefinition(boolean prefixFlag, boolean protectedFlag, boolean reversePropertyFlag) {
         this.prefixFlag = prefixFlag;
         this.protectedFlag = protectedFlag;
         this.reversePropertyFlag = reversePropertyFlag;

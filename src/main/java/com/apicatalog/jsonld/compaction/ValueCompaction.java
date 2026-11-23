@@ -46,7 +46,7 @@ public final class ValueCompaction {
         Object result = value;
 
         // 2.
-        if (context.getInverseContext() == null) {
+        if (context.inverseContext() == null) {
             context.createInverseContext();
         }
 
@@ -62,11 +62,11 @@ public final class ValueCompaction {
         }
 
         if (language == null) {
-            language = context.getDefaultLanguage();
+            language = context.defaultLanguage();
         }
 
         if (direction == null) {
-            direction = context.getDefaultBaseDirection();
+            direction = context.defaultBaseDirection();
         }
 
         // 6.

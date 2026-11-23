@@ -120,7 +120,7 @@ public final class ValueExpansion {
             // 5.1.
             var language = definition
                     .map(TermDefinition::languageMapping)
-                    .orElseGet(context::getDefaultLanguage);
+                    .orElseGet(context::defaultLanguage);
 
             // 5.3.
             if (language != null && !Keywords.NULL.equals(language)) {
@@ -130,7 +130,7 @@ public final class ValueExpansion {
             // 5.2.
             var direction = definition
                     .map(TermDefinition::directionMapping)
-                    .orElseGet(context::getDefaultBaseDirection);
+                    .orElseGet(context::defaultBaseDirection);
 
             // 5.4.
             if (direction != null && !Direction.NULL.equals(direction)) {

@@ -155,11 +155,11 @@ public final class Compaction {
         final var activePropertyDefinition = activeContext.findTerm(activeProperty).orElse(null);
 
         // 5.
-        if (activeContext.getPreviousContext() != null
+        if (activeContext.previousContext() != null
                 && !object.containsKey(Keywords.VALUE)
                 && !(object.containsKey(Keywords.ID)
                         && object.size() == 1)) {
-            activeContext = activeContext.getPreviousContext();
+            activeContext = activeContext.previousContext();
         }
 
         // 6.

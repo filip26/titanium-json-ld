@@ -79,11 +79,11 @@ public final class InverseContext {
         final InverseContext result = new InverseContext();
 
         // 2.
-        final String defaultLanguage = activeContext.getDefaultLanguage() != null
-                ? activeContext.getDefaultLanguage().toLowerCase()
+        final String defaultLanguage = activeContext.defaultLanguage() != null
+                ? activeContext.defaultLanguage().toLowerCase()
                 : Keywords.NONE;
         // 3
-        activeContext.getTerms()
+        activeContext.terms()
                 .stream()
                 .filter(termName -> activeContext
                         .findTerm(termName)
@@ -215,12 +215,12 @@ public final class InverseContext {
 
             // 3.16.
         } else {
-            final String langDir = activeContext.getDefaultBaseDirection() != null
-                    ? (activeContext.getDefaultLanguage() != null
-                            ? activeContext.getDefaultLanguage()
+            final String langDir = activeContext.defaultBaseDirection() != null
+                    ? (activeContext.defaultLanguage() != null
+                            ? activeContext.defaultLanguage()
                             : "")
                             .concat("_")
-                            .concat(activeContext.getDefaultBaseDirection().name())
+                            .concat(activeContext.defaultBaseDirection().name())
                             .toLowerCase()
                     : defaultLanguage;
 

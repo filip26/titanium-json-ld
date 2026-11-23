@@ -51,13 +51,13 @@ final class TermSelector {
         // 1. If the active context has a null inverse context,
         // set inverse context in active context to the result of calling
         // the Inverse Context Creation algorithm using active context.
-        if (activeContext.getInverseContext() == null) {
+        if (activeContext.inverseContext() == null) {
             activeContext.createInverseContext();
         }
 
         // 2. Initialize inverse context to the value of inverse context in active
         // context.
-        final var inverseContext = activeContext.getInverseContext();
+        final var inverseContext = activeContext.inverseContext();
 
         // 4.
         for (final var container : containers) {

@@ -159,7 +159,7 @@ final class ObjectExpansion1314 {
                 // 13.7.2.
                 final var direction = keyTermDefinition
                         .map(TermDefinition::directionMapping)
-                        .orElseGet(() -> activeContext.getDefaultBaseDirection());
+                        .orElseGet(() -> activeContext.defaultBaseDirection());
 
                 // 13.7.4.
                 final var langCodes = params.options().isOrdered()
@@ -254,10 +254,10 @@ final class ObjectExpansion1314 {
                     // 13.8.3.1.
                     Context mapContext = activeContext;
 
-                    if (activeContext.getPreviousContext() != null
+                    if (activeContext.previousContext() != null
                             && ((containerMapping.contains(Keywords.ID) && !containerMapping.contains(Keywords.SET))
                                     || containerMapping.contains(Keywords.TYPE))) {
-                        mapContext = activeContext.getPreviousContext();
+                        mapContext = activeContext.previousContext();
                     }
 
                     // 13.8.3.2.
