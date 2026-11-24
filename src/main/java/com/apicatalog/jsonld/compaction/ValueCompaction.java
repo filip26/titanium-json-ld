@@ -69,7 +69,7 @@ public final class ValueCompaction {
             direction = context.defaultDirection();
         }
 
-        final var typeMapping = propertyDefinition.map(TermDefinition::typeMapping);
+        final var typeMapping = propertyDefinition.map(TermDefinition::typeMapping).orElse(null);
 
         // 6.
         if (value.containsKey(Keywords.ID)
@@ -77,30 +77,30 @@ public final class ValueCompaction {
                         || (value.size() == 2 && value.containsKey(Keywords.INDEX)))) {
 
             // 6.1.
-            if (typeMapping.filter(Keywords.ID::equals).isPresent()) {
+            if (Keywords.ID.equals(typeMapping)) {
                 result = UriCompaction.compact(context, (String) value.get(Keywords.ID), options);
 
             } else
             // 6.2.
-            if (typeMapping.filter(Keywords.VOCAB::equals).isPresent()) {
+            if (Keywords.VOCAB.equals(typeMapping)) {
                 result = UriCompaction.withVocab(context, (String) value.get(Keywords.ID), options);
             }
 
         } else
         // 7.
-        if ((value.get(Keywords.TYPE) instanceof String type
-                && typeMapping.filter(type::equals).isPresent())
+        if ((value.get(Keywords.TYPE) instanceof String type && type.equals(typeMapping))
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
-                        && typeMapping.filter(types::contains).isPresent())) {
+                        && typeMapping != null
+                        && types.contains(typeMapping))) {
             result = value.get(Keywords.VALUE);
 
         } else
         // 8.
-        if (typeMapping.filter(Keywords.NONE::equals).isPresent()
+        if (Keywords.NONE.equals(typeMapping)
                 || (value.get(Keywords.TYPE) instanceof String type
-                        && (typeMapping.map(d -> !type.equals(d)).orElse(true)))
+                        && (typeMapping == null || !type.equals(typeMapping)))
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
-                        && (typeMapping.map(d -> !types.contains(d)).orElse(true)))) {
+                        && (typeMapping == null || !types.contains(typeMapping)))) {
 
             // 8.1.
             final var resultTypes = value.get(Keywords.TYPE);

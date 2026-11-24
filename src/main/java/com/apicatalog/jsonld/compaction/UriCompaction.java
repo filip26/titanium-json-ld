@@ -126,7 +126,7 @@ public final class UriCompaction {
                     && JsonLdAdapter.isNotGraph(map)) {
 
                 containers.add(Keywords.INDEX);
-                containers.add(Keywords.INDEX.concat(Keywords.SET));
+                containers.add(Keywords.INDEX + Keywords.SET);
             }
 
             // 4.6.
@@ -173,7 +173,7 @@ public final class UriCompaction {
                                 itemLanguage = langString.toLowerCase();
                             }
 
-                            itemLanguage += "_".concat(dirString.toLowerCase());
+                            itemLanguage += "_" + dirString.toLowerCase();
 
                         } else if (map.get(Keywords.LANGUAGE) instanceof String langString) {
                             // 4.7.4.2.2.
@@ -244,36 +244,36 @@ public final class UriCompaction {
 
                 // 4.8.1.
                 if (map.containsKey(Keywords.INDEX)) {
-                    containers.add(Keywords.GRAPH.concat(Keywords.INDEX));
-                    containers.add(Keywords.GRAPH.concat(Keywords.INDEX).concat(Keywords.SET));
+                    containers.add(Keywords.GRAPH + Keywords.INDEX);
+                    containers.add(Keywords.GRAPH + Keywords.INDEX + Keywords.SET);
                 }
 
                 // 4.8.2.
                 if (map.containsKey(Keywords.ID)) {
-                    containers.add(Keywords.GRAPH.concat(Keywords.ID));
-                    containers.add(Keywords.GRAPH.concat(Keywords.ID).concat(Keywords.SET));
+                    containers.add(Keywords.GRAPH + Keywords.ID);
+                    containers.add(Keywords.GRAPH + Keywords.ID + Keywords.SET);
                 }
 
                 // 4.8.3.
                 containers.add(Keywords.GRAPH);
-                containers.add(Keywords.GRAPH.concat(Keywords.SET));
+                containers.add(Keywords.GRAPH + Keywords.SET);
                 containers.add(Keywords.SET);
 
                 // 4.8.4.
                 if (!map.containsKey(Keywords.INDEX)) {
-                    containers.add(Keywords.GRAPH.concat(Keywords.INDEX));
-                    containers.add(Keywords.GRAPH.concat(Keywords.INDEX).concat(Keywords.SET));
+                    containers.add(Keywords.GRAPH + Keywords.INDEX);
+                    containers.add(Keywords.GRAPH + Keywords.INDEX + Keywords.SET);
                 }
 
                 // 4.8.5.
                 if (!map.containsKey(Keywords.ID)) {
-                    containers.add(Keywords.GRAPH.concat(Keywords.ID));
-                    containers.add(Keywords.GRAPH.concat(Keywords.ID).concat(Keywords.SET));
+                    containers.add(Keywords.GRAPH + Keywords.ID);
+                    containers.add(Keywords.GRAPH + Keywords.ID + Keywords.SET);
                 }
 
                 // 4.8.6.
                 containers.add(Keywords.INDEX);
-                containers.add(Keywords.INDEX.concat(Keywords.SET));
+                containers.add(Keywords.INDEX + Keywords.SET);
 
                 // 4.8.7.
                 typeLanguage = Keywords.TYPE;
@@ -296,11 +296,11 @@ public final class UriCompaction {
                         }
 
                         if (map.get(Keywords.DIRECTION) instanceof String dirString) {
-                            typeLanguageValue += "_".concat(dirString.toLowerCase());
+                            typeLanguageValue += "_" + dirString.toLowerCase();
                         }
 
                         containers.add(Keywords.LANGUAGE);
-                        containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
+                        containers.add(Keywords.LANGUAGE + Keywords.SET);
 
                         // 4.9.1.2.
                     } else if (map.containsKey(Keywords.LANGUAGE)
@@ -311,7 +311,7 @@ public final class UriCompaction {
                         }
 
                         containers.add(Keywords.LANGUAGE);
-                        containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
+                        containers.add(Keywords.LANGUAGE + Keywords.SET);
 
                         // 4.9.1.3.
                     } else if (map.containsKey(Keywords.TYPE)) {
@@ -327,9 +327,9 @@ public final class UriCompaction {
                     typeLanguageValue = Keywords.ID;
 
                     containers.add(Keywords.ID);
-                    containers.add(Keywords.ID.concat(Keywords.SET));
+                    containers.add(Keywords.ID + Keywords.SET);
                     containers.add(Keywords.TYPE);
-                    containers.add(Keywords.SET.concat(Keywords.TYPE));
+                    containers.add(Keywords.SET + Keywords.TYPE);
                 }
 
                 // 4.9.3.
@@ -345,7 +345,7 @@ public final class UriCompaction {
                             || !map.containsKey(Keywords.INDEX))) {
 
                 containers.add(Keywords.INDEX);
-                containers.add(Keywords.INDEX.concat(Keywords.SET));
+                containers.add(Keywords.INDEX + Keywords.SET);
             }
 
             // 4.12.
@@ -355,7 +355,7 @@ public final class UriCompaction {
                     && map.containsKey(Keywords.VALUE)) {
 
                 containers.add(Keywords.LANGUAGE);
-                containers.add(Keywords.LANGUAGE.concat(Keywords.SET));
+                containers.add(Keywords.LANGUAGE + Keywords.SET);
             }
 
             // 4.13.
@@ -478,8 +478,8 @@ public final class UriCompaction {
 
             // 7.2.
             final var compactUriCandidate = termEntry.getKey()
-                    .concat(":")
-                    .concat(variable.substring(termDefinition.uriMapping().length()));
+                    + ":"
+                    + variable.substring(termDefinition.uriMapping().length());
 
             // 7.3.
             if (((compactUri == null || (compactUriCandidate.compareTo(compactUri) < 0))
@@ -520,7 +520,7 @@ public final class UriCompaction {
 
             final var relativeUri = UriRelativizer.relativize(context.baseUri(), variable);
 
-            return Keywords.matchForm(relativeUri) ? "./".concat(relativeUri) : relativeUri;
+            return Keywords.matchForm(relativeUri) ? "./" + relativeUri : relativeUri;
         }
 
         // 11.
