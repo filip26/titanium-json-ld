@@ -73,30 +73,35 @@ public final class InverseContext {
         // 1.
         final var result = new InverseContext();
 
-        // 2.
-        final var defaultLanguage = activeContext.defaultLanguage() != null
-                ? activeContext.defaultLanguage().toLowerCase()
-                : Keywords.NONE;
-        // 3
-        var termMapping = new ArrayList<Entry<String, String>>();
+        if (!activeContext.terms().isEmpty()) {
 
-        for (var term : activeContext.terms()) {
+            // 3
+            final var termMapping = new ArrayList<Entry<String, String>>();
 
-            var mapping = activeContext.findTerm(term).map(TermDefinition::uriMapping);
+            for (var term : activeContext.terms()) {
 
-            if (mapping.isPresent()) {
-                termMapping.add(Map.entry(term, mapping.get()));
+                var mapping = activeContext.findTerm(term).map(TermDefinition::uriMapping);
+
+                if (mapping.isPresent()) {
+                    termMapping.add(Map.entry(term, mapping.get()));
+                }
             }
-            termMapping.sort(Map.Entry.comparingByKey());
+
+            if (!termMapping.isEmpty()) {
+
+                final var defaultLanguage = activeContext.defaultLanguage() != null
+                        ? activeContext.defaultLanguage().toLowerCase()
+                        : Keywords.NONE;
+
+                termMapping.sort(Map.Entry.comparingByKey());
+                termMapping.forEach(mapping -> processTerm(
+                        activeContext,
+                        mapping.getKey(),
+                        result,
+                        mapping.getValue(),
+                        defaultLanguage));
+            }
         }
-
-        termMapping.forEach(mapping -> processTerm(
-                activeContext,
-                mapping.getKey(),
-                result,
-                mapping.getValue(),
-                defaultLanguage));
-
         // 4.
         return result;
     }
