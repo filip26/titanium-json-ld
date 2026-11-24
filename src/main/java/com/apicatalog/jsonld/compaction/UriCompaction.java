@@ -81,7 +81,7 @@ public final class UriCompaction {
         }
 
         // 3.
-        var inverseContext = context.inverseContext();
+        final var inverseContext = context.inverseContext();
 
         var node = value;
 
@@ -89,7 +89,7 @@ public final class UriCompaction {
         if (vocab && inverseContext.contains(variable)) {
 
             // 4.1.
-            String defaultLanguage = Keywords.NONE;
+            var defaultLanguage = Keywords.NONE;
 
             if (context.defaultLanguage() != null) {
 

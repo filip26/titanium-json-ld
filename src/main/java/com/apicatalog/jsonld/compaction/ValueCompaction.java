@@ -39,7 +39,7 @@ public final class ValueCompaction {
     public static Object compact(
             final Context context,
             final Map<String, ?> value,
-            final String activeProperty,
+            final String property,
             final Options options) throws JsonLdException {
 
         // 1.
@@ -50,15 +50,15 @@ public final class ValueCompaction {
 //            context.createInverseContext();
 //        }
 
-        final var activePropertyDefinition = context.findTerm(activeProperty);
+        final var propertyDefinition = context.findTerm(property);
 
         // 4. - 5.
         String language = null;
         Direction direction = null;
 
-        if (activePropertyDefinition.isPresent()) {
-            language = activePropertyDefinition.get().languageMapping();
-            direction = activePropertyDefinition.get().directionMapping();
+        if (propertyDefinition.isPresent()) {
+            language = propertyDefinition.get().languageMapping();
+            direction = propertyDefinition.get().directionMapping();
         }
 
         if (language == null) {
@@ -75,7 +75,7 @@ public final class ValueCompaction {
                         || (value.size() == 2 && value.containsKey(Keywords.INDEX)))) {
 
             // 6.1.
-            if (activePropertyDefinition
+            if (propertyDefinition
                     .map(TermDefinition::typeMapping)
                     .filter(Keywords.ID::equals)
                     .isPresent()) {
@@ -83,7 +83,7 @@ public final class ValueCompaction {
                 result = UriCompaction.compact(context, (String) value.get(Keywords.ID), options);
 
                 // 6.2.
-            } else if (activePropertyDefinition
+            } else if (propertyDefinition
                     .map(TermDefinition::typeMapping)
                     .filter(Keywords.VOCAB::equals)
                     .isPresent()) {
@@ -92,11 +92,11 @@ public final class ValueCompaction {
             }
             // 7.
         } else if ((value.get(Keywords.TYPE) instanceof String type
-                && activePropertyDefinition
+                && propertyDefinition
                         .map(TermDefinition::typeMapping)
                         .filter(type::equals).isPresent())
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
-                        && activePropertyDefinition
+                        && propertyDefinition
                                 .map(TermDefinition::typeMapping)
                                 .filter(types::contains)
                                 .isPresent())) {
@@ -104,17 +104,17 @@ public final class ValueCompaction {
             result = value.get(Keywords.VALUE);
 
             // 8.
-        } else if (activePropertyDefinition
+        } else if (propertyDefinition
                 .map(TermDefinition::typeMapping)
                 .filter(Keywords.NONE::equals)
                 .isPresent()
                 || (value.get(Keywords.TYPE) instanceof String type
-                        && (activePropertyDefinition
+                        && (propertyDefinition
                                 .map(TermDefinition::typeMapping)
                                 .map(d -> !type.equals(d))
                                 .orElse(true)))
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
-                        && (activePropertyDefinition
+                        && (propertyDefinition
                                 .map(TermDefinition::typeMapping)
                                 .map(d -> !types.contains(d))
                                 .orElse(true)))) {
@@ -139,7 +139,7 @@ public final class ValueCompaction {
         } else if (!(value.get(Keywords.VALUE) instanceof String)) {
 
             if (!value.containsKey(Keywords.INDEX)
-                    || activePropertyDefinition.filter(td -> td.hasContainerMapping(Keywords.INDEX)).isPresent()) {
+                    || propertyDefinition.filter(td -> td.hasContainerMapping(Keywords.INDEX)).isPresent()) {
                 result = value.get(Keywords.VALUE);
             }
 
@@ -157,7 +157,7 @@ public final class ValueCompaction {
                                 && (!(value.get(Keywords.DIRECTION) instanceof String dirString)
                                         || Direction.NULL == Direction.valueOf(dirString.toUpperCase())))))
                 && (!value.containsKey(Keywords.INDEX)
-                        || activePropertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())) {
+                        || propertyDefinition.filter(d -> d.hasContainerMapping(Keywords.INDEX)).isPresent())) {
 
             result = value.get(Keywords.VALUE);
         }

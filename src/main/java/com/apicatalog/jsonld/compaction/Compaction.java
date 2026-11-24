@@ -912,16 +912,14 @@ public final class Compaction {
         return result;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static Map<String, Object> removeKey(Map container, String key) {
-        final var compactedMap = new LinkedHashMap<String, Object>(container);
+    private Map<?, ?> removeKey(Map<?, ?> container, String key) {
+        final var compactedMap = new LinkedHashMap<>(container);
         compactedMap.remove(key);
         return compactedMap;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static Map<String, Object> replaceKey(Map container, String key, Object value) {
-        final var compactedMap = new LinkedHashMap<String, Object>(container);
+    private Map<?, ?> replaceKey(Map<?, ?> container, String key, Object value) {
+        final var compactedMap = new LinkedHashMap<Object, Object>(container);
         compactedMap.put(key, value);
         return compactedMap;
     }

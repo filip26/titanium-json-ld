@@ -252,25 +252,20 @@ public final class UriExpansion {
          * value as term, and defined. This will ensure that a term definition is
          * created for value in active context during Context Processing
          */
-        if (localContext != null && localContext.containsKey(value)) {
+        if (localContext != null && localContext.get(value) instanceof String localValue) {
 
-            var entryValue = localContext.get(value);
+            if (!defined.containsKey(localValue) || Boolean.FALSE.equals(defined.get(localValue))) {
+                activeContext
+                        .addTerm(
+                                value,
+                                localContext,
+                                defined,
+                                loader,
+                                runtime);
 
-            if (entryValue instanceof String entryValueString) {
-
-                if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-                    activeContext
-                            .addTerm(
-                                    value,
-                                    localContext,
-                                    defined,
-                                    loader,
-                                    runtime);
-
-                    // CBOR-LD collector
-                    if (runtime.hasValuesConsumer()) {
-                        runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());
-                    }
+                // CBOR-LD collector
+                if (runtime.hasValuesConsumer()) {
+                    runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());
                 }
             }
         }

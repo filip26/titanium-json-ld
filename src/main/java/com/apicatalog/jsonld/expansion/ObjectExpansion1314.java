@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -569,20 +568,6 @@ final class ObjectExpansion1314 {
                     throw new JsonLdException(ErrorCode.INVALID_EMBEDDED_NODE);
                 }
 
-                // 13.4.3.1
-            } else if (!params.frameExpansion()
-                    && !(value instanceof String)
-                    && (!params.options().useNumericId()
-                            || !(value instanceof Number)
-                            || params.frameExpansion()
-                                    && !(value instanceof String)
-                                    && !(value instanceof Map map && map.isEmpty())
-                                    && (!(value instanceof Collection<?> col)
-                                            || col.stream()
-                                                    .anyMatch(Predicate.not(e -> !(e instanceof String)))))) {
-                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE,
-                        "An @id entry was encountered whose value [" + value + "] was not a string.");
-
             } else if (value instanceof String stringValue) {
                 // 13.4.3.2
                 expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
@@ -598,7 +583,7 @@ final class ObjectExpansion1314 {
                     return;
                 }
 
-            } else if (value instanceof Number numericValue) {
+            } else if (params.options().useNumericId() && value instanceof Number numericValue) {
 
                 expandedValue = UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                         .documentRelative(true)
@@ -613,24 +598,30 @@ final class ObjectExpansion1314 {
                     return;
                 }
 
-            } else if (value instanceof Map) {
+            } else if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (value instanceof Collection<?> col) {
+            } else if (params.frameExpansion() && value instanceof Collection<?> col) {
 
                 expandedValue = List.of();
 
                 if (!col.isEmpty()) {
+
                     List<Object> array = null;
 
                     for (var item : col) {
+
+                        if (!(item instanceof String stringValue)) {
+                            throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE,
+                                    "An @id entry was encountered whose value [" + value + "] was not a string.");
+                        }
 
                         var expandedStringValue = UriExpansion
                                 .with(activeContext, params.options().loader(), params.runtime())
                                 .documentRelative(true)
                                 .vocab(false)
-                                .expand((String) item);
+                                .expand(stringValue);
 
                         if (expandedStringValue != null) {
                             if (array == null) {
@@ -642,52 +633,39 @@ final class ObjectExpansion1314 {
 
                     expandedValue = array != null ? array : value;
                 }
+
+            } else {
+                throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE,
+                        "An @id entry was encountered whose value [" + value + "] was not a string.");
             }
         }
 
         // 13.4.4
         else if (Keywords.TYPE.equals(expandedProperty)) {
 
-            // 13.4.4.1
-            if ((!params.frameExpansion()
-                    && !(value instanceof String)
-                    && (!(value instanceof Collection<?> col)
-                            || col.stream().anyMatch(Predicate.not(el -> el instanceof String))))
-                    || params.frameExpansion()
-                            && !(value instanceof String)
-                            && !(value instanceof Map map && map.isEmpty())
-                            && (!(value instanceof Collection<?> col)
-                                    || col.stream().anyMatch(Predicate.not(el -> el instanceof String)))
-                            && !JsonLdAdapter.isDefault(value)
-                            && JsonLdAdapter.findDefaultValue(value)
-                                    .filter(el -> el instanceof String)
-                                    .map(String.class::cast)
-                                    .map(UriUtils::isNotURI)
-                                    .orElse(true)) {
-
-                throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE, "@type value is not valid [" + value + "].");
-            }
-
             // 13.4.4.2
-            if (value instanceof Map map && map.isEmpty()) {
+            if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
                 expandedValue = Map.of();
 
                 // 13.4.4.3
-            } else if (JsonLdAdapter.isDefault(value)) {
+            } else if (params.frameExpansion() && JsonLdAdapter.isDefault(value)) {
 
-                final var defaultValue = JsonLdAdapter.findDefaultValue(value);
+                final var defaultValue = JsonLdAdapter.findDefaultValue(value)
+                        .filter(el -> el instanceof String)
+                        .map(String.class::cast)
+                        .filter(UriUtils::isURI);
 
-                if (defaultValue.filter(el -> el instanceof String).isPresent()) {
+                if (defaultValue.isPresent()) {
                     expandedValue = Map.of(
                             Keywords.DEFAULT,
                             UriExpansion.with(typeContext, params.options().loader(), params.runtime())
                                     .vocab(true)
                                     .documentRelative(true)
                                     // deepcode ignore checkIsPresent~Optional: false positive
-                                    .expand(
-                                            defaultValue
-                                                    .map(String.class::cast)
-                                                    .get()));
+                                    .expand(defaultValue.get()));
+                } else {
+                    throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE,
+                            "@type value is not valid [" + value + "].");
                 }
 
             } else {
@@ -727,15 +705,18 @@ final class ObjectExpansion1314 {
                                 expandedItems.add(expandedStringValue);
                             }
                         } else {
-                            throw new IllegalStateException("TODO"); // TODO
+                            throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE,
+                                    "@type value is not valid [" + value + "].");
                         }
                     }
                     expandedValue = expandedItems != null
                             ? expandedItems
                             : List.of();
 
+                } else {
+                    throw new JsonLdException(ErrorCode.INVALID_TYPE_VALUE,
+                            "@type value is not valid [" + value + "].");
                 }
-
             }
 
             // 13.4.4.5
