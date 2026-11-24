@@ -36,8 +36,8 @@ import com.apicatalog.jsonld.test.MockServer;
 import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
-@DisplayName(value = "W3C Suite Remote")
-public class RemoteTest {
+@DisplayName(value = "W3C Suite Remote Document")
+class RemoteTest {
 
     static MockServer server = null;
 
@@ -61,7 +61,7 @@ public class RemoteTest {
     @MethodSource("data")
     void testRemote(final TestCase testCase) {
 
-        // skip, HTML extraction is not supported yet
+        // skip HTML extraction - won't fix 
         assumeFalse("#t0013".equals(testCase.id));
 
         try {
@@ -69,7 +69,7 @@ public class RemoteTest {
 
             (new JunitRunner(testCase)).execute(options -> {
 
-                Options expandOptions = Options.copyOf(options);
+                var expandOptions = Options.copyOf(options);
 
                 expandOptions.loader(
                         UriRewriter.newBuilder(SuiteConfig.HTTP_LOADER)
@@ -84,7 +84,7 @@ public class RemoteTest {
         }
     }
 
-    static final Stream<TestCase> data() throws JsonLdException {
+    static Stream<TestCase> data() throws JsonLdException {
         return TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,

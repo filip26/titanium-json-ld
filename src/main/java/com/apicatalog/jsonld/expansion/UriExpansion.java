@@ -301,7 +301,6 @@ public final class UriExpansion {
             if (runtime.hasValuesConsumer()) {
                 runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());
             }
-
         }
 
         // 6.4. If the prefix is a term in the active context, append the suffix to its
@@ -309,7 +308,7 @@ public final class UriExpansion {
         return activeContext.findTerm(prefix)
                 .filter(TermDefinition::isPrefix)
                 .map(TermDefinition::uriMapping)
-                .map(uriMapping -> uriMapping.concat(suffix))
+                .map(uriMapping -> uriMapping + suffix)
                 .orElse(result);
     }
 
@@ -324,7 +323,7 @@ public final class UriExpansion {
         // 7. If vocab is true, and active context has a vocabulary mapping,
         // return the result of concatenating the vocabulary mapping with value.
         if (vocab && activeContext.vocabularyMapping() != null) {
-            return activeContext.vocabularyMapping().concat(result);
+            return activeContext.vocabularyMapping() + result;
 
         } else if (documentRelative) {
             // 8. If documentRelative is true, resolve the result against the base URI.

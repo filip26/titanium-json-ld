@@ -45,10 +45,10 @@ public final class ValueCompaction {
         // 1.
         Object result = value;
 
-        // 2.
-        if (context.inverseContext() == null) {
-            context.createInverseContext();
-        }
+//        // 2.
+//        if (context.inverseContext() == null) {
+//            context.createInverseContext();
+//        }
 
         final var activePropertyDefinition = context.findTerm(activeProperty);
 
@@ -66,7 +66,7 @@ public final class ValueCompaction {
         }
 
         if (direction == null) {
-            direction = context.defaultBaseDirection();
+            direction = context.defaultDirection();
         }
 
         // 6.

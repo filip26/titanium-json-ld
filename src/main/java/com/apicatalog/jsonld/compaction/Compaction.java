@@ -868,7 +868,6 @@ public final class Compaction {
 
                         // 12.8.9.8.4.
                         if (compactedItem instanceof Map map && map.size() == 1) {
-//                        if (JsonUtils.isObject(compactedItem) && compactedItem.asJsonObject().size() == 1) {
 
                             final var expandedKey = UriExpansion.with(activeContext, options.loader(), runtime)
                                     .vocab(true)

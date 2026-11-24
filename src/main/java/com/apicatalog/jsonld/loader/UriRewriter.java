@@ -41,11 +41,11 @@ public final class UriRewriter implements DocumentLoader {
     }
 
     /** Creates a builder. */
-    public static final Builder newBuilder(DocumentLoader loader) {
+    public static Builder newBuilder(DocumentLoader loader) {
         return new Builder(Map.of(), Map.of(), loader);
     }
 
-    public static final Builder copyOf(UriRewriter rewriter) {
+    public static Builder copyOf(UriRewriter rewriter) {
         return new Builder(rewriter.rewrite, rewriter.rebase, rewriter.loader);
     }
 
@@ -106,7 +106,7 @@ public final class UriRewriter implements DocumentLoader {
         return loader.loadDocument(url, options);
     }
 
-    public static final class Builder {
+    public static class Builder {
 
         private final Map<URI, URI> rewrite;
         private final Map<String, String> rebase;

@@ -27,11 +27,13 @@ import com.apicatalog.rdf.provider.QuadEmitter;
 
 public final class RdfComparison {
 
-    public static final boolean equals(final Set<RdfQuad> dataset1, final Set<RdfQuad> dataset2) throws IOException {
+    public static boolean equals(
+            Set<RdfQuad> dataset1,
+            Set<RdfQuad> dataset2) throws IOException {
         return canon(dataset1).equals(canon(dataset2));
     }
 
-    private static final String canon(Set<RdfQuad> set) throws IOException {
+    private static String canon(Set<RdfQuad> set) throws IOException {
 
         var canon = RdfCanon.create("SHA-256", new RdfCanonTimeTicker(5 * 1000));
 
@@ -39,8 +41,8 @@ public final class RdfComparison {
 
         var writer = new StringWriter();
 
-        try (var nquads = new NQuadsWriter(writer)) {
-            canon.provide(nquads::quad);
+        try (var nquadsWriter = new NQuadsWriter(writer)) {
+            canon.provide(nquadsWriter::quad);
         }
 
         return writer.toString();

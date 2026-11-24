@@ -38,7 +38,7 @@ public class EarlRunner {
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);
 
-        final Options options = testCase.getOptions();
+        final Options options = testCase.options();
 
         assertNotNull(options);
         assertNotNull(options.loader());

@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -97,7 +96,7 @@ public final class Keywords {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String ANNOTATION = "@annotation";
 
-    private static final Collection<String> ALL_KEYWORDS = Set.of(ANY, BASE, CONTAINER, CONTEXT,
+    private static final Set<String> ALL_KEYWORDS = Set.of(ANY, BASE, CONTAINER, CONTEXT,
             DIRECTION, GRAPH, ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX,
             PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET, TYPE, VALUE, VERSION, VOCAB,
             // framing
@@ -134,10 +133,10 @@ public final class Keywords {
         return true;
     }
 
-    public static boolean noneMatch(final String key, final String... keywords) {
+    public static boolean noneMatch(final String value, final String... keywords) {
         // vanilla approach is 3 times faster than stream.noneMatch
-        for (final String k : keywords) {
-            if (k.equals(key)) {
+        for (final var key : keywords) {
+            if (key.equals(value)) {
                 return false;
             }
         }

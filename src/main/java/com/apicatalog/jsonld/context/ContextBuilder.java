@@ -51,7 +51,7 @@ import com.apicatalog.web.uri.UriUtils;
  */
 public final class ContextBuilder {
 
-    private static final int MAX_REMOTE_CONTEXTS = 256;
+    private static final int DEFAULT_MAX_REMOTE_CONTEXTS = 256;
 
     private static final Logger LOGGER = Logger.getLogger(ContextBuilder.class.getName());
 
@@ -73,6 +73,8 @@ public final class ContextBuilder {
 
     private TermsConsumer collectTerms;
 
+    private int maxRemoteContexts;
+
     // runtime
     private ActiveContext result;
 
@@ -89,12 +91,13 @@ public final class ContextBuilder {
         this.validateScopedContext = true;
         this.acceptInlineContext = true;
         this.collectTerms = null;
+        this.maxRemoteContexts = DEFAULT_MAX_REMOTE_CONTEXTS;
 
         // runtime
         this.result = null;
     }
 
-    public static final ContextBuilder with(
+    public static ContextBuilder with(
             final ActiveContext activeContext,
             final DocumentLoader loader,
             final Execution runtime) {
@@ -262,7 +265,7 @@ public final class ContextBuilder {
 
                 try {
 
-                    final Document importedDocument = loader.loadDocument(contextImportUri, loaderOptions);
+                    final var importedDocument = loader.loadDocument(contextImportUri, loaderOptions);
 
                     if (importedDocument == null) {
                         throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
@@ -291,10 +294,11 @@ public final class ContextBuilder {
 
                     var importedContext = nodeMap.get(Keywords.CONTEXT);
 
-                    if (importedContext instanceof Map contextMap) {
+                    if (importedContext instanceof Map<?, ?> contextMap) {
 
                         if (!contextMap.containsKey(Keywords.IMPORT)) {
-                            importedContextMap = contextMap;
+                            importedContextMap = (Map<String, ?>) contextMap;
+
                         } else {
                             throw new JsonLdException(ErrorCode.INVALID_CONTEXT_ENTRY);
                         }
@@ -309,7 +313,7 @@ public final class ContextBuilder {
                 }
 
                 // 5.6.8
-                final Map<Object, Object> merged = new LinkedHashMap<>(importedContextMap);
+                final var merged = new LinkedHashMap<Object, Object>(importedContextMap);
 
                 if (contextDefinition instanceof Map<?, ?> map) {
                     merged.putAll(map);
@@ -534,6 +538,11 @@ public final class ContextBuilder {
         return this;
     }
 
+    public ContextBuilder maxRemoteContexts(int maxRemoteContexts) {
+        this.maxRemoteContexts = maxRemoteContexts;
+        return this;
+    }
+
     private void fetch(final String uri, final URI baseUrl) throws JsonLdException {
 
         URI contextUri;
@@ -556,7 +565,7 @@ public final class ContextBuilder {
                     "Context URI is not URI [" + uri + "].");
         }
 
-        final String contextKey = contextUri.toString();
+        final var contextKey = contextUri.toString();
 
         // 5.2.2
         if (!validateScopedContext && remoteContexts.contains(contextKey)) {
@@ -564,9 +573,9 @@ public final class ContextBuilder {
         }
 
         // 5.2.3
-        if (remoteContexts.size() > MAX_REMOTE_CONTEXTS) {
+        if (remoteContexts.size() > maxRemoteContexts) {
             throw new JsonLdException(ErrorCode.CONTEXT_OVERFLOW,
-                    "Too many contexts; limit=" + MAX_REMOTE_CONTEXTS);
+                    "Too many contexts; limit=" + maxRemoteContexts);
         }
 
         remoteContexts.add(contextKey);
@@ -620,7 +629,7 @@ public final class ContextBuilder {
 
             if (remoteDocument == null) {
                 throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
-                        "Imported context is null.");
+                        "Remote context cannot be retrieved, uri=" + contextUri);
             }
         }
 
@@ -632,9 +641,9 @@ public final class ContextBuilder {
         }
 
         // 5.2.5.2.
-        if (!(importedContent instanceof Map importedContextMap)) {
+        if (!(importedContent instanceof Map<?, ?> importedContextMap)) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
-                    "An invalid imported JSON-LD, uri=" + contextUri + ", @context=" + importedContent);
+                    "An invalid remote context, uri=" + contextUri + ", context=" + importedContent);
         }
 
         // 5.2.5.3.
@@ -642,20 +651,16 @@ public final class ContextBuilder {
 
         if (importedContext == null) {
             throw new JsonLdException(ErrorCode.INVALID_REMOTE_CONTEXT,
-                    "Imported context does not contain @context key and is not valid JSON-LD context.");
+                    "The remote context does not contain @context key, uri=" + contextUri);
         }
 
         var newContext = importedContext;
 
         // remove @base from a remote context
-        if (newContext instanceof Map newContextMap
-                && newContextMap.containsKey(Keywords.BASE)) {
-
-            @SuppressWarnings("unchecked")
+        if (newContext instanceof Map<?, ?> newContextMap && newContextMap.containsKey(Keywords.BASE)) {
             var hashMap = new LinkedHashMap<>(newContextMap);
             hashMap.remove(Keywords.BASE);
             newContext = hashMap;
-
         }
 
         // 5.2.6

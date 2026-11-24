@@ -29,7 +29,7 @@ import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
 @DisplayName(value = "W3C Suite Flatten")
-public class FlattenTest {
+class FlattenTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "jsonLdApi" })
@@ -37,7 +37,7 @@ public class FlattenTest {
         assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+    static Stream<TestCase> jsonLdApi() throws JsonLdException {
         return TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,

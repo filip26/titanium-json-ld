@@ -33,7 +33,7 @@ final class TermSelector {
      *
      * @param preferredValues ordered collection of preferred values or types to
      *                        match
-     * @param activeContext   the active JSON-LD context
+     * @param context         the active JSON-LD context
      * @param variable        the property IRI or keyword variable being selected
      * @param containers      ordered collection of container keywords to check
      * @param typeLanguage    type mapping IRI, language tag, or keyword used for
@@ -42,8 +42,8 @@ final class TermSelector {
      *         none matches
      */
     public static String match(
+            final ActiveContext context,
             final Collection<String> preferredValues,
-            final ActiveContext activeContext,
             final String variable,
             final Collection<String> containers,
             final String typeLanguage) {
@@ -51,13 +51,13 @@ final class TermSelector {
         // 1. If the active context has a null inverse context,
         // set inverse context in active context to the result of calling
         // the Inverse Context Creation algorithm using active context.
-        if (activeContext.inverseContext() == null) {
-            activeContext.createInverseContext();
+        if (context.inverseContext() == null) {
+            context.createInverseContext();
         }
 
         // 2. Initialize inverse context to the value of inverse context in active
         // context.
-        final var inverseContext = activeContext.inverseContext();
+        final var inverseContext = context.inverseContext();
 
         // 4.
         for (final var container : containers) {

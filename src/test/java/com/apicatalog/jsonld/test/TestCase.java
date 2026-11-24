@@ -71,14 +71,14 @@ public final class TestCase {
 
     private final DocumentLoader loader;
 
-    private TestCase(final String testsBase, final DocumentLoader loader) {
+    private TestCase(String testsBase, DocumentLoader loader) {
         this.testsBase = testsBase;
         this.loader = loader;
     }
 
     @SuppressWarnings("unchecked")
-    public static final TestCase create(
-            final Map<String, ?> node,
+    public static TestCase create(
+            final Map<?, ?> node,
             final String manifestUri,
             final String manifestBase,
             final String baseUri,
@@ -93,7 +93,7 @@ public final class TestCase {
                 continue;
             }
 
-            switch (entry.getKey()) {
+            switch ((String) entry.getKey()) {
             case Keywords.ID:
                 testCase.id = (String) entry.getValue();
                 testCase.uri = baseUri + manifestUri.substring(0, manifestUri.length() - ".jsonld".length())
@@ -145,13 +145,13 @@ public final class TestCase {
                 break;
 
             default:
-                System.err.println("An unknown test case property " + entry.getKey() + " = " + entry.getValue() + ".");
-
+                throw new IllegalArgumentException(
+                        "An unknown test case property " + entry.getKey() + " = " + entry.getValue() + ".");
             }
         }
 
         if (testCase.options == null) {
-            testCase.options = TestOptions.newOptions();
+            testCase.options = new TestOptions();
         }
 
         if (testCase.options.contentType == null && testCase.input != null) {
@@ -170,7 +170,7 @@ public final class TestCase {
         return testCase;
     }
 
-    public Options getOptions() {
+    public Options options() {
         return options.setup(
                 Options.with(
                         UriRewriter.newBuilder(loader)
@@ -179,7 +179,7 @@ public final class TestCase {
                         .ordered(true));
     }
 
-    public static final ErrorCode errorCode(String errorCode) {
+    public static ErrorCode errorCode(String errorCode) {
 
         if (errorCode == null || errorCode.isBlank()) {
             return null;
@@ -253,7 +253,7 @@ public final class TestCase {
         var content = new LinkedHashSet<RdfQuad>();
 
         try (var reader = new NQuadsReader(new InputStreamReader(is))) {
-            reader.provide(new QuadSetProvider(content));
+            reader.read(new QuadSetProvider(content));
         }
 
         return content;

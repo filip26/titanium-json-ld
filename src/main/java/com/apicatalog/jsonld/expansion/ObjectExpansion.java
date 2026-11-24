@@ -159,13 +159,10 @@ public final class ObjectExpansion {
 
             boolean revert = true;
 
-            final var it = element.keySet().stream()
-                    .sorted()
-                    .iterator();
+            final var keys = new ArrayList<>(element.keySet());
+            Collections.sort(keys);
 
-            while (it.hasNext()) {
-
-                final var key = it.next();
+            for (var key : keys) {
 
                 final var expandedKey = UriExpansion
                         .with(
@@ -193,14 +190,11 @@ public final class ObjectExpansion {
 
         String typeKey = null;
 
-        final var typeKeys = element.keySet().stream()
-                .sorted()
-                .iterator();
+        final var typeKeys = new ArrayList<>(element.keySet());
+        Collections.sort(typeKeys);
 
         // 11.
-        while (typeKeys.hasNext()) {
-
-            final var key = typeKeys.next();
+        for (var key : typeKeys) {
 
             var expandedKey = UriExpansion
                     .with(
@@ -226,7 +220,7 @@ public final class ObjectExpansion {
                 final List<String> terms;
 
                 if (typeValue instanceof Collection<?> typeSet) {
-                    terms = new ArrayList<String>((Collection<? extends String>) typeSet);
+                    terms = new ArrayList<>((Collection<String>) typeSet);
                     Collections.sort(terms);
 
                 } else if (typeValue instanceof String typeString) {
@@ -275,15 +269,14 @@ public final class ObjectExpansion {
 
             if (typeValue instanceof Collection<?> col) {
 
-                final var lastValue = col.stream()
-                        .map(String.class::cast)
-                        .sorted()
-                        .reduce((first, second) -> second);
+                if (!col.isEmpty()) {
+                    @SuppressWarnings("unchecked")
+                    final var values = new ArrayList<>((Collection<String>) col);
+                    Collections.sort(values);
 
-                if (lastValue.isPresent()) {
                     return UriExpansion.with(activeContext, params.options().loader(), params.runtime())
                             .vocab(true)
-                            .expand(lastValue.get());
+                            .expand(values.getLast());
                 }
 
             } else if (typeValue instanceof String type) {

@@ -44,7 +44,6 @@ public final class ValueExpansion {
      * @param property The active property being expanded, which determines which
      *                 term definition to apply.
      * @param value    The JSON value to expand.
-     * @param adapter
      * @param params
      * @return A {@code Map} representing the expanded value object, typically
      *         containing keys like {@code @id}, {@code @value}, {@code @type},
@@ -114,7 +113,7 @@ public final class ValueExpansion {
 
         if (value instanceof String stringValue) {
 
-            var map = new HashMap<String, String>(3);
+            var map = HashMap.<String, String>newHashMap(3);
             map.put(Keywords.VALUE, stringValue);
 
             // 5.1.
@@ -130,7 +129,7 @@ public final class ValueExpansion {
             // 5.2.
             var direction = definition
                     .map(TermDefinition::directionMapping)
-                    .orElseGet(context::defaultBaseDirection);
+                    .orElseGet(context::defaultDirection);
 
             // 5.4.
             if (direction != null && !Direction.NULL.equals(direction)) {

@@ -20,6 +20,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -67,10 +68,9 @@ import com.apicatalog.web.uri.UriValidationPolicy;
  * ingest a single RDF quad.</li>
  * </ul>
  * 
- * @see RdfQuadConsumer
  * @since 1.7.0
  */
-public class QuadsToJsonLd {
+public final class QuadsToJsonLd {
 
     @FunctionalInterface
     public interface JsonLiteralReader {
@@ -118,7 +118,7 @@ public class QuadsToJsonLd {
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
         this.processingMode = Version.V1_1;
         this.error = null;
-    }   
+    }
 
     /**
      * Configures whether the output should be ordered.
@@ -235,10 +235,10 @@ public class QuadsToJsonLd {
             // 6.1.
             if (compoundLiteralSubjects.containsKey(graphName)) {
 
-                for (final String cl : compoundLiteralSubjects.get(graphName).keySet()) {
+                for (final var cl : compoundLiteralSubjects.get(graphName).keySet()) {
 
                     // 6.1.1.
-                    final Reference clEntry = referenceOnce.get(cl);
+                    final var clEntry = referenceOnce.get(cl);
 
                     if (clEntry == null) {
                         continue;
@@ -336,7 +336,7 @@ public class QuadsToJsonLd {
                         .orElse(Map.of());
 
                 // 6.4.2.
-                final var list = new ArrayList<Object>();
+                final var list = new ArrayList<>();
                 final var listNodes = new ArrayList<String>();
 
                 String nodeId = ((String) node.get(Keywords.ID));
@@ -401,14 +401,19 @@ public class QuadsToJsonLd {
         // 7.
         final var result = new ArrayList<Object>();
 
-        final var subjects = ordered
-                ? graphMap.keys(Keywords.DEFAULT).stream().sorted().iterator()
-                : graphMap.keys(Keywords.DEFAULT).iterator();
+        final Collection<String> subjects;
+
+        if (ordered) {
+            var sorted = new ArrayList<>(graphMap.keys(Keywords.DEFAULT));
+            Collections.sort(sorted);
+            subjects = sorted;
+
+        } else {
+            subjects = graphMap.keys(Keywords.DEFAULT);
+        }
 
         // 8.
-        while (subjects.hasNext()) {
-
-            final var subject = subjects.next();
+        for (final var subject : subjects) {
 
             final var node = graphMap
                     .get(Keywords.DEFAULT, subject)
@@ -447,15 +452,15 @@ public class QuadsToJsonLd {
     }
 
     public void quad(
-            String subject,
-            String predicate,
-            String object,
-            String datatype,
+            final String subject,
+            final String predicate,
+            final String object,
+            String datatype, // FIXMe final
             String language,
             String direction,
-            String graph) {
+            final String graph) {
 
-        final String graphName = graph == null ? Keywords.DEFAULT : graph;
+        final var graphName = graph == null ? Keywords.DEFAULT : graph;
 
         if (direction != null || datatype != null && datatype.startsWith(Terms.RDF_I18N_BASE)) {
 
@@ -469,7 +474,6 @@ public class QuadsToJsonLd {
                 datatype = datatype + '_' + direction;
                 direction = null;
             }
-
         }
 
         // 5.3.
@@ -483,7 +487,7 @@ public class QuadsToJsonLd {
         }
 
         // 5.6.
-        final Map<String, Boolean> compoundMap = compoundLiteralSubjects.get(graphName);
+        final var compoundMap = compoundLiteralSubjects.get(graphName);
 
         // 5.7.1.
         if (!graphMap.contains(graphName, subject)) {
@@ -498,7 +502,7 @@ public class QuadsToJsonLd {
         }
 
         // 5.7.4.
-        if (!isLiteral(datatype, language, direction)
+        if (isObject(datatype, language, direction)
                 && !graphMap.contains(graphName, object)) {
 
             graphMap.set(graphName, object, Keywords.ID, object);
@@ -506,7 +510,7 @@ public class QuadsToJsonLd {
 
         // 5.7.5.
         if (!useRdfType && Terms.RDF_TYPE.equals(predicate)
-                && !isLiteral(datatype, language, direction)) {
+                && isObject(datatype, language, direction)) {
 
             final var type = graphMap.get(graphName, subject, Keywords.TYPE);
 
@@ -570,17 +574,17 @@ public class QuadsToJsonLd {
                     predicate,
                     value));
         }
-    
+
     }
 
-    Map<String, Object> toObject(
+    private Map<String, Object> toObject(
             String object,
             String datatype,
             String langTag,
             String direction) {
 
         // 1.
-        if (!isLiteral(datatype, langTag, direction)) {
+        if (isObject(datatype, langTag, direction)) {
             final var ref = new LinkedHashMap<String, Object>(1);
             ref.put(Keywords.ID, object);
             return ref;
@@ -621,7 +625,7 @@ public class QuadsToJsonLd {
                 convertedValue = jsonReader.read(MediaType.JSON, new StringReader(object));
 
                 if (convertedValue == null) {
-                    final var result = new HashMap<String, Object>(2);
+                    final var result = HashMap.<String, Object>newHashMap(2);
                     result.put(Keywords.TYPE, Keywords.JSON);
                     result.put(Keywords.VALUE, null);
                     return result;
@@ -637,7 +641,7 @@ public class QuadsToJsonLd {
             }
         }
 
-        final var result = new LinkedHashMap<String, Object>(5);
+        final var result = HashMap.<String, Object>newHashMap(4);
 
         // 2.3.
         String type = null;
@@ -649,7 +653,7 @@ public class QuadsToJsonLd {
 
             convertedValue = object;
 
-            String dirLang = datatype.substring(Terms.RDF_I18N_BASE.length());
+            final var dirLang = datatype.substring(Terms.RDF_I18N_BASE.length());
 
             int directionIndex = dirLang.indexOf('_');
 
@@ -740,7 +744,7 @@ public class QuadsToJsonLd {
         return null;
     }
 
-    static Object flatten(Object value, String key) {
+    private static Object flatten(Object value, String key) {
 
         var result = value;
 
@@ -754,7 +758,7 @@ public class QuadsToJsonLd {
 
         return result;
     }
-    
+
     /**
      * Determines if the provided combination of {@code datatype}, {@code language},
      * and {@code direction} qualifies the object as RDF literal.
@@ -765,9 +769,12 @@ public class QuadsToJsonLd {
      * @return {@code true} indicating a literal, otherwise {@code false}.
      */
     static boolean isLiteral(String datatype, String language, String direction) {
-        return datatype != null || language != null || direction != null;
+        return datatype != null;
     }
 
+    static boolean isObject(String datatype, String language, String direction) {
+        return datatype == null && language == null && direction == null;
+    }
 
     /**
      * Checks whether the provided resource identifier represents a blank node. A

@@ -23,10 +23,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.Document;
 import com.apicatalog.jsonld.JsonLdException;
@@ -73,7 +70,7 @@ public final class Framer {
                 contextNode);
     }
 
-    public static final Context context(
+    public static Context context(
             final URI baseUrl,
             final Object localContext,
             final URI localContextBase,
@@ -91,7 +88,7 @@ public final class Framer {
                 .build();
     }
 
-    public static final Collection<?> expand(
+    public static Collection<?> expand(
             Document document,
             Options options,
             Execution runtime) throws JsonLdException {
@@ -101,7 +98,7 @@ public final class Framer {
                 runtime);
     }
 
-    public static final Collection<?> expand(
+    public static Collection<?> expand(
             Map<String, ?> document,
             Options options,
             Execution runtime) throws JsonLdException {
@@ -117,7 +114,7 @@ public final class Framer {
                 runtime);
     }
 
-    public static final Map<String, ?> frame(
+    public static Map<String, ?> frame(
             final Collection<?> expanded,
             final Frame frame,
             final Context context,
@@ -135,7 +132,7 @@ public final class Framer {
         state.setOmitDefault(options.isOmitDefault()); // 14.5.
         state.setGraphMap(new NodeMapBuilder(expanded, new NodeMap()).build()); // 14.7.
 
-        final String graphKey = UriCompaction.withVocab(context, Keywords.GRAPH, options);
+        final var graphKey = UriCompaction.withVocab(context, Keywords.GRAPH, options);
 
         if (frame.isDefault(graphKey)) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.
@@ -160,7 +157,7 @@ public final class Framer {
                 .ordered(options.isOrdered())
                 .frame();
 
-        Stream<?> result = null;
+        Collection<Object> result = null;
 
         // 17. - remove blank @id
         if (!context.isV10()) {
@@ -170,21 +167,26 @@ public final class Framer {
             final var remove = findBlankNodes(values);
 
             if (!remove.isEmpty()) {
-                result = values.stream().map(v -> Framer.removeBlankIdKey(v, remove));
+                result = new ArrayList<>(values.size());
+                for (var value : values) {
+                    result.add(Framer.removeBlankIdKey(value, remove));
+                }
 
             } else {
-                result = values.stream();
+                result = values;
             }
         }
 
         if (result == null) {
-            result = resultMap.values().stream();
+            result = resultMap.values();
         }
 
         // 18. - remove preserve
-        final var filtered = result
-                .map(Framer::removePreserve)
-                .toList();
+        final var filtered = new ArrayList<>(result.size());
+
+        for (var value : result) {
+            filtered.add(Framer.removePreserve(value));
+        }
 
         // 19.
         var compactedOutput = Compaction
@@ -237,10 +239,17 @@ public final class Framer {
         throw new IllegalStateException();
     }
 
-    private static final Object removePreserve(Object value) {
+    private static Object removePreserve(Object value) {
 
         if (value instanceof Collection<?> array) {
-            return array.stream().map(Framer::removePreserve).toList();
+
+            final var result = new ArrayList<>(array.size());
+
+            for (var el : array) {
+                result.add(Framer.removePreserve(el));
+            }
+
+            return result;
         }
 
         if (value instanceof Map<?, ?> map) {
@@ -251,7 +260,6 @@ public final class Framer {
 
                 if (Keywords.PRESERVE.equals(entry.getKey())) {
                     return entry.getValue();
-                    // ((Collection<?>) entry.getValue()).iterator().next();
                 }
 
                 object.put(entry.getKey(), removePreserve(entry.getValue()));
@@ -263,7 +271,7 @@ public final class Framer {
         return value;
     }
 
-    private static final Object replaceNull(Object node) {
+    private static Object replaceNull(Object node) {
 
         if (node == null || Keywords.NULL.equals(node)) {
             return null;
@@ -271,10 +279,14 @@ public final class Framer {
 
         if (node instanceof Collection<?> col) {
 
-            final var result = col.stream().map(Framer::replaceNull).toList();
+            final var result = new ArrayList<>(col.size());
+
+            for (var el : col) {
+                result.add(Framer.replaceNull(el));
+            }
 
             return result.size() != 1
-                    || result.get(0) != null
+                    || result.getFirst() != null
                             ? result
                             : List.of();
         }
@@ -293,10 +305,17 @@ public final class Framer {
         return node;
     }
 
-    private static final Object removeBlankIdKey(Object value, List<String> blankNodes) {
+    private static Object removeBlankIdKey(Object value, List<String> blankNodes) {
 
         if (value instanceof Collection<?> array) {
-            return array.stream().map(item -> removeBlankIdKey(item, blankNodes)).toList();
+
+            final var result = new ArrayList<>(array.size());
+
+            for (final var el : array) {
+                result.add(removeBlankIdKey(el, blankNodes));
+            }
+
+            return result;
         }
 
         if (value instanceof Map<?, ?> map) {
@@ -320,28 +339,36 @@ public final class Framer {
         return value;
     }
 
-    private static final List<String> findBlankNodes(final Collection<?> array) {
+    private static List<String> findBlankNodes(final Collection<?> array) {
 
-        Map<String, Integer> candidates = new HashMap<>();
+        final var candidates = new HashMap<String, Integer>();
 
         array.forEach(v -> findBlankNodes(v, candidates));
 
-        return candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
+        final var result = new ArrayList<String>();
+
+        for (var candidate : candidates.entrySet()) {
+            if (candidate.getValue() == 1) {
+                result.add(candidate.getKey());
+            }
+        }
+
+        return result;
     }
 
-    private static final void findBlankNodes(Object value, final Map<String, Integer> blankNodes) {
+    private static void findBlankNodes(Object value, final Map<String, Integer> blankNodes) {
 
         if (value instanceof String string) {
 
             if (BlankNode.isWellFormed(string)) {
-                Integer count = blankNodes.computeIfAbsent(string, x -> 0);
+                var count = blankNodes.computeIfAbsent(string, x -> 0);
                 blankNodes.put(string, ++count);
             }
 
             return;
         }
         if (value instanceof Collection<?> array) {
-            array.forEach(item -> findBlankNodes(item, blankNodes));
+            array.forEach(el -> findBlankNodes(el, blankNodes));
             return;
         }
 
@@ -350,7 +377,8 @@ public final class Framer {
         }
     }
 
-    private static Map<String, Map<String, Map<String, Set<String>>>> buildReversePropertyIndex(final NodeMap graphMap) {
+    private static Map<String, Map<String, Map<String, Set<String>>>> buildReversePropertyIndex(
+            final NodeMap graphMap) {
 
         final var index = new HashMap<String, Map<String, Map<String, Set<String>>>>();
 

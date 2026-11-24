@@ -66,7 +66,7 @@ public final class InverseContext {
      *      Context Creation</a>
      *
      */
-    static InverseContext newContext(ActiveContext activeContext) {
+    static InverseContext newInstance(ActiveContext activeContext) {
 
         // 1.
         final var result = new InverseContext();
@@ -203,12 +203,12 @@ public final class InverseContext {
 
         } else {
             // 3.16.
-            final var langDir = activeContext.defaultBaseDirection() != null
+            final var langDir = activeContext.defaultDirection() != null
                     ? ((activeContext.defaultLanguage() != null
                             ? activeContext.defaultLanguage()
                             : "")
                             + "_"
-                            + activeContext.defaultBaseDirection().name())
+                            + activeContext.defaultDirection().name())
                             .toLowerCase()
                     : defaultLanguage;
 

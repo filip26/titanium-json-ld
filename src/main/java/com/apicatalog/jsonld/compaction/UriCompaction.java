@@ -95,12 +95,12 @@ public final class UriCompaction {
 
                 defaultLanguage = context.defaultLanguage().toLowerCase();
 
-                if (context.defaultBaseDirection() != null) {
-                    defaultLanguage += "_".concat(context.defaultBaseDirection().name().toLowerCase());
+                if (context.defaultDirection() != null) {
+                    defaultLanguage += "_" + context.defaultDirection().name().toLowerCase();
                 }
 
-            } else if (context.defaultBaseDirection() != null) {
-                defaultLanguage = "_".concat(context.defaultBaseDirection().name().toLowerCase());
+            } else if (context.defaultDirection() != null) {
+                defaultLanguage = "_" + context.defaultDirection().name().toLowerCase();
             }
 
             // 4.2.
@@ -109,7 +109,7 @@ public final class UriCompaction {
                 final var preserve = map.get(Keywords.PRESERVE);
 
                 if (preserve != null) {
-                    node = JsonLdAdapter.asCollection(preserve).iterator().next();
+                    node = JsonLdAdapter.asCollection(preserve).getFirst();
                 }
             }
 
@@ -117,12 +117,13 @@ public final class UriCompaction {
             final var containers = new ArrayList<String>();
 
             // 4.4.
-            String typeLanguage = Keywords.LANGUAGE;
-            String typeLanguageValue = Keywords.NULL;
+            var typeLanguage = Keywords.LANGUAGE;
+            var typeLanguageValue = Keywords.NULL;
 
             // 4.5.
-            if (node instanceof Map<?, ?> map && map.containsKey(Keywords.INDEX)
-                    && JsonLdAdapter.isNotGraph(map)) { // TODO was !Gra...isGraph
+            if (node instanceof Map<?, ?> map
+                    && map.containsKey(Keywords.INDEX)
+                    && JsonLdAdapter.isNotGraph(map)) {
 
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX.concat(Keywords.SET));
@@ -403,7 +404,8 @@ public final class UriCompaction {
                     }
 
                 } else {
-                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE, "An @id entry was encountered whose value was not a string but [" + idValue + "].");
+                    throw new JsonLdException(ErrorCode.INVALID_KEYWORD_ID_VALUE,
+                            "An @id entry was encountered whose value was not a string but [" + idValue + "].");
                 }
 
                 preferredValues.add(Keywords.NONE);

@@ -56,7 +56,7 @@ public interface Context {
 
     Optional<TermDefinition> findTerm(final String value);
 
-    Direction defaultBaseDirection();
+    Direction defaultDirection();
 
     String defaultLanguage();
 
@@ -77,7 +77,7 @@ public interface Context {
 
     InverseContext inverseContext();
 
-    void createInverseContext();
+    InverseContext createInverseContext();
 
     String selectTerm(
             final Collection<String> preferredValues,

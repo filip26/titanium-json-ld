@@ -33,7 +33,7 @@ class UriRelativizerTest {
         assertEquals(expected, UriRelativizer.relativize(URI.create(base), url));
     }
 
-    static final Stream<Arguments> data() {
+    static Stream<Arguments> data() {
         return Stream.of(
             arguments("http://example.com/", "person/1", "http://example.com/person/1"),
             arguments("http://example.com", "/person/1", "http://example.com/person/1"),

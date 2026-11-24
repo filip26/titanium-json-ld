@@ -66,8 +66,6 @@ public final class TestManifest {
 
             final var node = (Map<?, ?>) manifest.content();
 
-            final var baseUri = (String) node.get("baseIri");
-
             return ((Collection<?>) node.get("sequence"))
                     .stream()
                     .map(Map.class::cast)
@@ -75,7 +73,7 @@ public final class TestManifest {
                             test,
                             manifestName,
                             manifestBase,
-                            baseUri,
+                            (String) node.get("baseIri"),
                             loader));
 
         } catch (LoaderException e) {

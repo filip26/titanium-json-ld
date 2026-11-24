@@ -20,13 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.JsonLdAdapter;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.runtime.Execution;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
@@ -40,7 +38,7 @@ import com.apicatalog.jsonld.runtime.Execution.EventType;
  */
 public final class Expansion {
 
-    public record Params(
+    public static record Params(
             boolean frameExpansion,
             boolean fromMap,
             URI baseUrl,
@@ -70,7 +68,7 @@ public final class Expansion {
         }
     }
 
-    public static final Object expand(
+    public static Object expand(
             final Context activeContext,
             final Object node,
             final String activeProperty,
@@ -161,7 +159,7 @@ public final class Expansion {
      * 
      * @throws JsonLdException if an error occurs during expansion
      */
-    static final Map<String, ?> scalar(
+    private static Map<String, ?> scalar(
             final Context context,
             final String property,
             final TermDefinition propertyContext,
@@ -234,7 +232,8 @@ public final class Expansion {
      * @throws JsonLdException if an error occurs during the recursive expansion of
      *                         an item
      */
-    static final Collection<?> array(final Context context,
+    static Collection<?> array(
+            final Context context,
             final Collection<?> node,
             final String property,
             final String term,
@@ -251,7 +250,7 @@ public final class Expansion {
             params.runtime().fire(EventType.BEGIN_LIST, term);
         }
 
-        final var result = new ArrayList<Object>();
+        final var result = new ArrayList<>();
 
         var counter = 0;
 
@@ -275,14 +274,17 @@ public final class Expansion {
                             .map(TermDefinition::containerMapping)
                             .filter(c -> c.contains(Keywords.LIST)).isPresent()) {
 
-                expanded = JsonLdAdapter.toList(list);
+                expanded = Map.of(Keywords.LIST, list);
             }
 
             // 5.2.3
             if (expanded instanceof Collection<?> collection) {
-                collection.stream()
-                        .filter(Objects::nonNull)
-                        .forEach(result::add);
+
+                for (var el : collection) {
+                    if (el != null) {
+                        result.add(el);
+                    }
+                }
 
             } else if (expanded != null) {
                 // append non-null element

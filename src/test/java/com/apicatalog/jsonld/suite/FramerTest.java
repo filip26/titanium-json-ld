@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.test.TestCase;
 import com.apicatalog.jsonld.test.TestManifest;
 
 @DisplayName(value = "W3C Suite Frame")
-public class FramerTest {
+class FramerTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("data")
@@ -42,7 +42,7 @@ public class FramerTest {
         assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<TestCase> data() throws JsonLdException {
+    static Stream<TestCase> data() throws JsonLdException {
         return TestManifest
                     .load(
                             TestManifest.JSON_LD_FRAMING_BASE, 

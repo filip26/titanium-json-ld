@@ -33,12 +33,12 @@ import com.fasterxml.jackson.core.JsonFactory;
 
 public class SuiteConfig {
 
-    public static final JsonFactory JSON_FACTORY = JsonFactory.builder()
-            .build();
-
     public static DocumentLoader LOADER = UriFilter.newBlacklist(new ZipResourceLoader(SuiteConfig::read))
             .base("http:")
             .base("https:")
+            .build();
+    
+    public static final JsonFactory JSON_FACTORY = JsonFactory.builder()
             .build();
 
     public static final HttpClient HTTP_CLIENT = HttpClient

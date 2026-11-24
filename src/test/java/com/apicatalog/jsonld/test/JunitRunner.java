@@ -118,16 +118,14 @@ public class JunitRunner {
         assertNotNull(testCase.baseUri);
         assertNotNull(testCase.input);
 
-        final var options = testCase.getOptions();
+        final var options = testCase.options();
 
         assertNotNull(options);
         assertNotNull(options.loader());
 
-        Object result = null;
-
         try {
 
-            result = method.invoke(options);
+            var result = method.invoke(options);
 
             assertNotNull(result, "A result is expected but got null");
 
@@ -148,6 +146,59 @@ public class JunitRunner {
                     options,
                     result,
                     true);
+
+        } catch (IOException e) {
+            fail(e);
+
+        } catch (JsonLdException e) {
+
+            if (testCase.expectErrorCode == e.code()
+                    || (JsonLdException.ErrorCode.LOADING_DOCUMENT_FAILED == e.code()
+                            && testCase.expectErrorCode != null
+                            && e.getCause() instanceof LoaderException le
+                            && testCase.expectErrorCode.name() == le.code().name())) {
+                return true;
+            }
+
+            write(testCase, null, null, e);
+
+            if (testCase.expectErrorCode != null) {
+                fail("Unexpected error " + e.code().name() + ", exptected " + testCase.expectErrorCode.name() + ".");
+
+            } else {
+                fail("Unexpected error " + e + ".");
+            }
+        }
+        return false;
+    }
+
+    public boolean executeToRdf(final TestMethod method) {
+
+        assertNotNull(testCase.baseUri);
+        assertNotNull(testCase.input);
+
+        final var options = testCase.options();
+
+        assertNotNull(options);
+        assertNotNull(options.loader());
+
+        Object result = null;
+
+        try {
+
+            result = method.invoke(options);
+
+            assertNotNull(result, "A result is expected but got null");
+
+            if (testCase.expectErrorCode != null) {
+                if (result != null) {
+                    write(testCase, result, null, null);
+                }
+                fail("Expected error [" + testCase.expectErrorCode + "] but got " + result + "");
+                return false;
+            }
+
+            return validateQuads(testCase, options, (Set<RdfQuad>) result, true);
 
         } catch (IOException e) {
             fail(e);
@@ -173,19 +224,6 @@ public class JunitRunner {
             }
 
             return false;
-
-//        } catch (RdfConsumerException e) {
-//
-//            if (e.getCause() instanceof JsonLdException) {
-//                if (Objects.equals(((JsonLdException) e.getCause()).code(), testCase.expectErrorCode)) {
-//                    return true;
-//                }
-//
-//                write(testCase, null, null, ((JsonLdException) e.getCause()));
-//                fail("Unexpected error: " + ((JsonLdException) e.getCause()) + ".");
-//
-//            }
-//            return false;
         }
     }
 
@@ -309,8 +347,7 @@ public class JunitRunner {
 
         try (var jsonWriter = new Jackson2Emitter(generator
                 .createGenerator(out)
-                .useDefaultPrettyPrinter()
-                )) {
+                .useDefaultPrettyPrinter())) {
             Tree.write(result, jsonWriter);
 
         } catch (IOException e) {

@@ -159,7 +159,7 @@ final class ObjectExpansion1314 {
                 // 13.7.2.
                 final var direction = keyTermDefinition
                         .map(TermDefinition::directionMapping)
-                        .orElseGet(() -> activeContext.defaultBaseDirection());
+                        .orElseGet(() -> activeContext.defaultDirection());
 
                 // 13.7.4.
                 final var langCodes = params.options().isOrdered()

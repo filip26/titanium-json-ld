@@ -47,7 +47,7 @@ class TypeMapTest {
         final var typeMapper = new TypeMapCollector(typeMap::put);
 
         try {
-            var options = testCase.getOptions();
+            var options = testCase.options();
 
             options.loader(StaticLoader.newBuilder(TermMapTest.STATIC_LOADER)
                     .fallback(options.loader())

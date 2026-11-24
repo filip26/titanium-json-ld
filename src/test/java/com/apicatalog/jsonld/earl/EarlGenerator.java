@@ -113,7 +113,6 @@ public class EarlGenerator {
     }
 
     public void testToRdf(final PrintWriter writer) throws JsonLdException {
-
         TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,

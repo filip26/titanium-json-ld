@@ -58,7 +58,7 @@ class PoliciesTest {
 
         var termMapper = new TermMapCollector(termMap::put);
         try {
-            var options = testCase.getOptions();
+            var options = testCase.options();
 
             options.loader(StaticLoader.newBuilder()
                     .reader(MediaType.JSON_LD, SuiteConfig::read)

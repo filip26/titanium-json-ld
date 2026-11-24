@@ -103,12 +103,18 @@ public final class ActiveContext implements Context {
         TermDefinitionBuilder.newInstance(this, localContext, defined, loader, runtime).addTerm(term);
     }
 
-    public void createInverseContext() {
-        this.inverseContext = InverseContext.newContext(this);
+    public InverseContext createInverseContext() {
+        this.inverseContext = InverseContext.newInstance(this);
+        return this.inverseContext;
     }
 
     public boolean containsProtectedTerm() {
-        return terms.values().stream().anyMatch(TermDefinition::isProtected);
+        for (var term : terms.values()) {
+            if (term.isProtected()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean containsTerm(String term) {
@@ -128,7 +134,7 @@ public final class ActiveContext implements Context {
             String variable,
             Collection<String> containerMapping,
             String typeLanguage) {
-        return TermSelector.match(preferredValues, this, variable, containerMapping, typeLanguage);
+        return TermSelector.match(this, preferredValues, variable, containerMapping, typeLanguage);
     }
 
     @Override
@@ -138,7 +144,7 @@ public final class ActiveContext implements Context {
                 + ", previousContext=" + previousContext + "]";
     }
 
-    public Direction defaultBaseDirection() {
+    public Direction defaultDirection() {
         return defaultBaseDirection;
     }
 

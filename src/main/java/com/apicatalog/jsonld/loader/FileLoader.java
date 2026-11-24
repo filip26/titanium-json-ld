@@ -123,7 +123,7 @@ public final class FileLoader implements DocumentLoader {
         }
 
         final String lower = name.toLowerCase();
-
+        //TODO use map lookup
         return FILE_EXTENSIONS.entrySet().stream()
                 .filter(e -> lower.endsWith(e.getKey()))
                 .map(Map.Entry::getValue)

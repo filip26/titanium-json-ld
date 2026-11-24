@@ -35,7 +35,7 @@ import com.apicatalog.jsonld.test.TestManifest;
 
 @DisplayName(value = "W3C Suite Compact")
 @TestMethodOrder(MethodOrderer.MethodName.class)
-public class CompactorTest {
+class CompactorTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "jsonLdApi" })
@@ -65,7 +65,7 @@ public class CompactorTest {
         assertTrue(new JunitRunner(testCase).execute());
     }
 
-    static final Stream<TestCase> jsonLdApi() throws JsonLdException {
+    static Stream<TestCase> jsonLdApi() throws JsonLdException {
         return TestManifest
                 .load(
                         TestManifest.JSON_LD_API_BASE,
@@ -75,7 +75,7 @@ public class CompactorTest {
                 .filter(TestCase.IS_NOT_V1_0); // skip specVersion == 1.0
     }
 
-    static final Stream<TestCase> jsonLdStar() throws JsonLdException {
+    static Stream<TestCase> jsonLdStar() throws JsonLdException {
         return TestManifest
                 .load(
                         TestManifest.JSON_LD_STAR_BASE,

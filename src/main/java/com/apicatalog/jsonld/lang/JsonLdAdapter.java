@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SequencedCollection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -149,7 +150,7 @@ public class JsonLdAdapter {
     public static Map<String, ?> toList(Object node) {
         return node instanceof Collection
                 ? Map.of(Keywords.LIST, node)
-                : Map.of(Keywords.LIST, Set.of(node));
+                : Map.of(Keywords.LIST, List.of(node));
     }
 
     public static boolean isValueNode(Map<?, ?> node) {
@@ -184,9 +185,9 @@ public class JsonLdAdapter {
         var previous = source.get(key);
 
         if (previous == null) {
-            if (value instanceof Collection<?> array) {
+            if (value instanceof SequencedCollection<?> array) {
                 if (!asArray && array.size() == 1) {
-                    source.put(key, array.iterator().next());
+                    source.put(key, array.getFirst());
                     return;
                 }
                 source.put(key, value);
@@ -206,7 +207,7 @@ public class JsonLdAdapter {
 
         final Collection<Object> array;
 
-        if (previous instanceof ArrayList list) {
+        if (previous instanceof ArrayList<?> list) {
 
             @SuppressWarnings("unchecked")
             var typedList = (Collection<Object>) list;
@@ -351,19 +352,22 @@ public class JsonLdAdapter {
      * @param node the node to convert.
      * @return a non-null {@link Collection} representing the node's contents.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static Collection<? extends Object> asCollection(Object node) {
+
+    public static SequencedCollection<? extends Object> asCollection(Object node) {
         if (node == null) {
             var result = new ArrayList<>(1);
             result.add(null);
             return result;
         }
-        //TODO isArray, use switch
-        if (node instanceof Collection) {
-            return (Collection) node;
+        // TODO isArray, use switch
+        if (node instanceof SequencedCollection<?> col) {
+            return col;
         }
-        if (node instanceof Stream) {
-            return ((Stream<Object>) node).collect(Collectors.toList());
+        if (node instanceof Collection<?> col) {
+            return new ArrayList<>(col);
+        }
+        if (node instanceof Stream<?> stream) {
+            return stream.collect(Collectors.toList());
         }
         return List.of(node);
     }
@@ -373,6 +377,7 @@ public class JsonLdAdapter {
     }
 
     public static boolean isEmptyOrNull(Object node) {
-        return node == null || node instanceof Collection col && col.isEmpty() || node instanceof Map map && map.isEmpty();
+        return node == null || node instanceof Collection col && col.isEmpty()
+                || node instanceof Map map && map.isEmpty();
     }
 }

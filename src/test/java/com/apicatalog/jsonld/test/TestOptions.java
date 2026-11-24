@@ -56,10 +56,6 @@ public class TestOptions {
     public Options.ProcessingPolicy undefinedTerms = Options.ProcessingPolicy.Ignore;
     public Options.ProcessingPolicy droppedNodes = Options.ProcessingPolicy.Ignore;
 
-    public static final TestOptions newOptions() {
-        return new TestOptions();
-    }
-
     public static final TestOptions create(Map<String, ?> node, String baseUri) {
 
         final TestOptions options = new TestOptions();
@@ -178,7 +174,7 @@ public class TestOptions {
         return options;
     }
 
-    public Options setup(Options options) {
+    Options setup(Options options) {
 
         Optional.ofNullable(processingMode)
                 .map(Version::from)
