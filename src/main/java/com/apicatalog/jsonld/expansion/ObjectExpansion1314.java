@@ -17,11 +17,13 @@ package com.apicatalog.jsonld.expansion;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,14 +71,8 @@ final class ObjectExpansion1314 {
             final String activeProperty,
             final String term) throws JsonLdException {
 
-        final var keys = params.options().isOrdered()
-                ? element.keySet().stream().sorted().iterator()
-                : element.keySet().iterator();
-
         // 13.
-        while (keys.hasNext()) {
-
-            var key = keys.next();
+        for (var key : keys(element.keySet())) {
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -150,7 +146,7 @@ final class ObjectExpansion1314 {
                 }
             }
             // 13.7.
-            else if (value instanceof Map map && containerMapping.contains(Keywords.LANGUAGE)) {
+            else if (value instanceof Map<?, ?> map && containerMapping.contains(Keywords.LANGUAGE)) {
 
                 // 13.7.1.
                 final var langMaps = new ArrayList<>();
@@ -160,16 +156,12 @@ final class ObjectExpansion1314 {
                         .map(TermDefinition::directionMapping)
                         .orElseGet(() -> activeContext.defaultDirection());
 
-                // 13.7.4.
-                final var langCodes = params.options().isOrdered()
-                        ? map.keySet().stream().sorted().iterator()
-                        : map.keySet().iterator();
-
                 params.runtime().fire(EventType.BEGIN_MAP, key);
-                while (langCodes.hasNext()) {
 
-                    final var langCode = (String) langCodes.next();
-                    final var langValue = map.get(langCode);
+                for (var langEntry : entries((Map<String, ?>) map)) {
+
+                    final var langCode = langEntry.getKey();
+                    final var langValue = langEntry.getValue();
 
                     // 13.7.4.2.
                     for (final var item : JsonLdAdapter.asCollection(langValue)) {
@@ -233,20 +225,19 @@ final class ObjectExpansion1314 {
                         .map(TermDefinition::indexMapping)
                         .orElse(Keywords.INDEX);
 
-                final var valueKeys = params.options().isOrdered()
-                        ? map.keySet().stream().sorted().iterator()
-                        : map.keySet().iterator();
+//                final var valueKeys = params.options().isOrdered()
+//                        ? map.keySet().stream().sorted().iterator()
+//                        : map.keySet().iterator();
 
                 params.runtime().fire(EventType.BEGIN_MAP, key);
 
                 // 13.8.3.
-                while (valueKeys.hasNext()) {
+                for (var valueEntry : entries((Map<String, ?>) map)) {
 
-                    final var valueKey = valueKeys.next();
+                    final var valueKey = valueEntry.getKey();
+                    final var indexValue = valueEntry.getValue();
 
-                    final var indexValue = map.get(valueKey);
-
-                    final var index = (String) valueKey;
+                    final var index = valueKey;
 
                     params.runtime().fire(EventType.TERM_KEY, index, Keywords.INDEX);
 
@@ -825,19 +816,23 @@ final class ObjectExpansion1314 {
                 expandedValue = value;
             }
             // 13.4.7.2
-            else if (value == null
-                    || JsonLdAdapter.isScalar(value)
-                    || params.frameExpansion()
-                            && ((value instanceof Map map && map.isEmpty())
-                                    || (value instanceof Collection<?> col
-                                            && (col.isEmpty()
-                                                    || col.stream().allMatch(JsonLdAdapter::isScalar))))) {
+            else if (value == null || JsonLdAdapter.isScalar(value)) {
 
                 expandedValue = value;
 
-                if (params.frameExpansion()) {
-                    expandedValue = asList(expandedValue);
+            } else if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
+
+                expandedValue = asList(value);
+
+            } else if (params.frameExpansion() && value instanceof Collection<?> col) {
+
+                for (var el : col) {
+                    if (!JsonLdAdapter.isScalar(el)) {
+                        throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, "An invalid @value=" + value);
+                    }
                 }
+
+                expandedValue = asList(value);
 
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_VALUE_OBJECT_VALUE, "An invalid @value=" + value);
@@ -875,9 +870,13 @@ final class ObjectExpansion1314 {
 
                 expandedValue = List.of();
 
-            } else if (params.frameExpansion()
-                    && value instanceof Collection<?> col
-                    && col.stream().allMatch(el -> el instanceof String)) {
+            } else if (params.frameExpansion() && value instanceof Collection<?> col) {
+
+                for (var el : col) {
+                    if (!(el instanceof String)) {
+                        throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
+                    }
+                }
 
                 expandedValue = value;
 
@@ -905,15 +904,22 @@ final class ObjectExpansion1314 {
                     expandedValue = asList(expandedValue);
                 }
 
-            } else if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
+            } else if (params.frameExpansion() && value instanceof Map<?, ?> map && map.isEmpty()) {
+
                 expandedValue = List.of(Map.of());
 
-            } else if (params.frameExpansion() && value instanceof Collection col && col.isEmpty()) {
+            } else if (params.frameExpansion() && value instanceof Collection<?> col && col.isEmpty()) {
+
                 expandedValue = List.of();
 
-            } else if (params.frameExpansion()
-                    && value instanceof Collection<?> col
-                    && col.stream().allMatch(el -> el instanceof String)) {
+            } else if (params.frameExpansion() && value instanceof Collection<?> col) {
+
+                for (var el : col) {
+                    if (!(el instanceof String)) {
+                        throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
+                    }
+                }
+
                 expandedValue = value;
 
             } else {
@@ -1100,6 +1106,7 @@ final class ObjectExpansion1314 {
                 } else if (params.runtime().hasValuesConsumer()
                         && expandedValue instanceof Collection<?> types) {
 
+                    // TODO replace stream()
                     params.runtime().fire(EventType.TYPE_KEY, types.stream().map(Object::toString).toList());
                 }
             }
@@ -1153,13 +1160,13 @@ final class ObjectExpansion1314 {
             final Context activeContext,
             final Map<String, ?> element) throws JsonLdException {
 
-        final var nestedKeys = params.options().isOrdered()
-                ? nest.keySet().stream().sorted().iterator()
-                : nest.keySet().iterator();
+//        final var nestedKeys = params.options().isOrdered()
+//                ? nest.keySet().stream().sorted().iterator()
+//                : nest.keySet().iterator();
 
-        while (nestedKeys.hasNext()) {
+        for (var nestedKey : keys(nest.keySet())) {
 
-            final var nestedKey = nestedKeys.next();
+//            final var nestedKey = nestedKeys.next();
 
             final var nestedNode = element.get(nestedKey);
 
@@ -1226,4 +1233,23 @@ final class ObjectExpansion1314 {
         }
         return List.of(value);
     }
+
+    private Collection<String> keys(Collection<String> keys) {
+        if (params.options().isOrdered()) {
+            var sorted = new ArrayList<>(keys);
+            Collections.sort(sorted);
+            return sorted;
+        }
+        return keys;
+    }
+
+    private Collection<Entry<String, Object>> entries(Map<String, ?> map) {
+        if (params.options().isOrdered()) {
+            var sorted = new ArrayList<>(((Map<String, Object>) map).entrySet());
+            sorted.sort(Map.Entry.comparingByKey());
+            return sorted;
+        }
+        return ((Map<String, Object>) map).entrySet();
+    }
+
 }
