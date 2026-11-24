@@ -18,15 +18,16 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 
 ### 🚀 Coming in v2.0
 
+- Generalized processing utilizing native `Map`, `Collection`, `String`, `Number`, `Boolean`.
 - Processing policies for undefined terms, dropped values, time/space constraints, invalid statements, disallowed keywords, and more
 - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, URI filter, LRU cache, in-memory
-- Generalized processing utilizing native `Map`, `Collection`, `String`, `Number`, `Boolean`.
-- ZERO external dependenciess
+- RDF 1.2 directional language tagged string support (`rdf:dirLangString`) 
+- ZERO external dependencies
 
 #### 🧬 Experimental
 
 - JSON-LD-star expansion
-- Generated type and term maps
+- Generated term and type maps
 
 ### 🧩 Libraries & Tools
 
@@ -187,7 +188,7 @@ static DocumentLoader loader = StaticLoader.newBuilder()
                         "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))))
     .build();
 
-Map<String, String> document = Map.of(
+var document = Map.of(
     "@context", "urn:uuid:133e236f-e96a-400b-a009-6f8e08618b99",
     "@type", "Person",
     "name", "Filip Kolařík",
@@ -258,7 +259,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 ## 🤝 Contributing
 
-Contributions of all kinds are welcome - whether it’s code, documentation, testing, or community support! Please open a **pull request** or **issue** to get started.
+Contributions of all kinds are welcome - whether it’s code, documentation, testing, or community support! Please open a pull request or issue to get started.
 
 ### 🌟 Promote
 - Star ⭐ and share the project  
