@@ -69,62 +69,45 @@ public final class ValueCompaction {
             direction = context.defaultDirection();
         }
 
+        final var typeMapping = propertyDefinition.map(TermDefinition::typeMapping);
+
         // 6.
-        if (value.containsKey(Keywords.ID) &&
-                ((value.size() == 1)
+        if (value.containsKey(Keywords.ID)
+                && ((value.size() == 1)
                         || (value.size() == 2 && value.containsKey(Keywords.INDEX)))) {
 
             // 6.1.
-            if (propertyDefinition
-                    .map(TermDefinition::typeMapping)
-                    .filter(Keywords.ID::equals)
-                    .isPresent()) {
-
+            if (typeMapping.filter(Keywords.ID::equals).isPresent()) {
                 result = UriCompaction.compact(context, (String) value.get(Keywords.ID), options);
 
-                // 6.2.
-            } else if (propertyDefinition
-                    .map(TermDefinition::typeMapping)
-                    .filter(Keywords.VOCAB::equals)
-                    .isPresent()) {
-
+            } else
+            // 6.2.
+            if (typeMapping.filter(Keywords.VOCAB::equals).isPresent()) {
                 result = UriCompaction.withVocab(context, (String) value.get(Keywords.ID), options);
             }
-            // 7.
-        } else if ((value.get(Keywords.TYPE) instanceof String type
-                && propertyDefinition
-                        .map(TermDefinition::typeMapping)
-                        .filter(type::equals).isPresent())
-                || (value.get(Keywords.TYPE) instanceof Collection<?> types
-                        && propertyDefinition
-                                .map(TermDefinition::typeMapping)
-                                .filter(types::contains)
-                                .isPresent())) {
 
+        } else
+        // 7.
+        if ((value.get(Keywords.TYPE) instanceof String type
+                && typeMapping.filter(type::equals).isPresent())
+                || (value.get(Keywords.TYPE) instanceof Collection<?> types
+                        && typeMapping.filter(types::contains).isPresent())) {
             result = value.get(Keywords.VALUE);
 
-            // 8.
-        } else if (propertyDefinition
-                .map(TermDefinition::typeMapping)
-                .filter(Keywords.NONE::equals)
-                .isPresent()
+        } else
+        // 8.
+        if (typeMapping.filter(Keywords.NONE::equals).isPresent()
                 || (value.get(Keywords.TYPE) instanceof String type
-                        && (propertyDefinition
-                                .map(TermDefinition::typeMapping)
-                                .map(d -> !type.equals(d))
-                                .orElse(true)))
+                        && (typeMapping.map(d -> !type.equals(d)).orElse(true)))
                 || (value.get(Keywords.TYPE) instanceof Collection<?> types
-                        && (propertyDefinition
-                                .map(TermDefinition::typeMapping)
-                                .map(d -> !types.contains(d))
-                                .orElse(true)))) {
+                        && (typeMapping.map(d -> !types.contains(d)).orElse(true)))) {
 
             // 8.1.
-            final var types = new ArrayList<String>();
-
             final var resultTypes = value.get(Keywords.TYPE);
 
             if (resultTypes != null) {
+
+                final var types = new ArrayList<String>();
 
                 for (final var type : JsonLdAdapter.asCollection(resultTypes)) {
                     types.add(UriCompaction.withVocab(context, (String) type, options));
@@ -135,16 +118,18 @@ public final class ValueCompaction {
                 result = resultMap;
             }
 
-            // 9.
-        } else if (!(value.get(Keywords.VALUE) instanceof String)) {
+        } else
+        // 9.
+        if (!(value.get(Keywords.VALUE) instanceof String)) {
 
             if (!value.containsKey(Keywords.INDEX)
                     || propertyDefinition.filter(td -> td.hasContainerMapping(Keywords.INDEX)).isPresent()) {
                 result = value.get(Keywords.VALUE);
             }
 
-            // 10.
-        } else if ((((value.get(Keywords.LANGUAGE) instanceof String langString
+        } else
+        // 10.
+        if ((((value.get(Keywords.LANGUAGE) instanceof String langString
                 && language != null
                 && language.equalsIgnoreCase(langString))
                 || ((language == null || Keywords.NULL.equals(language))
