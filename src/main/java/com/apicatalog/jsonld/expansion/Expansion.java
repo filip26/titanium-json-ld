@@ -182,12 +182,13 @@ public final class Expansion {
          * property in active context.
          */
         if (propertyContext != null && propertyContext.hasLocalContext()) {
-            return ValueExpansion.expand(context
-                    .builder(params.options().loader(), params.runtime())
-                    .build(propertyContext.localContext(),
-                            context.findTerm(property)
-                                    .map(TermDefinition::baseUrl)
-                                    .orElse(null)),
+            return ValueExpansion.expand(
+                    context
+                            .builder(params.options().loader(), params.runtime())
+                            .build(propertyContext.localContext(),
+                                    context.findTerm(property)
+                                            .map(TermDefinition::baseUrl)
+                                            .orElse(null)),
                     property,
                     node,
                     params);

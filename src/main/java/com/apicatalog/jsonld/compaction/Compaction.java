@@ -146,13 +146,13 @@ public final class Compaction {
         return result.get(0);
     }
 
-    public Object compactObject(final String activeProperty, final Map<String, ?> object) throws JsonLdException {
+    public Object compactObject(final String property, final Map<String, ?> object) throws JsonLdException {
 
         // 1.
         Context typeContext = context;
         Context activeContext = context;
 
-        final var activePropertyDefinition = activeContext.findTerm(activeProperty).orElse(null);
+        final var propertyDefinition = activeContext.findTerm(property).orElse(null);
 
         // 5.
         if (activeContext.previousContext() != null
@@ -163,15 +163,14 @@ public final class Compaction {
         }
 
         // 6.
+        if (propertyDefinition != null && propertyDefinition.hasLocalContext()) {
 
-        if (activePropertyDefinition != null && activePropertyDefinition.hasLocalContext()) {
-
-            var localContext = activePropertyDefinition.localContext();
+            var localContext = propertyDefinition.localContext();
 
             activeContext = activeContext
                     .builder(options.loader(), runtime)
                     .overrideProtected(true)
-                    .build(localContext, activePropertyDefinition.baseUrl());
+                    .build(localContext, propertyDefinition.baseUrl());
         }
 
         // 7.
@@ -181,30 +180,30 @@ public final class Compaction {
             final var result = ValueCompaction.compact(
                     activeContext,
                     object,
-                    activeProperty,
+                    property,
                     options);
 
             if (result != null && JsonLdAdapter.isScalar(result)
-                    || (activePropertyDefinition != null
-                            && Keywords.JSON.equals(activePropertyDefinition.typeMapping()))) {
+                    || (propertyDefinition != null
+                            && Keywords.JSON.equals(propertyDefinition.typeMapping()))) {
                 return result;
             }
         }
 
         // 8.
         if (JsonLdAdapter.isList(object)
-                && activePropertyDefinition != null
-                && activePropertyDefinition.hasContainerMapping(Keywords.LIST)) {
+                && propertyDefinition != null
+                && propertyDefinition.hasContainerMapping(Keywords.LIST)) {
 
             return Compaction
                     .with(activeContext, options, runtime)
                     .compactArrays(compactArrays)
                     .ordered(ordered)
-                    .compact(activeProperty, object.get(Keywords.LIST));
+                    .compact(property, object.get(Keywords.LIST));
         }
 
         // 9.
-        final var insideReverse = Keywords.REVERSE.equals(activeProperty);
+        final var insideReverse = Keywords.REVERSE.equals(property);
 
         // 10.
         final var result = new LinkedHashMap<String, Object>();
@@ -385,7 +384,7 @@ public final class Compaction {
                         .with(activeContext, options, runtime)
                         .compactArrays(compactArrays)
                         .ordered(ordered)
-                        .compact(activeProperty, expandedValue);
+                        .compact(property, expandedValue);
 
                 // 12.4.2.
                 if (!(compactedValue instanceof Collection array) || !array.isEmpty()) {
@@ -397,8 +396,8 @@ public final class Compaction {
 
             // 12.5.
             if (Keywords.INDEX.equals(expandedProperty)
-                    && activePropertyDefinition != null
-                    && activePropertyDefinition.hasContainerMapping(Keywords.INDEX)) {
+                    && propertyDefinition != null
+                    && propertyDefinition.hasContainerMapping(Keywords.INDEX)) {
                 continue;
 
                 // 12.6.

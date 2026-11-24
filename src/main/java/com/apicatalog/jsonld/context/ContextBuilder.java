@@ -110,7 +110,7 @@ public final class ContextBuilder {
 
         // 1. Initialize result to the result of cloning active context, with inverse
         // context set to null.
-        result = new ActiveContext(activeContext);
+        result = ActiveContext.copyOf(activeContext);
         result.inverseContext(null);
         // TODO better
 //        result.setVersion(activeContext.runtime().version());

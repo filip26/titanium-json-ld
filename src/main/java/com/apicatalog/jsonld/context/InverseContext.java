@@ -15,14 +15,16 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -40,7 +42,7 @@ public final class InverseContext {
 
     private InverseContext() {
         this.variables = new HashSet<>();
-        this.mapping = new LinkedHashMap<>();
+        this.mapping = new HashMap<>();
     }
 
     public boolean contains(final String variable) {
@@ -76,22 +78,24 @@ public final class InverseContext {
                 ? activeContext.defaultLanguage().toLowerCase()
                 : Keywords.NONE;
         // 3
-        activeContext.terms()
-                .stream()
-                .filter(termName -> activeContext
-                        .findTerm(termName)
-                        .map(TermDefinition::uriMapping)
-                        .isPresent())
-                .sorted()
-                .forEach(termName -> processTerm(
-                        activeContext,
-                        termName,
-                        result,
-                        activeContext
-                                .findTerm(termName)
-                                .map(TermDefinition::uriMapping)
-                                .get(),
-                        defaultLanguage));
+        var termMapping = new ArrayList<Entry<String, String>>();
+
+        for (var term : activeContext.terms()) {
+
+            var mapping = activeContext.findTerm(term).map(TermDefinition::uriMapping);
+
+            if (mapping.isPresent()) {
+                termMapping.add(Map.entry(term, mapping.get()));
+            }
+            termMapping.sort(Map.Entry.comparingByKey());
+        }
+
+        termMapping.forEach(mapping -> processTerm(
+                activeContext,
+                mapping.getKey(),
+                result,
+                mapping.getValue(),
+                defaultLanguage));
 
         // 4.
         return result;
@@ -105,14 +109,22 @@ public final class InverseContext {
             final String defaultLanguage) {
 
         // 3.2.
-        final var container = activeContext
+        final var containerMapping = activeContext
                 .findTerm(termName)
                 .map(TermDefinition::containerMapping)
-                .filter(Predicate.not(Collection::isEmpty))
-                .orElseGet(() -> Arrays.asList(Keywords.NONE))
-                .stream()
-                .sorted()
-                .collect(Collectors.joining());
+                .filter(Predicate.not(Collection::isEmpty));
+
+        final String container;
+
+        if (containerMapping.isPresent()) {
+
+            var sorted = new ArrayList<>(containerMapping.get());
+            Collections.sort(sorted);
+            container = String.join("", sorted);
+
+        } else {
+            container = Keywords.NONE;
+        }
 
         result.setIfAbsent(variableValue, container, Keywords.ANY, Keywords.NONE, termName);
 
@@ -142,13 +154,11 @@ public final class InverseContext {
             return;
         }
 
-        final var languageMapping = activeContext
-                .findTerm(termName)
-                .map(TermDefinition::languageMapping);
+        final var termDefinition = activeContext.findTerm(termName);
 
-        final var directionMapping = activeContext
-                .findTerm(termName)
-                .map(TermDefinition::directionMapping);
+        final var languageMapping = termDefinition.map(TermDefinition::languageMapping);
+
+        final var directionMapping = termDefinition.map(TermDefinition::directionMapping);
 
         if (languageMapping.isPresent()) {
 

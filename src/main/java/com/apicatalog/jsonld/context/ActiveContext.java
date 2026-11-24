@@ -17,7 +17,9 @@ package com.apicatalog.jsonld.context;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,7 +37,7 @@ public final class ActiveContext implements Context {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
-    private final Map<String, TermDefinition> terms;
+    private Map<String, TermDefinition> terms;
 
     private Version version;
 
@@ -76,16 +78,19 @@ public final class ActiveContext implements Context {
     }
 
     // copy constructor
-    ActiveContext(ActiveContext origin) {
-        this.terms = new LinkedHashMap<>(origin.terms);
-        this.baseUri = origin.baseUri;
-        this.baseUrl = origin.baseUrl;
-        this.inverseContext = origin.inverseContext;
-        this.previousContext = origin.previousContext;
-        this.vocabularyMapping = origin.vocabularyMapping;
-        this.defaultLanguage = origin.defaultLanguage;
-        this.defaultBaseDirection = origin.defaultBaseDirection;
-        this.version = origin.version;
+    static ActiveContext copyOf(ActiveContext origin) {
+        
+        var context = new ActiveContext(origin.version);
+        context.terms = new LinkedHashMap<>(origin.terms);
+//        context.terms = Collections.unmodifiableMap(origin.terms);
+        context.baseUri = origin.baseUri;
+        context.baseUrl = origin.baseUrl;
+        context.inverseContext = origin.inverseContext;
+        context.previousContext = origin.previousContext;
+        context.vocabularyMapping = origin.vocabularyMapping;
+        context.defaultLanguage = origin.defaultLanguage;
+        context.defaultBaseDirection = origin.defaultBaseDirection;
+        return context;
     }
 
     @Override
