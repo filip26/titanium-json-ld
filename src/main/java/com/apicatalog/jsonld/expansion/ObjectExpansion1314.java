@@ -158,7 +158,7 @@ final class ObjectExpansion1314 {
 
                 params.runtime().fire(EventType.BEGIN_MAP, key);
 
-                for (var langEntry : entries((Map<String, ?>) map)) {
+                for (var langEntry : entries(map)) {
 
                     final var langCode = langEntry.getKey();
                     final var langValue = langEntry.getValue();
@@ -225,14 +225,10 @@ final class ObjectExpansion1314 {
                         .map(TermDefinition::indexMapping)
                         .orElse(Keywords.INDEX);
 
-//                final var valueKeys = params.options().isOrdered()
-//                        ? map.keySet().stream().sorted().iterator()
-//                        : map.keySet().iterator();
-
                 params.runtime().fire(EventType.BEGIN_MAP, key);
 
                 // 13.8.3.
-                for (var valueEntry : entries((Map<String, ?>) map)) {
+                for (var valueEntry : entries(map)) {
 
                     final var valueKey = valueEntry.getKey();
                     final var indexValue = valueEntry.getValue();
@@ -461,14 +457,14 @@ final class ObjectExpansion1314 {
                     if (map == null) {
                         result.put(Keywords.REVERSE, Map.of(expandedProperty, List.of(item)));
 
-                    } else if (map instanceof LinkedHashMap hashmap) {
+                    } else if (map instanceof LinkedHashMap<?, ?> hashmap) {
 
                         @SuppressWarnings("unchecked")
                         final var typedMap = (Map<String, Object>) hashmap;
 
                         JsonLdAdapter.setOrAdd(typedMap, expandedProperty, item);
 
-                    } else if (map instanceof Map rawMap) {
+                    } else if (map instanceof Map<?, ?> rawMap) {
 
                         @SuppressWarnings("unchecked")
                         final var typedMap = (Map<String, Object>) rawMap;
@@ -589,7 +585,7 @@ final class ObjectExpansion1314 {
                     return;
                 }
 
-            } else if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
+            } else if (params.frameExpansion() && value instanceof Map<?, ?> map && map.isEmpty()) {
 
                 expandedValue = List.of(Map.of());
 
@@ -635,7 +631,7 @@ final class ObjectExpansion1314 {
         else if (Keywords.TYPE.equals(expandedProperty)) {
 
             // 13.4.4.2
-            if (params.frameExpansion() && value instanceof Map map && map.isEmpty()) {
+            if (params.frameExpansion() && value instanceof Map<?, ?> map && map.isEmpty()) {
                 expandedValue = Map.of();
 
                 // 13.4.4.3
@@ -675,7 +671,7 @@ final class ObjectExpansion1314 {
 
 //                    params.runtime().onTypeMapping(Set.of((String)expandedValue));
 
-                } else if (value instanceof Collection col) {
+                } else if (value instanceof Collection<?> col) {
 
                     List<String> expandedItems = null;
 
@@ -722,7 +718,6 @@ final class ObjectExpansion1314 {
                     expandedValue = set;
 
                 } else if (typeValue instanceof Collection<?> set) {
-
                     var newSet = new HashSet<Object>(set);
                     newSet.add(expandedValue);
                     expandedValue = newSet;
@@ -799,6 +794,7 @@ final class ObjectExpansion1314 {
 
                     expandedValue = included;
                 }
+
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_KEYWORD_INCLUDED_VALUE);
             }
@@ -866,10 +862,6 @@ final class ObjectExpansion1314 {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (params.frameExpansion() && value instanceof Collection col && col.isEmpty()) {
-
-                expandedValue = List.of();
-
             } else if (params.frameExpansion() && value instanceof Collection<?> col) {
 
                 for (var el : col) {
@@ -878,7 +870,7 @@ final class ObjectExpansion1314 {
                     }
                 }
 
-                expandedValue = value;
+                expandedValue = col;
 
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_LANGUAGE_TAGGED_STRING);
@@ -908,10 +900,6 @@ final class ObjectExpansion1314 {
 
                 expandedValue = List.of(Map.of());
 
-            } else if (params.frameExpansion() && value instanceof Collection<?> col && col.isEmpty()) {
-
-                expandedValue = List.of();
-
             } else if (params.frameExpansion() && value instanceof Collection<?> col) {
 
                 for (var el : col) {
@@ -920,7 +908,7 @@ final class ObjectExpansion1314 {
                     }
                 }
 
-                expandedValue = value;
+                expandedValue = col;
 
             } else {
                 throw new JsonLdException(ErrorCode.INVALID_BASE_DIRECTION);
@@ -1153,20 +1141,13 @@ final class ObjectExpansion1314 {
         if (activeProperty != null || term != null) {
             params.runtime().fire(EventType.END_MAP, term != null ? term : activeProperty);
         }
-
     }
 
     private void processNest(
             final Context activeContext,
             final Map<String, ?> element) throws JsonLdException {
 
-//        final var nestedKeys = params.options().isOrdered()
-//                ? nest.keySet().stream().sorted().iterator()
-//                : nest.keySet().iterator();
-
         for (var nestedKey : keys(nest.keySet())) {
-
-//            final var nestedKey = nestedKeys.next();
 
             final var nestedNode = element.get(nestedKey);
 
@@ -1223,7 +1204,6 @@ final class ObjectExpansion1314 {
                     params.runtime().fire(EventType.END_LIST, nestedKey);
                 }
             }
-
         }
     }
 
@@ -1243,7 +1223,7 @@ final class ObjectExpansion1314 {
         return keys;
     }
 
-    private Collection<Entry<String, Object>> entries(Map<String, ?> map) {
+    private Collection<Entry<String, Object>> entries(Map<?, ?> map) {
         if (params.options().isOrdered()) {
             var sorted = new ArrayList<>(((Map<String, Object>) map).entrySet());
             sorted.sort(Map.Entry.comparingByKey());
