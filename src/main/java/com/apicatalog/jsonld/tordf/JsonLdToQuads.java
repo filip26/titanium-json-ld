@@ -449,7 +449,7 @@ public final class JsonLdToQuads {
 
                 if (RdfDirection.COMPOUND_LITERAL == rdfDirection) {
 
-                    final String blankNodeId = nodeMap.createIdentifier();
+                    final var blankNodeId = nodeMap.createIdentifier();
 
                     // 13.3.2.
                     consumer.triple(
@@ -477,7 +477,7 @@ public final class JsonLdToQuads {
                     consumer.triple(
                             blankNodeId,
                             Terms.RDF_DIRECTION,
-                            (String) item.get(Keywords.DIRECTION),
+                            direction,
                             Terms.XSD_STRING);
 
                     consumer.triple(subject, predicate, blankNodeId);
@@ -519,6 +519,10 @@ public final class JsonLdToQuads {
                     return;
                 }
 
+                enforcePolicy(
+                        "Direction policy is not set and value [{0}] is omitted.",
+                        direction);
+
             } else {
                 enforcePolicy(
                         "Direction [{0}] is invalid and value is omitted.",
@@ -544,7 +548,7 @@ public final class JsonLdToQuads {
             }
 
             enforcePolicy(
-                    "Language tag [{0}] is unknown and value is omitted.",
+                    "Language tag [{0}] is invalid and value is omitted.",
                     langValue);
         }
 
