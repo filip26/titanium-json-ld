@@ -1,0 +1,3 @@
+_:subject1 <http://an.example/predicate1> "Ahoj"@cs--ltr .
+_:subject1 <http://an.example/predicate1> "Čau"@und--ltr .
+_:subject1 <http://an.example/predicate1> "مرحبا"@ar--rtl .

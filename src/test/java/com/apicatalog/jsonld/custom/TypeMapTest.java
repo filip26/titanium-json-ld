@@ -58,7 +58,7 @@ class TypeMapTest {
                     .add(typeMapper::terms);
 
             var expanded = Expander.expand(
-                    JsonLd.fetch(testCase.input, options.loader()),
+                    JsonLd.load(testCase.input, options),
                     options,
                     runtime);
 

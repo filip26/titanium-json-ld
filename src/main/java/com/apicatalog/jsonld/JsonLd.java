@@ -66,14 +66,8 @@ public final class JsonLd {
      * @return expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(URI document, Options options) throws JsonLdException {
-        return Expander.expand(
-                fetch(
-                        document,
-                        options.loader(),
-                        options.isExtractAllScripts()),
-                options,
-                Execution.of(options));
+    public static Collection<?> expand(URI document, Options options) throws JsonLdException {
+        return Expander.expand(load(document, options), options, Execution.of(options));
     }
 
     /**
@@ -84,7 +78,7 @@ public final class JsonLd {
      * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(Document document, Options options) throws JsonLdException {
+    public static Collection<?> expand(Document document, Options options) throws JsonLdException {
         return Expander.expand(
                 document,
                 options,
@@ -100,7 +94,7 @@ public final class JsonLd {
      * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(Map<String, ?> document, Options options) throws JsonLdException {
+    public static Collection<?> expand(Map<String, ?> document, Options options) throws JsonLdException {
         return Expander.expand(
                 document,
                 options,
@@ -116,7 +110,7 @@ public final class JsonLd {
      * @return the expanded JSON-LD document
      * @throws JsonLdException if expansion fails
      */
-    public static final Collection<?> expand(Collection<?> document, Options options) throws JsonLdException {
+    public static Collection<?> expand(Collection<?> document, Options options) throws JsonLdException {
         return Expander.expand(
                 document,
                 options,
@@ -134,12 +128,12 @@ public final class JsonLd {
      * @return the compacted JSON-LD document
      * @throws JsonLdException if compaction fails
      */
-    public static final Map<String, ?> compact(
-            final URI document,
-            final URI context,
-            final Options options) throws JsonLdException {
+    public static Map<String, ?> compact(
+            URI document,
+            URI context,
+            Options options) throws JsonLdException {
         return compact(
-                fetch(document, options.loader(), options.isExtractAllScripts()),
+                load(document, options),
                 Context.load(context, options.loader()),
                 options);
     }
@@ -154,14 +148,11 @@ public final class JsonLd {
      * @return the compacted JSON-LD document
      * @throws JsonLdException if compaction fails
      */
-    public static final Map<String, ?> compact(
-            final URI document,
-            final Document context,
-            final Options options) throws JsonLdException {
-        return compact(
-                fetch(document, options.loader(), options.isExtractAllScripts()),
-                context,
-                options);
+    public static Map<String, ?> compact(
+            URI document,
+            Document context,
+            Options options) throws JsonLdException {
+        return compact(load(document, options), context, options);
     }
 
     /**
@@ -174,9 +165,9 @@ public final class JsonLd {
      * @return the compacted JSON-LD document
      * @throws JsonLdException if compaction fails
      */
-    public static final Map<String, ?> compact(
-            final Document document,
-            final URI context,
+    public static Map<String, ?> compact(
+            Document document,
+            URI context,
             Options options) throws JsonLdException {
         return compact(
                 document,
@@ -193,11 +184,10 @@ public final class JsonLd {
      * @return the compacted JSON-LD document
      * @throws JsonLdException if compaction fails
      */
-    public static final Map<String, ?> compact(
-            final Document document,
-            final Document context,
-            final Options options) throws JsonLdException {
-
+    public static Map<String, ?> compact(
+            Document document,
+            Document context,
+            Options options) throws JsonLdException {
         return Compactor.compact(
                 document,
                 context,
@@ -216,12 +206,12 @@ public final class JsonLd {
      * @return the compacted JSON-LD document
      * @throws JsonLdException if compaction fails
      */
-    public static final Map<String, ?> compact(
-            final Collection<?> document,
-            final Map<String, ?> context,
-            final Options options) throws JsonLdException {
+    public static Map<String, ?> compact(
+            Collection<?> document,
+            Map<String, ?> context,
+            Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
+        final var runtime = Execution.of(options);
 
         return Compactor.compact(
                 Compactor.expand(document, options, runtime),
@@ -238,18 +228,14 @@ public final class JsonLd {
      *
      * @param document a {@link URI} referencing the JSON-LD document to flatten
      * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException if flattening fails
      */
-    public static final Object flatten(
-            final URI document,
-            final Options options) throws JsonLdException {
-
+    public static Object flatten(
+            URI document,
+            Options options) throws JsonLdException {
         return Flattener.flatten(
-                fetch(
-                        document,
-                        options.loader(),
-                        options.isExtractAllScripts()),
+                load(document, options),
                 null,
                 options,
                 Execution.of(options));
@@ -261,19 +247,15 @@ public final class JsonLd {
      * @param document {@link URI} referencing JSON-LD document to flatten
      * @param context  {@link URI} referencing the context to use when flattening
      * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException if flattening fails
      */
-    public static final Object flatten(
-            final URI document,
-            final URI context,
-            final Options options) throws JsonLdException {
-
+    public static Object flatten(
+            URI document,
+            URI context,
+            Options options) throws JsonLdException {
         return Flattener.flatten(
-                fetch(
-                        document,
-                        options.loader(),
-                        options.isExtractAllScripts()),
+                load(document, options),
                 context != null
                         ? Context.load(context, options.loader()).content()
                         : null,
@@ -287,13 +269,12 @@ public final class JsonLd {
      * @param document a {@link Document} representing the JSON-LD document to
      *                 flatten
      * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException if flattening fails
      */
-    public static final Object flatten(
-            final Document document,
-            final Options options) throws JsonLdException {
-
+    public static Object flatten(
+            Document document,
+            Options options) throws JsonLdException {
         return Flattener.flatten(
                 document,
                 null,
@@ -305,13 +286,13 @@ public final class JsonLd {
      * Flattens the remote input and optionally compacts it using context.
      *
      * @param document to flatten
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException
      */
-    public static final Object flatten(
-            final Document document,
-            final Document context,
-            final Options options) throws JsonLdException {
-
+    public static Object flatten(
+            Document document,
+            Document context,
+            Options options) throws JsonLdException {
         return Flattener.flatten(
                 document,
                 context != null
@@ -327,13 +308,12 @@ public final class JsonLd {
      * @param document a {@link Map} representation of the JSON-LD document to
      *                 flatten
      * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException if flattening fails
      */
-    public static final Object flatten(
-            final Map<String, ?> document,
-            final Options options) throws JsonLdException {
-
+    public static Object flatten(
+            Map<String, ?> document,
+            Options options) throws JsonLdException {
         return flatten(
                 document,
                 null,
@@ -348,10 +328,10 @@ public final class JsonLd {
      *                 flatten
      * @param context  a {@link Map} representation of the context to apply
      * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException if flattening fails
      */
-    public static final Object flatten(
+    public static Object flatten(
             Map<String, ?> document,
             Map<String, ?> context,
             Options options) throws JsonLdException {
@@ -368,10 +348,10 @@ public final class JsonLd {
      * @param document a {@link Collection} representing the JSON-LD document to
      *                 flatten
      * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException if flattening fails
      */
-    public static final Object flatten(
+    public static Object flatten(
             Collection<?> document,
             Options options) throws JsonLdException {
         return flatten(document,
@@ -387,42 +367,19 @@ public final class JsonLd {
      *                 flatten
      * @param context  a {@link Map} representation of the context to apply
      * @param options  options to configure flattening
-     * @return the flattened JSON-LD document
+     * @return the flattened JSON-LD document; {@link Map} or {@link Collection}.
      * @throws JsonLdException if flattening fails
      */
-    public static final Object flatten(
-            final Collection<?> document,
-            final Map<String, ?> context,
-            final Options options) throws JsonLdException {
+    public static Object flatten(
+            Collection<?> document,
+            Map<String, ?> context,
+            Options options) throws JsonLdException {
         return Flattener.flatten(
                 document,
                 context,
                 options,
                 Execution.of(options));
     }
-
-//    /**
-//     * Flattens a JSON-LD document represented as a {@link Map} node.
-//     *
-//     * @param document a {@link Map} representation of the JSON-LD document to
-//     *                 flatten
-//     * @param context  a {@link Map} representation of the context to apply during
-//     *                 flattening
-//     * @param options  options to configure flattening
-//     * @return the flattened JSON-LD document
-//     * @throws JsonLdException if flattening fails
-//     */
-//    public static final Object flatten(
-//            final Map<String, ?> document,
-//            final Object context,
-//            final Options options) throws JsonLdException {
-//
-//        return Flattener.flatten(
-//                document,
-//                context,
-//                options,
-//                Execution.of(options));
-//    }
 
     /* --- FRAME -- */
 
@@ -435,15 +392,11 @@ public final class JsonLd {
      * @return the framed JSON-LD document
      * @throws JsonLdException if framing fails
      */
-    public static final Map<String, ?> frame(
-            final URI document,
-            final URI frame,
-            final Options options) throws JsonLdException {
-
-        return frame(
-                fetch(document, options.loader(), options.isExtractAllScripts()),
-                frame,
-                options);
+    public static Map<String, ?> frame(
+            URI document,
+            URI frame,
+            Options options) throws JsonLdException {
+        return frame(load(document, options), frame, options);
     }
 
     /**
@@ -455,15 +408,11 @@ public final class JsonLd {
      * @return the framed JSON-LD document
      * @throws JsonLdException if framing fails
      */
-    public static final Map<String, ?> frame(
-            final Document document,
-            final URI frame,
-            final Options options) throws JsonLdException {
-
-        return frame(
-                document,
-                fetch(frame, options.loader(), options.isExtractAllScripts()),
-                options);
+    public static Map<String, ?> frame(
+            Document document,
+            URI frame,
+            Options options) throws JsonLdException {
+        return frame(document, load(frame, options), options);
     }
 
     /**
@@ -475,15 +424,11 @@ public final class JsonLd {
      * @return the framed JSON-LD document
      * @throws JsonLdException if framing fails
      */
-    public static final Map<String, ?> frame(
-            final URI document,
-            final Document frame,
-            final Options options) throws JsonLdException {
-
-        return frame(
-                fetch(document, options.loader(), options.isExtractAllScripts()),
-                frame,
-                options);
+    public static Map<String, ?> frame(
+            URI document,
+            Document frame,
+            Options options) throws JsonLdException {
+        return frame(load(document, options), frame, options);
     }
 
     /**
@@ -495,11 +440,10 @@ public final class JsonLd {
      * @return the framed JSON-LD document
      * @throws JsonLdException if framing fails
      */
-    public static final Map<String, ?> frame(
-            final Document document,
-            final Document frame,
-            final Options options) throws JsonLdException {
-
+    public static Map<String, ?> frame(
+            Document document,
+            Document frame,
+            Options options) throws JsonLdException {
         return Framer.frame(
                 document,
                 frame,
@@ -516,12 +460,12 @@ public final class JsonLd {
      * @return the framed JSON-LD document
      * @throws JsonLdException if framing fails
      */
-    public static final Map<String, ?> frame(
-            final Map<String, ?> document,
-            final Map<String, ?> frame,
-            final Options options) throws JsonLdException {
+    public static Map<String, ?> frame(
+            Map<String, ?> document,
+            Map<String, ?> frame,
+            Options options) throws JsonLdException {
 
-        final Execution runtime = Execution.of(options);
+        final var runtime = Execution.of(options);
 
         final var contextNode = Context.extract(frame);
 
@@ -550,16 +494,11 @@ public final class JsonLd {
      * @throws JsonLdException if transformation fails
      * 
      */
-    public static final void toRdf(
-            final URI uri,
+    public static void toRdf(
+            URI uri,
             QuadConsumer consumer,
             Options options) throws JsonLdException {
-        toRdf(fetch(
-                uri,
-                options.loader(),
-                options.isExtractAllScripts()),
-                consumer,
-                options);
+        toRdf(load(uri, options), consumer, options);
     }
 
     /**
@@ -570,11 +509,10 @@ public final class JsonLd {
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      */
-    public static final void toRdf(
-            final Document document,
-            final QuadConsumer consumer,
-            final Options options) throws JsonLdException {
-
+    public static void toRdf(
+            Document document,
+            QuadConsumer consumer,
+            Options options) throws JsonLdException {
         RdfEmitter.toRdf(
                 document,
                 consumer,
@@ -592,10 +530,10 @@ public final class JsonLd {
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      */
-    public static final void toRdf(
-            final Collection<?> document,
-            final QuadConsumer consumer,
-            final Options options) throws JsonLdException {
+    public static void toRdf(
+            Collection<?> document,
+            QuadConsumer consumer,
+            Options options) throws JsonLdException {
 
         RdfEmitter.toRdf(
                 document,
@@ -613,10 +551,10 @@ public final class JsonLd {
      * @param options  options to configure transformation
      * @throws JsonLdException if transformation fails
      */
-    public static final void toRdf(
-            final Map<String, ?> document,
-            final QuadConsumer consumer,
-            final Options options) throws JsonLdException {
+    public static void toRdf(
+            Map<String, ?> document,
+            QuadConsumer consumer,
+            Options options) throws JsonLdException {
 
         RdfEmitter.toRdf(
                 document,
@@ -648,7 +586,7 @@ public final class JsonLd {
      * @return a {@link QuadsToJsonLd} instance, allowing additional parameter
      *         configuration
      */
-    public static final QuadsToJsonLd fromRdf() {
+    public static QuadsToJsonLd fromRdf() {
         return new QuadsToJsonLd();
     }
 
@@ -674,25 +612,27 @@ public final class JsonLd {
      * @return a {@link QuadsToJsonLd} instance, allowing additional parameter
      *         configuration
      */
-    public static final QuadsToJsonLd fromRdf(Options options) {
+    public static QuadsToJsonLd fromRdf(Options options) {
         return new QuadsToJsonLd().options(options);
     }
 
     /* --- REMOTE DOCUMENT -- */
 
-    public static final Document fetch(URI url, DocumentLoader loader) throws JsonLdException {
-        return fetch(url, loader, false);
+    public static Document load(URI url, Options options) throws JsonLdException {
+        return load(url, options.loader(), options.isExtractAllScripts());
     }
 
-    public static final Document fetch(URI url, DocumentLoader loader, boolean extractAllScripts)
-            throws JsonLdException {
+    public static Document load(
+            URI url,
+            DocumentLoader loader,
+            boolean extractAllScripts) throws JsonLdException {
 
         Objects.requireNonNull(url);
 
         if (loader == null) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
-                    "Document loader is null. Cannot fetch [" + url + "].");
+                    "Document loader is null, url=" + url);
         }
 
         try {
@@ -706,7 +646,7 @@ public final class JsonLd {
             if (document == null) {
                 throw new JsonLdException(
                         ErrorCode.LOADING_DOCUMENT_FAILED,
-                        "Returned document is null [" + url + "].");
+                        "Returned remote document is null, url=" + url);
             }
 
             return document;
@@ -714,12 +654,13 @@ public final class JsonLd {
         } catch (LoaderException e) {
             throw new JsonLdException(
                     ErrorCode.LOADING_DOCUMENT_FAILED,
+                    "Loading remote document failed, url=" + url,
                     e);
         }
     }
 
     /* --- TYPES --- */
-    
+
     /**
      * Represents supported JSON-LD versions.
      */

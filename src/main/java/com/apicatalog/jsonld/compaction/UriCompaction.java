@@ -187,18 +187,18 @@ public final class UriCompaction {
                             // 4.7.4.2.4.
                             itemLanguage = Keywords.NULL;
                         }
-
-                    } else {
-                        // 4.7.4.3.
+                    }
+                    // 4.7.4.3.
+                    else {
                         itemType = Keywords.ID;
                     }
 
                     // 4.7.4.4.
                     if (commonLanguage == null) {
                         commonLanguage = itemLanguage;
-
-                        // 4.7.4.5.
-                    } else if (!Objects.equals(itemLanguage, commonLanguage)
+                    }
+                    // 4.7.4.5.
+                    else if (!Objects.equals(itemLanguage, commonLanguage)
                             && item instanceof Map itemMap
                             && itemMap.containsKey(Keywords.VALUE)) {
                         commonLanguage = Keywords.NONE;
@@ -207,9 +207,9 @@ public final class UriCompaction {
                     // 4.7.4.6.
                     if (commonType == null) {
                         commonType = itemType;
-
-                        // 4.7.4.7.
-                    } else if (!Objects.equals(itemType, commonType)) {
+                    }
+                    // 4.7.4.7.
+                    else if (!Objects.equals(itemType, commonType)) {
                         commonType = Keywords.NONE;
                     }
 
@@ -233,9 +233,9 @@ public final class UriCompaction {
                 if (!Keywords.NONE.equals(commonType)) {
                     typeLanguage = Keywords.TYPE;
                     typeLanguageValue = commonType;
-
-                    // 4.7.8.
-                } else {
+                }
+                // 4.7.8.
+                else {
                     typeLanguageValue = commonLanguage;
                 }
 
@@ -279,12 +279,11 @@ public final class UriCompaction {
                 typeLanguage = Keywords.TYPE;
                 typeLanguageValue = Keywords.ID;
 
-                // 4.9.
-            } else {
-
+            }
+            // 4.9.
+            else {
                 // 4.9.1.
                 if (node instanceof Map map && JsonLdAdapter.isValueNode(map)) {
-
                     // 4.9.1.1.
                     if (map.containsKey(Keywords.DIRECTION)
                             && !map.containsKey(Keywords.INDEX)) {
@@ -301,9 +300,9 @@ public final class UriCompaction {
 
                         containers.add(Keywords.LANGUAGE);
                         containers.add(Keywords.LANGUAGE + Keywords.SET);
-
-                        // 4.9.1.2.
-                    } else if (map.containsKey(Keywords.LANGUAGE)
+                    }
+                    // 4.9.1.2.
+                    else if (map.containsKey(Keywords.LANGUAGE)
                             && !map.containsKey(Keywords.INDEX)) {
 
                         if (map.get(Keywords.LANGUAGE) instanceof String langString) {
@@ -312,17 +311,15 @@ public final class UriCompaction {
 
                         containers.add(Keywords.LANGUAGE);
                         containers.add(Keywords.LANGUAGE + Keywords.SET);
-
-                        // 4.9.1.3.
-                    } else if (map.containsKey(Keywords.TYPE)) {
-
+                    }
+                    // 4.9.1.3.
+                    else if (map.containsKey(Keywords.TYPE)) {
                         typeLanguage = Keywords.TYPE;
                         typeLanguageValue = (String) map.get(Keywords.TYPE);
                     }
-
-                    // 4.9.2.
-                } else {
-
+                }
+                // 4.9.2.
+                else {
                     typeLanguage = Keywords.TYPE;
                     typeLanguageValue = Keywords.ID;
 
@@ -331,18 +328,15 @@ public final class UriCompaction {
                     containers.add(Keywords.TYPE);
                     containers.add(Keywords.SET + Keywords.TYPE);
                 }
-
                 // 4.9.3.
                 containers.add(Keywords.SET);
             }
-
             // 4.10.
             containers.add(Keywords.NONE);
 
             // 4.11.
             if (!context.isV10()
-                    && (!(node instanceof Map map)
-                            || !map.containsKey(Keywords.INDEX))) {
+                    && (!(node instanceof Map map) || !map.containsKey(Keywords.INDEX))) {
 
                 containers.add(Keywords.INDEX);
                 containers.add(Keywords.INDEX + Keywords.SET);
@@ -364,7 +358,7 @@ public final class UriCompaction {
             }
 
             // 4.14.
-            Collection<String> preferredValues = new ArrayList<>();
+            final var preferredValues = new ArrayList<String>();
 
             // 4.15.
             if (Keywords.REVERSE.equals(typeLanguageValue)) {
@@ -428,7 +422,7 @@ public final class UriCompaction {
             preferredValues.add(Keywords.ANY);
 
             // 4.19.
-            for (final String preferredValue : new ArrayList<>(preferredValues)) {
+            for (final var preferredValue : new ArrayList<>(preferredValues)) {
 
                 int index = preferredValue.indexOf('_');
 

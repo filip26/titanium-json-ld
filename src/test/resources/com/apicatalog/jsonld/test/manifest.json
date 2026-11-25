@@ -288,6 +288,16 @@
         "option": {
           "useInlineContexts": false
         }      
-    }    
+    },
+    {
+        "@id": "#ti0001",
+        "@type": [
+          "jld:PositiveEvaluationTest",
+          "jld:FromRDFTest"
+        ],
+        "name": "rdf:dirLangSTring",
+        "input": "dir-lang-string-1-in.nq",
+        "expect": "dir-lang-string-1-out.json"      
+    }
   ]
 }

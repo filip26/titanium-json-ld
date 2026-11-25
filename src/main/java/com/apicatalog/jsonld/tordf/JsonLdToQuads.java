@@ -489,8 +489,7 @@ public final class JsonLdToQuads {
                     if (datatype == null) {
                         datatype = switch (rdfDirection) {
                         case I18N_DATATYPE -> Terms.RDF_I18N_BASE;
-                        case DIR_LANG_STRING -> Terms.RDF_DIR_LANG_STRING;
-                        default -> null;
+                        default -> Terms.RDF_DIR_LANG_STRING;
                         };
                     }
 

@@ -90,7 +90,7 @@ public final class QuadsToJsonLd {
     protected boolean ordered;
     protected RdfDirection rdfDirection;
     protected boolean useRdfType;
-    protected boolean useXsdDecimal;
+
     protected UriValidationPolicy uriValidation;
     protected Version processingMode;
 
@@ -113,7 +113,6 @@ public final class QuadsToJsonLd {
         this.rdfDirection = null;
         this.jsonReader = null;
         this.nativeTypes = Map.of();
-        this.useXsdDecimal = false;
         this.useRdfType = false;
         this.uriValidation = Options.DEFAULT_URI_VALIDATION;
         this.processingMode = Version.V1_1;
@@ -455,26 +454,12 @@ public final class QuadsToJsonLd {
             final String subject,
             final String predicate,
             final String object,
-            String datatype, // FIXMe final
-            String language,
-            String direction,
+            final String datatype,
+            final String language,
+            final String direction,
             final String graph) {
 
         final var graphName = graph == null ? Keywords.DEFAULT : graph;
-
-        if (direction != null || datatype != null && datatype.startsWith(Terms.RDF_I18N_BASE)) {
-
-            datatype = Terms.RDF_I18N_BASE;
-
-            if (language != null) {
-                datatype = datatype + language;
-                language = null;
-            }
-            if (direction != null) {
-                datatype = datatype + '_' + direction;
-                direction = null;
-            }
-        }
 
         // 5.3.
         if (!compoundLiteralSubjects.containsKey(graphName)) {
@@ -486,51 +471,52 @@ public final class QuadsToJsonLd {
             graphMap.set(Keywords.DEFAULT, graphName, Keywords.ID, graphName);
         }
 
-        // 5.6.
-        final var compoundMap = compoundLiteralSubjects.get(graphName);
-
         // 5.7.1.
         if (!graphMap.contains(graphName, subject)) {
             graphMap.set(graphName, subject, Keywords.ID, subject);
         }
 
         // 5.7.3.
-        if (RdfDirection.COMPOUND_LITERAL == rdfDirection
-                && Terms.RDF_DIRECTION.equals(predicate)) {
-
-            compoundMap.put(subject, Boolean.TRUE);
+        if (rdfDirection == RdfDirection.COMPOUND_LITERAL && Terms.RDF_DIRECTION.equals(predicate)) {
+            compoundLiteralSubjects.get(graphName).put(subject, Boolean.TRUE);
         }
 
-        // 5.7.4.
-        if (isObject(datatype, language, direction)
-                && !graphMap.contains(graphName, object)) {
+        final var isObjectResource = isObject(datatype, language, direction);
 
+        // 5.7.4.
+        if (isObjectResource && !graphMap.contains(graphName, object)) {
             graphMap.set(graphName, object, Keywords.ID, object);
         }
 
         // 5.7.5.
-        if (!useRdfType && Terms.RDF_TYPE.equals(predicate)
-                && isObject(datatype, language, direction)) {
+        if (!useRdfType && isObjectResource && Terms.RDF_TYPE.equals(predicate)) {
 
             final var type = graphMap.get(graphName, subject, Keywords.TYPE);
 
             if (type.isPresent()) {
-
                 var types = new ArrayList<Object>((Collection<?>) type.get());
                 types.add(object);
 
                 graphMap.set(graphName, subject, Keywords.TYPE, types);
-
-            } else {
-
-                graphMap.set(graphName, subject, Keywords.TYPE, Set.of(object));
+                return;
             }
 
+            graphMap.set(graphName, subject, Keywords.TYPE, Set.of(object));
             return;
         }
 
         // 5.7.6.
-        final var value = toObject(object, datatype, language, direction);
+        final Map<String, Object> value;
+
+        // 1.
+        if (isObjectResource) {
+            final var ref = new LinkedHashMap<String, Object>(1);
+            ref.put(Keywords.ID, object);
+            value = ref;
+
+        } else {
+            value = toObject(object, datatype, language, direction);
+        }
 
         final var predicateValue = graphMap.get(graphName, subject, predicate);
 
@@ -577,125 +563,8 @@ public final class QuadsToJsonLd {
 
     }
 
-    private Map<String, Object> toObject(
-            String object,
-            String datatype,
-            String langTag,
-            String direction) {
-
-        // 1.
-        if (isObject(datatype, langTag, direction)) {
-            final var ref = new LinkedHashMap<String, Object>(1);
-            ref.put(Keywords.ID, object);
-            return ref;
-        }
-
-        // 2.2.
-        Object convertedValue = null;
-
-        // 2.4.
-        if (!nativeTypes.isEmpty()) {
-
-            if (datatype != null) {
-
-                final var convertor = nativeTypes.get(datatype);
-
-                if (convertor != null) {
-                    convertedValue = convertor.apply(object);
-                    if (convertedValue != null) {
-                        return Map.of(Keywords.VALUE, convertedValue);
-                    }
-                }
-
-                return Map.of(
-                        Keywords.VALUE, object,
-                        Keywords.TYPE, datatype);
-            }
-            return Map.of(
-                    Keywords.VALUE, object);
-        }
-
-        // 2.5.
-        if (jsonReader != null
-                && processingMode != Version.V1_0
-                && Terms.RDF_JSON.equals(datatype)) {
-
-            try {
-
-                convertedValue = jsonReader.read(MediaType.JSON, new StringReader(object));
-
-                if (convertedValue == null) {
-                    final var result = HashMap.<String, Object>newHashMap(2);
-                    result.put(Keywords.TYPE, Keywords.JSON);
-                    result.put(Keywords.VALUE, null);
-                    return result;
-                }
-
-                return Map.of(
-                        Keywords.VALUE, convertedValue,
-                        Keywords.TYPE, Keywords.JSON);
-
-            } catch (Exception e) {
-                this.error = new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
-                throw e;
-            }
-        }
-
-        final var result = HashMap.<String, Object>newHashMap(4);
-
-        // 2.3.
-        String type = null;
-
-        // 2.6.
-        if (RdfDirection.I18N_DATATYPE == rdfDirection
-                && datatype != null
-                && datatype.startsWith(Terms.RDF_I18N_BASE)) {
-
-            convertedValue = object;
-
-            final var dirLang = datatype.substring(Terms.RDF_I18N_BASE.length());
-
-            int directionIndex = dirLang.indexOf('_');
-
-            if (directionIndex > 1) {
-
-                result.put(Keywords.LANGUAGE, dirLang.substring(0, directionIndex));
-                result.put(Keywords.DIRECTION, dirLang.substring(directionIndex + 1));
-
-            } else if (directionIndex == 0) {
-
-                result.put(Keywords.DIRECTION, dirLang.substring(1));
-
-            } else if (directionIndex == -1) {
-
-                result.put(Keywords.LANGUAGE, dirLang);
-            }
-
-            // 2.7.
-        } else if (langTag != null) {
-
-            result.put(Keywords.LANGUAGE, langTag);
-
-            // 2.8.
-        } else if (datatype != null
-                && !Terms.XSD_STRING.equals(datatype)) {
-
-            type = datatype;
-        }
-
-        // 2.9.
-        result.put(Keywords.VALUE,
-                (convertedValue != null)
-                        ? convertedValue
-                        : object);
-
-        // 2.10.
-        if (type != null) {
-            result.put(Keywords.TYPE, type);
-        }
-
-        // 2.11.
-        return result;
+    public JsonLdException error() {
+        return error;
     }
 
     public static Boolean toBoolean(String value) {
@@ -744,6 +613,135 @@ public final class QuadsToJsonLd {
         return null;
     }
 
+    private Map<String, Object> toObject(
+            String object,
+            String datatype,
+            String language,
+            String direction) {
+
+        // 2.2.
+        Object convertedValue = null;
+
+        // 2.4.
+        if (nativeTypes.containsKey(datatype)) {
+
+            if (datatype != null) {
+
+                final var convertor = nativeTypes.get(datatype);
+
+                if (convertor != null) {
+                    convertedValue = convertor.apply(object);
+
+                    if (convertedValue != null) {
+                        return Map.of(Keywords.VALUE, convertedValue);
+                    }
+                }
+
+                return Map.of(
+                        Keywords.VALUE, object,
+                        Keywords.TYPE, datatype);
+            }
+            return Map.of(Keywords.VALUE, object);
+        }
+
+        // 2.5.
+        if (jsonReader != null
+                && processingMode != Version.V1_0
+                && Terms.RDF_JSON.equals(datatype)) {
+
+            try {
+
+                convertedValue = jsonReader.read(MediaType.JSON, new StringReader(object));
+
+                if (convertedValue == null) {
+                    final var result = HashMap.<String, Object>newHashMap(2);
+                    result.put(Keywords.TYPE, Keywords.JSON);
+                    result.put(Keywords.VALUE, null);
+                    return result;
+                }
+
+                return Map.of(
+                        Keywords.VALUE, convertedValue,
+                        Keywords.TYPE, Keywords.JSON);
+
+            } catch (Exception e) {
+                this.error = new JsonLdException(ErrorCode.INVALID_JSON_LITERAL, e);
+                throw e;
+            }
+        }
+
+        String valueType = datatype;
+        String valueLanguage = language;
+        String valueDirection = direction;
+
+        // 2.6.
+        if (datatype != null && datatype.startsWith(Terms.RDF_I18N_BASE)) {
+
+            if (rdfDirection == RdfDirection.I18N_DATATYPE
+                    && datatype.length() == Terms.RDF_I18N_BASE.length()) {
+                valueType = null;
+
+            } else if (rdfDirection != RdfDirection.I18N_DATATYPE
+                    && datatype.length() == Terms.RDF_I18N_BASE.length()) {
+
+                if (language != null) {
+                    valueType = datatype + language;
+                    valueLanguage = null;
+                }
+                if (direction != null) {
+                    valueType = valueType + '_' + direction;
+                    valueDirection = null;
+                }
+
+            } else if (rdfDirection == RdfDirection.I18N_DATATYPE
+                    && datatype.length() > (Terms.RDF_I18N_BASE.length() + 1)) {
+
+                convertedValue = object;
+
+                final var dirLang = datatype.substring(Terms.RDF_I18N_BASE.length());
+
+                final var directionIndex = dirLang.indexOf('_');
+
+                if (directionIndex > 1) {
+                    valueLanguage = dirLang.substring(0, directionIndex);
+                    valueDirection = dirLang.substring(directionIndex + 1);
+                    valueType = Terms.RDF_I18N_BASE;
+
+                } else if (directionIndex == 0) {
+                    valueDirection = dirLang.substring(1);
+                    valueType = Terms.RDF_I18N_BASE;
+                }
+            }
+        }
+
+        final var result = HashMap.<String, Object>newHashMap(4);
+
+        // 2.7.
+        if (valueLanguage != null && !(Terms.RDF_DIR_LANG_STRING.equals(valueType) && "und".equals(language))) {
+            result.put(Keywords.LANGUAGE, valueLanguage);
+        }
+
+        if (valueDirection != null) {
+            result.put(Keywords.DIRECTION, valueDirection);
+        }
+
+        if (valueType != null
+                && !Terms.XSD_STRING.equals(valueType)
+                && !Terms.RDF_LANG_STRING.equals(valueType)
+                && !Terms.RDF_DIR_LANG_STRING.equals(valueType)) {
+            result.put(Keywords.TYPE, valueType);
+        }
+
+        // 2.9.
+        result.put(Keywords.VALUE,
+                (convertedValue != null)
+                        ? convertedValue
+                        : object);
+
+        // 2.11.
+        return result;
+    }
+
     private static Object flatten(Object value, String key) {
 
         var result = value;
@@ -759,20 +757,7 @@ public final class QuadsToJsonLd {
         return result;
     }
 
-    /**
-     * Determines if the provided combination of {@code datatype}, {@code language},
-     * and {@code direction} qualifies the object as RDF literal.
-     *
-     * @param datatype  the datatype IRI
-     * @param language  the language tag
-     * @param direction the text direction
-     * @return {@code true} indicating a literal, otherwise {@code false}.
-     */
-    static boolean isLiteral(String datatype, String language, String direction) {
-        return datatype != null;
-    }
-
-    static boolean isObject(String datatype, String language, String direction) {
+    private static boolean isObject(String datatype, String language, String direction) {
         return datatype == null && language == null && direction == null;
     }
 
@@ -784,11 +769,7 @@ public final class QuadsToJsonLd {
      * @return {@code true} if the resource is a non-null blank node identifier;
      *         otherwise {@code false}.
      */
-    static boolean isBlank(String resource) {
+    private static boolean isBlank(String resource) {
         return resource != null && resource.startsWith("_:");
-    }
-
-    public JsonLdException error() {
-        return error;
     }
 }

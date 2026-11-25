@@ -56,11 +56,10 @@ public final class Expander {
                 runtime);
     }
 
-    public static final Collection<?> expand(
-            final Map<String, ?> document,
-            final Options options,
-            final Execution runtime) throws JsonLdException {
-
+    public static Collection<?> expand(
+            Map<String, ?> document,
+            Options options,
+            Execution runtime) throws JsonLdException {
         return Expander.expand(
                 document,
                 Expander.context(null, null, options, runtime),
@@ -69,10 +68,10 @@ public final class Expander {
                 runtime);
     }
 
-    public static final Collection<?> expand(
-            final Collection<?> document,
-            final Options options,
-            final Execution runtime) throws JsonLdException {
+    public static Collection<?> expand(
+            Collection<?> document,
+            Options options,
+            Execution runtime) throws JsonLdException {
 
         return Expander.expand(
                 document,

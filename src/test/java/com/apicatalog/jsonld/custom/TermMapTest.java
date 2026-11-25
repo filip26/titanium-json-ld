@@ -68,7 +68,7 @@ class TermMapTest {
             var runtime = Execution.of(options).add(termMapper);
 
             var expanded = Expander.expand(
-                    JsonLd.fetch(testCase.input, options.loader()),
+                    JsonLd.load(testCase.input, options),
                     options,
                     runtime);
 

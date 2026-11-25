@@ -101,10 +101,10 @@ public final class Expansion {
                     propertyContextMap.keySet());
         }
 
-        if (node instanceof Map map) {
+        if (node instanceof Map<?, ?> map) {
             return new ObjectExpansion(
                     propertyContext,
-                    map,
+                    (Map<String, ?>) map,
                     new Params(
                             params.frameExpansion && !Keywords.DEFAULT.equals(activeProperty),
                             params.fromMap,

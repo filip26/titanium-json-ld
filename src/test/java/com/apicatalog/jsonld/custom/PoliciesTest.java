@@ -70,7 +70,7 @@ class PoliciesTest {
                     .build());
 
             Expander.expand(
-                    JsonLd.fetch(testCase.input, options.loader()),
+                    JsonLd.load(testCase.input, options),
                     options,
                     Execution.of(options).add(termMapper));
 
