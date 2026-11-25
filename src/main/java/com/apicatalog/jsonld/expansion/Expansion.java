@@ -92,13 +92,11 @@ public final class Expansion {
                 .findTerm(activeProperty)
                 .orElse(null);
 
-        // Extension: CBOR-LD collector
-        if (params.runtime().hasValuesConsumer()
+        // Extension: CBOR-LD context keys collector
+        if (params.runtime().hasContextKeysCollector()
                 && propertyContext != null
                 && propertyContext.localContext() instanceof Map propertyContextMap) {
-            params.runtime().fire(
-                    EventType.CONTEXT_KEYS,
-                    propertyContextMap.keySet());
+            params.runtime().acceptContextKeys(propertyContextMap.keySet());
         }
 
         if (node instanceof Map<?, ?> map) {
@@ -124,7 +122,7 @@ public final class Expansion {
                 params);
 
         if (Keywords.SET.equals(expandedTerm)) {
-            params.runtime().fire(EventType.TERM_KEY, term);
+            params.runtime().fireEvent(EventType.TERM_KEY, term);
         }
         return scalar;
     }
@@ -171,7 +169,7 @@ public final class Expansion {
          * returning null.
          */
         if (property == null || Keywords.GRAPH.equals(property)) {
-            params.runtime().fire(EventType.DROPPED_NODE, property);
+            params.runtime().fireEvent(EventType.DROPPED_NODE, property);
             return null;
         }
 
@@ -248,7 +246,7 @@ public final class Expansion {
         final var indexedSingleton = Keywords.INDEX.equals(expandedTerm) && node.size() == 1;
 
         if (!indexedSingleton) {
-            params.runtime().fire(EventType.BEGIN_LIST, term);
+            params.runtime().fireEvent(EventType.BEGIN_LIST, term);
         }
 
         final var result = new ArrayList<>();
@@ -294,7 +292,7 @@ public final class Expansion {
         }
 
         if (!indexedSingleton) {
-            params.runtime().fire(EventType.END_LIST, term);
+            params.runtime().fireEvent(EventType.END_LIST, term);
         }
 
         // 5.3

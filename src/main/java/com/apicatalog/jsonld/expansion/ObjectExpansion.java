@@ -62,7 +62,7 @@ public final class ObjectExpansion {
     public Object expand(final Context context, final String property) throws JsonLdException {
 
         if (property != null || term != null) {
-            params.runtime().fire(EventType.BEGIN_MAP, term != null ? term : property);
+            params.runtime().fireEvent(EventType.BEGIN_MAP, term != null ? term : property);
         }
 
         activeContext = initPreviousContext(
@@ -88,8 +88,8 @@ public final class ObjectExpansion {
             activeContext = activeContext
                     .builder(params.options().loader(), params.runtime())
                     .useInline(params.options().useInlineContexts())
-                    .collectTerms(params.runtime().hasValuesConsumer()
-                            ? params.runtime()::fire
+                    .collectTerms(params.runtime().hasContextKeysCollector()
+                            ? params.runtime()::acceptContextKeys
                             : null)
                     .build(element.get(Keywords.CONTEXT), params.baseUrl());
         }
@@ -114,7 +114,7 @@ public final class ObjectExpansion {
         final var normalized = normalize(result, property, params);
 
         if (property != null || term != null) {
-            params.runtime().fire(EventType.END_MAP, term != null ? term : property);
+            params.runtime().fireEvent(EventType.END_MAP, term != null ? term : property);
         }
 
         return normalized;
@@ -241,8 +241,8 @@ public final class ObjectExpansion {
                         activeContext = activeContext
                                 .builder(params.options().loader(), params.runtime())
                                 .propagate(false)
-                                .collectTerms(params.runtime().hasValuesConsumer()
-                                        ? params.runtime()::fire
+                                .collectTerms(params.runtime().hasContextKeysCollector()
+                                        ? params.runtime()::acceptContextKeys
                                         : null)
                                 .build(termDefinition.localContext(),
                                         activeContext.findTerm(term)
@@ -387,7 +387,7 @@ public final class ObjectExpansion {
 
         // 18.
         if (result.size() == 1 && result.containsKey(Keywords.LANGUAGE)) {
-            params.runtime().fire(EventType.DROPPED_NODE, term);
+            params.runtime().fireEvent(EventType.DROPPED_NODE, term);
             return null;
         }
 
@@ -399,7 +399,7 @@ public final class ObjectExpansion {
             if (!frameExpansion && result.isEmpty()
                     || result.containsKey(Keywords.VALUE)
                     || result.containsKey(Keywords.LIST)) {
-                params.runtime().fire(EventType.DROPPED_NODE, term);
+                params.runtime().fireEvent(EventType.DROPPED_NODE, term);
                 return null;
             }
 
@@ -407,7 +407,7 @@ public final class ObjectExpansion {
             // the frameExpansion flag is set, a map containing only the @id entry is
             // retained.
             if (!frameExpansion && result.size() == 1 && result.containsKey(Keywords.ID)) {
-                params.runtime().fire(EventType.DROPPED_NODE, term);
+                params.runtime().fireEvent(EventType.DROPPED_NODE, term);
                 return null;
             }
 

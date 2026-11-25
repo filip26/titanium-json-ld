@@ -43,7 +43,6 @@ import com.apicatalog.rdf.provider.QuadEmitter;
 import com.apicatalog.rdf.provider.QuadSetProvider;
 import com.apicatalog.tree.io.Tree;
 import com.apicatalog.tree.io.jakcson.Jackson2Emitter;
-import com.fasterxml.jackson.core.JsonFactory;
 
 public class JunitRunner {
 
@@ -315,7 +314,7 @@ public class JunitRunner {
             writer.println("Test " + testCase.id + ": " + testCase.name);
 
             if (expected != null) {
-                write(writer, SuiteConfig.JSON_FACTORY, "Expected", expected);
+                write(writer, "Expected", expected);
                 writer.println();
 
             } else if (testCase.expectErrorCode != null) {
@@ -323,7 +322,7 @@ public class JunitRunner {
             }
 
             if (result != null) {
-                write(writer, SuiteConfig.JSON_FACTORY, "Actual", result);
+                write(writer, "Actual", result);
                 writer.println();
             }
             if (error != null) {
@@ -337,7 +336,7 @@ public class JunitRunner {
 
     public static final void write(
             PrintWriter writer,
-            JsonFactory generator,
+//            JsonFactory generator,
             String name,
             Object result) {
 
@@ -345,9 +344,10 @@ public class JunitRunner {
 
         final StringWriter out = new StringWriter();
 
-        try (var jsonWriter = new Jackson2Emitter(generator
-                .createGenerator(out)
-                .useDefaultPrettyPrinter())) {
+        try (var jsonWriter = new Jackson2Emitter(
+                SuiteConfig.JSON_FACTORY
+                        .createGenerator(out)
+                        .useDefaultPrettyPrinter())) {
             Tree.write(result, jsonWriter);
 
         } catch (IOException e) {

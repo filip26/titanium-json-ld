@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -44,8 +45,8 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.jsonld.runtime.Execution.EventType;
 import com.apicatalog.jsonld.suite.SuiteConfig;
+import com.apicatalog.jsonld.test.JunitRunner;
 import com.apicatalog.web.media.MediaType;
 
 class ExecutionTest {
@@ -92,35 +93,28 @@ class ExecutionTest {
 
         final var keys = new ArrayList<Collection<String>>();
 
-        var runtime = Execution.of(options).add((type, values) -> {
-            if (EventType.CONTEXT_KEYS == type) {
-                keys.add(values);
-            }
-        });
+        var runtime = Execution.of(options).contextKeysCollector(keys::add);
 
-        var expanded = Expander.expand((Map) document, options, runtime);
+        if (!(document instanceof Map map)) {
+            throw new IllegalArgumentException();
+        }
+
+        var expanded = Expander.expand(map, options, runtime);
 
         assertNotNull(expanded);
 
-//        System.out.println(keys
-//                .stream()
-//                .map(c -> c.stream().filter(Predicate.not(Keywords::contains)).sorted())
-//                .flatMap(Function.identity())
-//                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        var result = Map.of("contextKeys", keys);
 
         var expected = read(output);
 
-        var match = Comparison.equals(expected, Map.of("contextKeys", keys));        
-
-        // TreeIO.deepEquals(Map.of("contextKeys", keys), NativeAdapter.instance(),
-        // expected.node(), expected.adapter());
+        var match = Comparison.equals(expected, result);
 
         if (!match) {
             var out = new StringWriter();
-
-//            try (final JsonWriter jsonWriter = JunitRunner.JSON_GENERATOR_FACTORY.createWriter(out)) {
-//       //FIXME         jsonWriter.write(JakartaMaterializer.node(keys, JavaAdapter.instance()));
-//            }
+            try (var writer = new PrintWriter(out)) {
+                JunitRunner.write(writer, "Expected", expected);
+                JunitRunner.write(writer, "Actual", result);
+            }
             System.out.println(out);
         }
 

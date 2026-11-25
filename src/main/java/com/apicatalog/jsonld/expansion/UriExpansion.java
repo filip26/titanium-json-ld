@@ -127,7 +127,7 @@ public final class UriExpansion {
         // a processor SHOULD generate a warning and return null.
         if (Keywords.matchForm(value)) {
             LOGGER.log(Level.WARNING, "Value [{0}] of keyword form [@1*ALPHA] is not allowed.", value);
-            runtime.fire(EventType.DROPPED_NODE, value);
+            runtime.fireEvent(EventType.DROPPED_NODE, value);
             return null;
         }
 
@@ -263,9 +263,9 @@ public final class UriExpansion {
                                 loader,
                                 runtime);
 
-                // CBOR-LD collector
-                if (runtime.hasValuesConsumer()) {
-                    runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());
+                // Extension: CBOR-LD context keys collector
+                if (runtime.hasContextKeysCollector()) {
+                    runtime.acceptContextKeys(activeContext.termsMapping().keySet());
                 }
             }
         }
@@ -293,8 +293,9 @@ public final class UriExpansion {
 
             activeContext.addTerm(prefix, localContext, defined, loader, runtime);
 
-            if (runtime.hasValuesConsumer()) {
-                runtime.fire(EventType.CONTEXT_KEYS, activeContext.termsMapping().keySet());
+            // Extension: CBOR-LD context keys collector
+            if (runtime.hasContextKeysCollector()) {
+                runtime.acceptContextKeys(activeContext.termsMapping().keySet());
             }
         }
 

@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.runtime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
@@ -34,35 +35,29 @@ public class Execution {
         END_MAP,
         BEGIN_LIST,
         END_LIST,
-        
-        NEXT_ELEMENT,   //TODO
-        
-        CONTEXT_KEYS,
+
+        NEXT_ELEMENT, // TODO
+
         TYPE_KEY,
-        TERM_KEY,        
+        TERM_KEY,
 
         UNDEFINED_TERM,
         DROPPED_NODE,
     }
 
     @FunctionalInterface
-    public interface TermValueConsumer {
-        void term(EventType type, String term, String value) throws JsonLdException;
+    public interface EventConsumer {
+        void term(EventType type, String term, Object value) throws JsonLdException;
     }
 
-    @FunctionalInterface
-    public interface TermsConsumer {
-        void terms(EventType type, Collection<String> terms) throws JsonLdException;
-    }
-
-    private Collection<TermValueConsumer> keyValueConsumer;
-    private Collection<TermsConsumer> termsConsumer;
+    private Collection<EventConsumer> keyValueConsumer;
+    private Consumer<Collection<String>> contextKeysCollector;
 
     protected Execution(
-            Collection<TermValueConsumer> keyValueConsumer,
-            Collection<TermsConsumer> valuesconsumer) {
+            Collection<EventConsumer> keyValueConsumer,
+            Consumer<Collection<String>> contextKeysCollector) {
         this.keyValueConsumer = keyValueConsumer;
-        this.termsConsumer = valuesconsumer;
+        this.contextKeysCollector = contextKeysCollector;
     }
 
     public static Execution of(Options options) {
@@ -71,7 +66,7 @@ public class Execution {
                 || options.droppedNodes() != null
                 || options.undefinedTerms() != null) {
 
-            final var consumers = new ArrayList<TermValueConsumer>();
+            final var consumers = new ArrayList<EventConsumer>();
 
             if (options.timeout() != null) {
                 consumers.add(TimeLimiter.of(options.timeout())::term);
@@ -81,13 +76,13 @@ public class Execution {
                         options.undefinedTerms(),
                         options.droppedNodes())::term);
             }
-            return new Execution(consumers, List.of());
+            return new Execution(consumers, null);
         }
 
-        return new Execution(List.of(), List.of());
+        return new Execution(List.of(), null);
     }
 
-    public Execution add(TermValueConsumer consumer) {
+    public Execution add(EventConsumer consumer) {
         if (keyValueConsumer.isEmpty()) {
             keyValueConsumer = new ArrayList<>();
         }
@@ -95,33 +90,32 @@ public class Execution {
         return this;
     }
 
-    public Execution add(TermsConsumer consumer) {
-        if (termsConsumer.isEmpty()) {
-            termsConsumer = new ArrayList<>();
-        }
-        termsConsumer.add(consumer);
+    public Execution contextKeysCollector(Consumer<Collection<String>> consumer) {
+        this.contextKeysCollector = consumer;
         return this;
     }
 
-    public void fire(EventType type, String key) throws JsonLdException {
+    public void fireEvent(EventType type, String key) throws JsonLdException {
         for (final var consumer : keyValueConsumer) {
             consumer.term(type, key, null);
         }
     }
 
-    public void fire(EventType type, String key, String uri) throws JsonLdException {
+    public void fireEvent(EventType type, String key, Object uri) throws JsonLdException {
         for (final var consumer : keyValueConsumer) {
             consumer.term(type, key, uri);
         }
     }
 
-    public void fire(EventType type, Collection<String> values) throws JsonLdException {
-        for (final var consumer : termsConsumer) {
-            consumer.terms(type, values);
-        }
+    public void acceptContextKeys(Collection<String> values) {
+        contextKeysCollector.accept(values);
     }
 
-    public boolean hasValuesConsumer() {
-        return !termsConsumer.isEmpty();
+    public boolean hasContextKeysCollector() {
+        return contextKeysCollector != null;
+    }
+
+    public boolean hasEventConsumer() {
+        return !keyValueConsumer.isEmpty();
     }
 }

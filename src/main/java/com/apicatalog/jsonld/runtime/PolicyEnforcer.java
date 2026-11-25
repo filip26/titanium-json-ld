@@ -22,9 +22,9 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.Options.ProcessingPolicy;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
+import com.apicatalog.jsonld.runtime.Execution.EventConsumer;
 
-public final class PolicyEnforcer implements TermValueConsumer {
+public final class PolicyEnforcer implements EventConsumer {
 
     private static final Logger LOGGER = Logger.getLogger(PolicyEnforcer.class.getName());
     
@@ -40,7 +40,7 @@ public final class PolicyEnforcer implements TermValueConsumer {
     }
 
     @Override
-    public void term(EventType type, String key, String value) throws JsonLdException {
+    public void term(EventType type, String key, Object value) throws JsonLdException {
         switch (type) {
         case DROPPED_NODE:
             enforceNodes(droppedNodes, key);

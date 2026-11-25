@@ -18,7 +18,7 @@ package com.apicatalog.jsonld.runtime;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
+import com.apicatalog.jsonld.runtime.Execution.EventConsumer;
 
 /**
  * A counter that tracks the number of processed nodes and enforces a maximum
@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
  * 
  * @since 2.0.0
  */
-public final class NodeThrottle implements TermValueConsumer {
+public final class NodeThrottle implements EventConsumer {
 
     private final int maxNodes;
     private final int maxDepth;
@@ -47,7 +47,7 @@ public final class NodeThrottle implements TermValueConsumer {
     }
 
     @Override
-    public void term(EventType type, String key, String value) throws JsonLdException {
+    public void term(EventType type, String key, Object value) throws JsonLdException {
 
         switch (type) {
         case BEGIN_LIST:

@@ -87,7 +87,7 @@ final class ObjectExpansion1314 {
 
             // if the term is undefined, i.e. is not URI or keyword
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
-                params.runtime().fire(EventType.UNDEFINED_TERM, key);
+                params.runtime().fireEvent(EventType.UNDEFINED_TERM, key);
                 continue;
             }
 
@@ -95,7 +95,7 @@ final class ObjectExpansion1314 {
             if (Keywords.contains(expandedProperty)) {
 
                 if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                    params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
+                    params.runtime().fireEvent(EventType.TERM_KEY, key, expandedProperty);
                 }
 
                 final var value = element.get(key);
@@ -114,7 +114,7 @@ final class ObjectExpansion1314 {
             final var typeMapping = keyTermDefinition.map(TermDefinition::typeMapping).orElse(null);
 
             if (typeMapping != null) {
-                params.runtime().fire(EventType.TYPE_KEY, key, typeMapping);
+                params.runtime().fireEvent(EventType.TYPE_KEY, key, typeMapping);
             }
 
             final var containerMapping = keyTermDefinition
@@ -156,7 +156,7 @@ final class ObjectExpansion1314 {
                         .map(TermDefinition::directionMapping)
                         .orElseGet(() -> activeContext.defaultDirection());
 
-                params.runtime().fire(EventType.BEGIN_MAP, key);
+                params.runtime().fireEvent(EventType.BEGIN_MAP, key);
 
                 for (var langEntry : entries(map)) {
 
@@ -206,9 +206,9 @@ final class ObjectExpansion1314 {
                         // 13.7.4.2.6.
                         langMaps.add(langMap);
                     }
-                    params.runtime().fire(EventType.TERM_KEY, langCode, Keywords.LANGUAGE);
+                    params.runtime().fireEvent(EventType.TERM_KEY, langCode, Keywords.LANGUAGE);
                 }
-                params.runtime().fire(EventType.END_MAP, key);
+                params.runtime().fireEvent(EventType.END_MAP, key);
 
                 expandedValue = List.copyOf(langMaps);
 
@@ -225,7 +225,7 @@ final class ObjectExpansion1314 {
                         .map(TermDefinition::indexMapping)
                         .orElse(Keywords.INDEX);
 
-                params.runtime().fire(EventType.BEGIN_MAP, key);
+                params.runtime().fireEvent(EventType.BEGIN_MAP, key);
 
                 // 13.8.3.
                 for (var valueEntry : entries(map)) {
@@ -235,7 +235,7 @@ final class ObjectExpansion1314 {
 
                     final var index = valueKey;
 
-                    params.runtime().fire(EventType.TERM_KEY, index, Keywords.INDEX);
+                    params.runtime().fireEvent(EventType.TERM_KEY, index, Keywords.INDEX);
 
                     // 13.8.3.1.
                     Context mapContext = activeContext;
@@ -388,7 +388,7 @@ final class ObjectExpansion1314 {
                         indices.add(indexMap);
                     }
                 }
-                params.runtime().fire(EventType.END_MAP, key);
+                params.runtime().fireEvent(EventType.END_MAP, key);
                 expandedValue = indices;
             }
             // 13.9.
@@ -481,7 +481,7 @@ final class ObjectExpansion1314 {
             }
 
             if (!Keywords.contains(key) || !Keywords.contains(expandedProperty)) {
-                params.runtime().fire(EventType.TERM_KEY, key, expandedProperty);
+                params.runtime().fireEvent(EventType.TERM_KEY, key, expandedProperty);
             }
 
         }
@@ -1085,17 +1085,15 @@ final class ObjectExpansion1314 {
 
             if (Keywords.TYPE.equals(expandedProperty)) {
                 if (expandedValue instanceof String typeValue) {
-                    params.runtime().fire(EventType.TYPE_KEY, Keywords.TYPE, typeValue);
+                    params.runtime().fireEvent(EventType.TYPE_KEY, Keywords.TYPE, typeValue);
 
                 } else if (expandedValue instanceof Collection<?> types && types.size() == 1) {
 
-                    params.runtime().fire(EventType.TYPE_KEY, Keywords.TYPE, (String) types.iterator().next());
+                    params.runtime().fireEvent(EventType.TYPE_KEY, Keywords.TYPE, (String) types.iterator().next());
 
-                } else if (params.runtime().hasValuesConsumer()
+                } else if (params.runtime().hasEventConsumer()
                         && expandedValue instanceof Collection<?> types) {
-
-                    // TODO replace stream()
-                    params.runtime().fire(EventType.TYPE_KEY, types.stream().map(Object::toString).toList());
+                    params.runtime().fireEvent(EventType.TYPE_KEY, expandedProperty, types);
                 }
             }
 
@@ -1110,7 +1108,7 @@ final class ObjectExpansion1314 {
             final String term) throws JsonLdException {
 
         if (activeProperty != null || term != null) {
-            params.runtime().fire(EventType.BEGIN_MAP, term != null ? term : activeProperty);
+            params.runtime().fireEvent(EventType.BEGIN_MAP, term != null ? term : activeProperty);
         }
 
         var activeContext = context;
@@ -1139,7 +1137,7 @@ final class ObjectExpansion1314 {
         expand(activeContext, element, activeProperty, term);
 
         if (activeProperty != null || term != null) {
-            params.runtime().fire(EventType.END_MAP, term != null ? term : activeProperty);
+            params.runtime().fireEvent(EventType.END_MAP, term != null ? term : activeProperty);
         }
     }
 
@@ -1182,7 +1180,7 @@ final class ObjectExpansion1314 {
                 }
 
                 if (isCollection) {
-                    params.runtime().fire(EventType.BEGIN_LIST, nestedKey);
+                    params.runtime().fireEvent(EventType.BEGIN_LIST, nestedKey);
                 }
 
                 // 14.2.2
@@ -1201,7 +1199,7 @@ final class ObjectExpansion1314 {
                                         : nestedKey);
 
                 if (isCollection) {
-                    params.runtime().fire(EventType.END_LIST, nestedKey);
+                    params.runtime().fireEvent(EventType.END_LIST, nestedKey);
                 }
             }
         }

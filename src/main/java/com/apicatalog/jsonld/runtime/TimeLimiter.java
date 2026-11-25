@@ -20,9 +20,9 @@ import java.time.Duration;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.jsonld.runtime.Execution.TermValueConsumer;
+import com.apicatalog.jsonld.runtime.Execution.EventConsumer;
 
-public final class TimeLimiter implements TermValueConsumer {
+public final class TimeLimiter implements EventConsumer {
 
     private final long ttl;
 
@@ -38,7 +38,7 @@ public final class TimeLimiter implements TermValueConsumer {
     }
 
     @Override
-    public void term(EventType type, String key, String value) throws JsonLdException {
+    public void term(EventType type, String key, Object value) throws JsonLdException {
 
         final var now = System.currentTimeMillis();
 

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,8 +37,6 @@ import com.apicatalog.jsonld.lang.Terms;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.LoaderException;
 import com.apicatalog.jsonld.runtime.Execution;
-import com.apicatalog.jsonld.runtime.Execution.EventType;
-import com.apicatalog.jsonld.runtime.Execution.TermsConsumer;
 import com.apicatalog.web.lang.LanguageTag;
 import com.apicatalog.web.uri.BlankNode;
 import com.apicatalog.web.uri.UriResolver;
@@ -71,7 +70,7 @@ public final class ContextBuilder {
 
     private boolean acceptInlineContext;
 
-    private TermsConsumer collectTerms;
+    private Consumer<Collection<String>> collectTerms;
 
     private int maxRemoteContexts;
 
@@ -190,10 +189,9 @@ public final class ContextBuilder {
                         "A context must be a map, context=" + itemContext);
             }
 
+            // Extension: CBOR-LD context keys collector
             if (collectTerms != null) {
-                collectTerms.terms(
-                        EventType.CONTEXT_KEYS,
-                        itemContextMap.keySet());
+                collectTerms.accept(itemContextMap.keySet());
             }
 
             // 5.4. Otherwise, it's a context definition
@@ -533,7 +531,7 @@ public final class ContextBuilder {
         return this;
     }
 
-    public ContextBuilder collectTerms(TermsConsumer collectTerms) {
+    public ContextBuilder collectTerms(Consumer<Collection<String>> collectTerms) {
         this.collectTerms = collectTerms;
         return this;
     }
