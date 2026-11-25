@@ -484,41 +484,40 @@ public final class JsonLdToQuads {
                     return;
                 }
 
-                if (rdfDirection != null) {
+                String language = null;
 
-                    if (datatype == null) {
-                        datatype = switch (rdfDirection) {
-                        case I18N_DATATYPE -> Terms.RDF_I18N_BASE;
-                        default -> Terms.RDF_DIR_LANG_STRING;
-                        };
+                if (item.containsKey(Keywords.LANGUAGE)) {
+                    if (item.get(Keywords.LANGUAGE) instanceof String langString) {
+                        language = langString.toLowerCase();
+
+                    } else {
+                        enforcePolicy(
+                                "Language tag [{0}] is invalid and value is omitted for datatype [{1}].",
+                                language, datatype);
                     }
+                }
 
-                    String language = null;
-
-                    if (item.containsKey(Keywords.LANGUAGE)) {
-                        if (item.get(Keywords.LANGUAGE) instanceof String langString) {
-                            language = langString.toLowerCase();
-
-                        } else {
-                            enforcePolicy(
-                                    "Language tag [{0}] is invalid and value is omitted for datatype [{1}].",
-                                    language, datatype);
-                        }
-                    }
-
+                if (RdfDirection.I18N_DATATYPE == rdfDirection) {
                     consumer.triple(
                             subject,
                             predicate,
                             valueString,
-                            datatype,
+                            Terms.RDF_I18N_BASE,
                             language,
                             direction);
                     return;
                 }
 
-                enforcePolicy(
-                        "Direction [{0}] has been omitted because RDF direction policy is not set.",
-                        direction);
+                if (RdfDirection.DIR_LANG_STRING == rdfDirection) {
+                    consumer.triple(
+                            subject,
+                            predicate,
+                            valueString,
+                            Terms.RDF_DIR_LANG_STRING,
+                            language,
+                            direction);
+                    return;
+                }
 
             } else {
                 enforcePolicy(
@@ -547,7 +546,6 @@ public final class JsonLdToQuads {
             enforcePolicy(
                     "Language tag [{0}] is unknown and value is omitted.",
                     langValue);
-
         }
 
         consumer.triple(

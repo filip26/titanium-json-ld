@@ -1,0 +1,15 @@
+[ {
+  "http://an.example/predicate1" : [ {
+    "@value" : "Ahoj",
+    "@language" : "cs",
+    "@direction": "ltr"
+  }, {
+    "@value" : "Čau",
+    "@direction": "ltr"
+  }, {
+    "@value" : "مرحبا",
+    "@language" : "ar",
+    "@direction": "rtl"
+  } ],
+  "@id" : "_:subject1"
+} ]

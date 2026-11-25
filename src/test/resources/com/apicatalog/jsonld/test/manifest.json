@@ -295,9 +295,22 @@
           "jld:PositiveEvaluationTest",
           "jld:FromRDFTest"
         ],
-        "name": "rdf:dirLangSTring",
+        "name": "fromRDF: rdf:dirLangString",
         "input": "dir-lang-string-1-in.nq",
         "expect": "dir-lang-string-1-out.json"      
+    },
+    {
+        "@id": "#ti0001",
+        "@type": [
+          "jld:PositiveEvaluationTest",
+          "jld:ToRDFTest"
+        ],
+        "name": "toRDF: rdf:dirLangString",
+        "input": "dir-lang-string-2-in.json",
+        "expect": "dir-lang-string-2-out.nq",
+        "option": {
+            "rdfDirection": "DIR_LANG_STRING"
+        }      
     }
   ]
 }

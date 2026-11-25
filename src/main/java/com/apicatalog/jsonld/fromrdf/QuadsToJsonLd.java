@@ -614,10 +614,10 @@ public final class QuadsToJsonLd {
     }
 
     private Map<String, Object> toObject(
-            String object,
-            String datatype,
-            String language,
-            String direction) {
+            final String object,
+            final String datatype,
+            final String language,
+            final String direction) {
 
         // 2.2.
         Object convertedValue = null;

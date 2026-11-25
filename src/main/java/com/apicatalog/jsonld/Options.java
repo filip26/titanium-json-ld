@@ -68,8 +68,8 @@ public final class Options {
         I18N_DATATYPE,
         /** Use compound literal representation. */
         COMPOUND_LITERAL,
-//        /** RDF 1.2 {@code rdf:dirLangString} type */
-//        DIR_LANG_STRING,
+        /** RDF 1.2 {@code rdf:dirLangString} type */
+        DIR_LANG_STRING,
     }
 
     /**
