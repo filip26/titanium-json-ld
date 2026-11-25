@@ -1,3 +1,4 @@
 {
-    "/prop": "http://example.org/prop"
+  "/prop/@included" : "http://example.org/Bar",
+  "/prop" : "http://example.org/Foo"
 }

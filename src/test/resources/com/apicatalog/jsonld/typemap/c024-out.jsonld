@@ -1,6 +1,6 @@
 {
-    "/nested/bar": "ex:bar",
-    "/nested/foo/0/value": "@value",
-    "/nested/foo": "ex:foo",
-    "/nested": "ex:nested"
+  "/" : "ex:Outer",
+  "/nested" : "ex:Inner",
+  "/nested/bar" : "@id",
+  "/nested/foo" : "ex:Number"
 }

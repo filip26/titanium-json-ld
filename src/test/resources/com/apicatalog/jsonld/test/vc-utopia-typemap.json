@@ -1,16 +1,13 @@
 {
-    "/type": "@type",
-    "/credentialSubject": "@id",
-    "/credentialSubject/type": "@type",
-    "/credentialSubject/protectedComponentIndex": "https://w3id.org/security#multibase",
-    "/issuer": "@id",
-    "/credentialStatus": "@id",
-    "/credentialStatus/type": "@type",
-    "/credentialStatus/terseStatusListBaseUrl": "@id",
-    "/proof": "@id",
-    "/proof/type": "@type",
-    "/proof/verificationMethod": "@id",
-    "/proof/cryptosuite": "https://w3id.org/security#cryptosuiteString",
-    "/proof/proofPurpose": "@vocab",
-    "/proof/proofValue": "https://w3id.org/security#multibase"
+  "/credentialStatus" : "https://w3id.org/vc-barcodes#TerseBitstringStatusListEntry",
+  "/credentialStatus/terseStatusListBaseUrl" : "@id",
+  "/credentialSubject" : "https://w3id.org/vc-barcodes#AamvaDriversLicenseScannableInformation",
+  "/credentialSubject/protectedComponentIndex" : "https://w3id.org/security#multibase",
+  "/issuer" : "@id",
+  "/proof" : "https://w3id.org/security#DataIntegrityProof",
+  "/proof/cryptosuite" : "https://w3id.org/security#cryptosuiteString",
+  "/proof/proofPurpose" : "@vocab",
+  "/proof/proofValue" : "https://w3id.org/security#multibase",
+  "/proof/verificationMethod" : "@id",
+  "/" : [ "https://www.w3.org/2018/credentials#VerifiableCredential", "https://w3id.org/vc-barcodes#OpticalBarcodeCredential" ]
 }

@@ -22,12 +22,10 @@ An implementation of the [JSON-LD 1.1](https://www.w3.org/TR/json-ld/) (JSON-bas
 - Processing policies for undefined terms, dropped values, time/space constraints, invalid statements, disallowed keywords, and more
 - Built-in loaders: HTTPS, file, classpath, scheme router, URI rewriter, URI filter, LRU cache, in-memory
 - RDF 1.2 directional language tagged string support (`rdf:dirLangString`) 
-- ZERO external dependencies
+- 💯 ZERO external dependencies
 
-#### 🧬 Experimental
-
-- JSON-LD-star expansion
-- Generated term and type maps
+- JSON-LD-star expansion (🧬 Experimental)
+- Generated term and type maps (🧬 Experimental)
 
 ### 🧩 Libraries & Tools
 

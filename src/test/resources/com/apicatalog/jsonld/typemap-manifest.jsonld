@@ -625,20 +625,20 @@
       "expect": "typemap/tn02-out.jsonld"
     },
     {
-          "@id": "#tvc01",
-          "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-          "name": "VC Utopia Example",
-          "option": {"specVersion": "json-ld-1.1"},
-          "input": "test/vc-utopia.jsonld",
-          "expect": "test/vc-utopia-typemap.json"
-        },
-        {
-              "@id": "#tvc02",
-              "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
-              "name": "VC Utopia Example #2",
-              "option": {"specVersion": "json-ld-1.1"},
-              "input": "test/vc-utopia-2.jsonld",
-              "expect": "test/vc-utopia-typemap-2.json"
-            }        
+      "@id": "#tvc01",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "VC Utopia Example",
+      "option": {"specVersion": "json-ld-1.1"},
+      "input": "test/vc-utopia.jsonld",
+      "expect": "test/vc-utopia-typemap.json"
+    },
+    {
+      "@id": "#tvc02",
+      "@type": ["jld:PositiveEvaluationTest", "jld:ExpandTest"],
+      "name": "VC Utopia Example #2",
+      "option": {"specVersion": "json-ld-1.1"},
+      "input": "test/vc-utopia-2.jsonld",
+      "expect": "test/vc-utopia-typemap-2.json"
+    }        
   ]
 }

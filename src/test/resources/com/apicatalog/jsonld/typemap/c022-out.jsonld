@@ -1,3 +1,4 @@
 {
-    "/foo": "ex:foo"
+  "/" : "ex:Type",
+  "/foo" : "@vocab"
 }

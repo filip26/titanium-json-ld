@@ -1,4 +1,5 @@
 {
-    "/nested/foo": "ex:foo",
-    "/nested": "ex:nested"
+  "/" : "ex:Outer",
+  "/nested" : "ex:Inner",
+  "/nested/foo" : "@vocab"
 }

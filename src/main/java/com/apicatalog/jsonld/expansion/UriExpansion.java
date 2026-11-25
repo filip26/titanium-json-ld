@@ -290,7 +290,7 @@ public final class UriExpansion {
         if (localContext != null
                 && localContext.containsKey(prefix)
                 && !Boolean.TRUE.equals(defined.get(prefix))) {
-System.out.println("> " + prefix + ", " + localContext);            
+
             activeContext.addTerm(prefix, localContext, defined, loader, runtime);
 
             if (runtime.hasValuesConsumer()) {
